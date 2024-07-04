@@ -1,5 +1,9 @@
 import { SignUp } from '@clerk/nextjs';
 
 export default function Page() {
-  return <SignUp />;
+  return (
+    <main className='my-44 grid place-content-center'>
+      <SignUp />;
+    </main>
+  );
 }
