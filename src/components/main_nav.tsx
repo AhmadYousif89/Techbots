@@ -20,21 +20,21 @@ export function MainNav() {
           </Link>
         </li>
         <li>
-          <Link href='/blogs'>
+          <Link href='/#blogs'>
             <Button variant={'link'} className='text-secondary'>
               Blogs
             </Button>
           </Link>
         </li>
         <li>
-          <Link href='#'>
+          <Link href='/#footer'>
             <Button variant={'link'} className='text-secondary'>
               About
             </Button>
           </Link>
         </li>
         <li>
-          <Link href='#'>
+          <Link href='/#footer'>
             <Button variant={'link'} className='text-secondary'>
               Contact
             </Button>
