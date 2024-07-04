@@ -7,10 +7,10 @@ export function Logo({ className }: { className?: string }) {
     <Link
       href={'/'}
       className={cn([
-        'flex items-center gap-2 text-secondary text-xl font-bold',
+        'flex items-center gap-2 text-secondary text-lg font-bold',
         className
       ])}>
-      <Computer /> TechBots
+      <Computer size={20} /> TechBots
     </Link>
   );
 }
