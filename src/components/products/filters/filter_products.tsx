@@ -24,9 +24,6 @@ type FilterProductsProps = {
 };
 
 export function FilterProducts({ searchParams }: FilterProductsProps) {
-  const catParam = searchParams['category'] ?? '';
-  const category = catParam as Category;
-
   return (
     <section aria-label='filters' className='flex items-center justify-between'>
       <div className='relative flex items-center gap-4 w-full'>
@@ -40,7 +37,9 @@ export function FilterProducts({ searchParams }: FilterProductsProps) {
             </AccordionTrigger>
             <Separator />
             <AccordionContent className='p-0'>
-              <FilterContent />
+              {/* Filter Content */}
+              <FilterContent searchParams={searchParams} />
+              {/* Filter Content */}
             </AccordionContent>
           </AccordionItem>
         </Accordion>

@@ -1,17 +1,20 @@
-import { categories } from '@/lib/store';
-import { capitalizeString } from '@/lib/utils';
-import { getColorList, getLocalProducts } from '@/lib/actions';
-
-import { Input } from '../../ui/input';
-import { Label } from '../../ui/label';
-import { Separator } from '../../ui/separator';
+import { filterAndPaginateProducts, getColorList } from '@/lib/actions';
 import { FilterContentCategory } from './filter_content_category';
 import { FilterContentColors } from './filter_content_color';
 import { FilterContentPrice } from './filter_content_price';
+import { Separator } from '../../ui/separator';
+import { Category } from '@/lib/store';
+import { Product } from '@/lib/types';
 
-export async function FilterContent() {
-  const products = await getLocalProducts();
-  const colors = getColorList(products);
+type FilterContentProps = {
+  searchParams: { [key: string]: string | Category | undefined };
+};
+
+export async function FilterContent({ searchParams }: FilterContentProps) {
+  const { paginatedProducts: products } = await filterAndPaginateProducts(searchParams);
+  const colors = await getColorList();
+
+  const filterByPrice = (p: Product[]) => {};
 
   return (
     <div className='p-4'>
@@ -32,7 +35,10 @@ export async function FilterContent() {
 
         {/* Price */}
         <section className='mb-8 mt-4 lg:mt-0 lg:ml-[10%] col-[1] lg:col-[3] lg:row-[1]'>
-          <FilterContentPrice />
+          <FilterContentPrice
+            products={products}
+            // onFilter={filterByPrice}
+          />
         </section>
       </div>
     </div>
