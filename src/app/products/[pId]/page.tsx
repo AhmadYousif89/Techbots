@@ -1,5 +1,6 @@
-import { products } from '../../../../data';
 import { cn } from '@/lib/utils';
+import { getProductByAsin } from '@/lib/actions';
+
 import {
   Card,
   CardContent,
@@ -10,95 +11,131 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { RatingStars } from '@/components/products/rating_stars';
+import { RatingStars } from '@/components/products/reviews/rating_stars';
 import { AddToCartButton } from '@/components/cart/add_to_cart_button';
 import { SimilarProducts } from '@/components/products/similar_products';
 import { AddToWishlistButton } from '@/components/wishlist/add_to_wishlist_button';
+import { ProductReviews } from '@/components/products/reviews/product_reviews';
+import { ProductCarousel } from '@/components/products/product_carousel';
+import { Suspense } from 'react';
+import { SimilarItemSkeleton } from '@/components/products/skeletons/similar_item_skeleton';
+import { ItemCarouselSkeleton } from '@/components/products/skeletons/item_carousel_skeleton';
 import {
-  ProductCarousel,
-  ProductPicker,
-  ProductReviews
-} from '@/components/products/single_product';
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion';
 
 type PageProps = {
   params: { pId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: { [key: string]: string | undefined };
 };
 
-export default function SingleProductPage({ params: { pId }, searchParams }: PageProps) {
-  const product = products.find(product => product.id === +pId);
+export default async function SingleProductPage({
+  params: { pId },
+  searchParams
+}: PageProps) {
+  const product = await getProductByAsin(pId);
 
   if (!product) {
     return (
-      <main className='grid justify-center items-center min-h-screen max-w-screen-xl mx-auto'>
-        <p className='text-2xl'>Product not found</p>
+      <main className='grid justify-center items-center min-h-screen max-w-screen-xl mx-auto bg-foreground'>
+        <p className='text-xl'>Product not found</p>
       </main>
     );
   }
 
-  const similarProducts = products.filter(
-    p => p.category === product.category && p.id !== product.id
-  );
-
-  const reviews = product.reviews.data;
+  const reviews = product.top_reviews != null ? product.top_reviews : [];
   const selectedRating = searchParams['filterByRating'] ?? '';
   const page = searchParams['page'] ?? '1';
   const limit = searchParams['limit'] ?? '5';
   const start = (+page - 1) * +limit;
   const end = start + +limit;
-  let filteredReviews = selectedRating
-    ? reviews.filter(review => review.rating === +selectedRating)
-    : reviews;
+  let filteredReviews =
+    reviews && selectedRating
+      ? reviews.filter(review => review.rating === +selectedRating)
+      : reviews;
   const totalPages = Math.ceil(filteredReviews.length / +limit);
   const hasPrevPage = start > 0;
   const hasNextPage = end < filteredReviews.length;
   filteredReviews = filteredReviews.slice(start, end);
 
+  const productSpecs = parseDataString(product.specifications_flat);
+  const productFeatures = parseDataString(product.feature_bullets_flat);
+
   return (
     <main className='grid min-h-screen max-w-screen-xl mx-auto'>
-      <Card className='grid items-center p-0 pb-20 rounded-none lg:grid-cols-2 lg:gap-8'>
-        <ProductCarousel product={product} />
-        <div className='space-y-4'>
-          <CardHeader className='gap-4 max-w-[55ch]'>
+      <Card className='grid items-center pb-10 lg:py-10 rounded-none lg:grid-cols-2 lg:gap-10'>
+        <Suspense fallback={<ItemCarouselSkeleton />}>
+          <ProductCarousel product={product} />
+        </Suspense>
+
+        <div>
+          <CardHeader className='gap-4 max-w-prose'>
             <Badge variant='outline' className='w-fit'>
               {product.category}
             </Badge>
             <div className='space-y-6'>
-              <CardTitle className='text-xl'>{product.name}</CardTitle>
+              <CardTitle className='text-sm md:text-[16px] lg:text-lg font-medium text-balance'>
+                {product.title}
+              </CardTitle>
               <RatingStars
-                rating={product.reviews.rating}
-                reviewsCount={product.reviews.data.length}
+                productRating={product.rating}
+                reviewsCount={product.ratings_total.toLocaleString()}
               />
               <Badge
-                variant={product.isStock ? 'outline' : 'destructive'}
+                variant={product.stock_quantity > 0 ? 'outline' : 'destructive'}
                 className={cn(
-                  product.isStock ? 'bg-emerald-500 text-secondary border-0' : ''
+                  product.stock_quantity > 0
+                    ? 'bg-emerald-500 text-secondary border-0'
+                    : ''
                 )}>
-                {product.isStock ? 'In Stock' : 'Out of Stock'}
+                {product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock'}
               </Badge>
-              {product.isNew && (
-                <Badge
-                  variant={'outline'}
-                  className='bg-blue-500 border-0 text-background shadow ml-2'>
-                  New Arrival
-                </Badge>
-              )}
               <Separator />
             </div>
-            <CardDescription>{product.description.slice(0, 100)}</CardDescription>
-            <div className='space-y-4'>
-              <div className='flex items-center gap-4'>
-                <p className='cursor-default font-medium line-through text-muted-foreground'>
-                  ${product.regularPrice}
-                </p>
-                <p className='cursor-default font-medium'>${product.salePrice}</p>
-              </div>
-              <ProductPicker colors={product.colors} />
-            </div>
           </CardHeader>
-          <CardFooter className='gap-8'>
-            <AddToCartButton product={product} />
-            <AddToWishlistButton product={product} />
+          <CardContent className='max-w-prose'>
+            {product.description && (
+              <CardDescription className='mb-4 border-b pb-2'>
+                {product.description}
+              </CardDescription>
+            )}
+            <div className='flex gap-8 justify-between'>
+              <div className='space-y-4'>
+                <Badge className='text-sm shadow-sm py-1' variant={'outline'}>
+                  <p className='cursor-default text-muted-foreground font-medium'>
+                    {product.price}
+                  </p>
+                </Badge>
+                {product.color && (
+                  <div className='flex items-center font-medium text-sm ml-2'>
+                    Color <span className='text-foreground ml-4'>{product.color}</span>
+                  </div>
+                )}
+              </div>
+              <div className='flex items-center gap-8'>
+                <AddToCartButton product={product} />
+                <AddToWishlistButton product={product} />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className='flex-col items-stretch max-w-prose'>
+            {productFeatures && (
+              <ProductDetailsTable type='feats' data={productFeatures} />
+            )}
+            {productSpecs && <ProductDetailsTable type='specs' data={productSpecs} />}
+            {!productFeatures && !productSpecs && (
+              <span>
+                {product.title} Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                Facilis ipsam quas optio itaque, quo aperiam autem rerum ratione sunt.
+                Voluptates distinctio animi veniam, libero aliquid harum quisquam ullam
+                beatae iusto accusantium magnam laudantium officiis aperiam, asperiores
+                incidunt in aspernatur rem. Qui temporibus libero eum iure ratione quia,
+                corporis eius voluptatum.
+              </span>
+            )}
           </CardFooter>
         </div>
       </Card>
@@ -107,18 +144,23 @@ export default function SingleProductPage({ params: { pId }, searchParams }: Pag
         <CardHeader>
           <h2 className='text-2xl sm:text-center font-medium'>Similar Products</h2>
         </CardHeader>
-        <CardContent className='px-6 m-0'>
-          <SimilarProducts products={similarProducts} currentProduct={product} />
+        <CardContent className='px-6 pb-10 m-0'>
+          <Suspense fallback={<SimilarItemSkeleton />}>
+            <SimilarProducts pId={pId} category={product.category} />
+          </Suspense>
         </CardContent>
       </Card>
 
-      <Card id='reviews' className='rounded-none py-20 sm:px-4 xl:px-8'>
+      <Card id='reviews' className='rounded-none py-10 sm:px-4 xl:px-8'>
         <CardHeader>
           <h2 className='text-2xl font-medium'>Customer Reviews</h2>
         </CardHeader>
         <CardContent>
           <ProductReviews
             product={product}
+            page={page}
+            limit={limit}
+            selectedRating={selectedRating}
             filteredReviews={filteredReviews}
             hasNextPage={hasNextPage}
             hasPrevPage={hasPrevPage}
@@ -129,3 +171,55 @@ export default function SingleProductPage({ params: { pId }, searchParams }: Pag
     </main>
   );
 }
+
+function parseDataString(dataString: string) {
+  const dataObject: { [key: string]: string } = {};
+  if (!dataString) return dataObject;
+  const entries = dataString.split('. ');
+  entries.forEach(entry => {
+    const [key, value] = entry.split(': ');
+    if (key && value) {
+      dataObject[key] = value;
+    }
+  });
+  return dataObject;
+}
+
+type ProductDetailsTableProps = {
+  data: Record<string, string>;
+  type: 'specs' | 'feats';
+};
+
+const ProductDetailsTable = ({ data, type }: ProductDetailsTableProps) => {
+  return (
+    <Accordion type='single' collapsible>
+      <AccordionItem value='details' className={cn(type == 'specs' ? 'border-b-0' : '')}>
+        <AccordionTrigger
+          className={cn(
+            `text-xs text-muted-foreground uppercase hover:text-foreground/50`,
+            type == 'feats' && 'sm:pt-0'
+          )}>
+          {type === 'specs' ? 'Specifications' : 'Features'}
+        </AccordionTrigger>
+        <AccordionContent>
+          <table className='bg-secondary text-xs'>
+            <thead className='bg-primary text-secondary'>
+              <tr>
+                <th className='w-1/4 p-2'>Attribute</th>
+                <th className='w-3/4 p-2'>Value</th>
+              </tr>
+            </thead>
+            <tbody className='text-gray-700'>
+              {Object.entries(data).map(([key, value]) => (
+                <tr key={key}>
+                  <td className='border px-4 py-2'>{key}</td>
+                  <td className='border px-4 py-2'>{value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+};

@@ -14,7 +14,7 @@ import { featuredProducts } from '../../../data';
 
 export function FeaturedProducts() {
   return (
-    <section className='px-6 py-28 bg-secondary max-w-screen-xl lg:mx-auto'>
+    <section className='px-6 py-20 mb-40 bg-secondary max-w-screen-xl lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Featured Products</h2>
       <Carousel opts={{ align: 'end' }}>
         <CarouselContent>
@@ -38,13 +38,13 @@ export function FeaturedProducts() {
                   <span className='text-sm text-gray-500 row-span-1 col-span-2'>
                     Starts from:
                   </span>
-                  <span className='ring-2 ring-secondary p-2 rounded font-medium'>
+                  <span className='ring-2 ring-secondary p-2 rounded text-sm font-medium'>
                     {item.price}
                   </span>
                   <Link href={item.url}>
                     <Button
                       variant={'link'}
-                      className='bg-primary/95 text-white rounded-md'>
+                      className='bg-primary/95 text-white rounded-md text-xs'>
                       {item.buttonTitle}
                     </Button>
                   </Link>

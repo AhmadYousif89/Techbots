@@ -1,32 +1,33 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Info, Trash2 } from 'lucide-react';
-import { ProductType } from '../../../data';
-
-import { Card, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { toast } from 'sonner';
+
+import { Product } from '@/lib/types';
+import { Info, Trash2 } from 'lucide-react';
 import { useCartMenuState } from '@/lib/store';
+
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card, CardTitle } from '../ui/card';
 import { useLocalStorage } from '../hooks/use_local_storage';
 
 type ProductThumbnailProps = {
-  product: ProductType;
+  product: Product;
   type: 'cart' | 'wishlist';
 };
 
 export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
   const { setIsOpen } = useCartMenuState();
-  const { '1': setStoredItems } = useLocalStorage<ProductType[]>(type, []);
+  const { '1': setStoredItems } = useLocalStorage<Product[]>(type, []);
 
   return (
     <Card className='flex items-center p-4'>
       <Image
-        src={product.images[0]}
-        alt={product.name}
+        src={product.main_image.link}
+        alt={product.title}
         width={80}
         height={80}
-        className='size-20'
+        className='size-20 mr-4'
       />
       <div className='flex items-center justify-between gap-4 w-full'>
         <div>
@@ -34,12 +35,12 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
             <Badge variant='outline' className='font-medium mb-1 -ml-1 w-fit'>
               {product.category}
             </Badge>
-            <Link href={`/products/${product.id}`} onClick={() => setIsOpen(false)}>
-              {product.name.split(' ').slice(0, 4).join(' ')}
+            <Link href={`/products/${product.asin}`} onClick={() => setIsOpen(false)}>
+              {product.title.split(' ').slice(0, 4).join(' ')}
             </Link>
           </CardTitle>
           <div className='font-medium text-sm text-muted-foreground'>
-            <span>${product.salePrice}</span>
+            <span>{product.price}</span>
           </div>
         </div>
         <Button
@@ -47,7 +48,7 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
           variant={'destructive'}
           className='size-8 aspect-square p-0'
           onClick={() => {
-            setStoredItems(items => items.filter(item => item.id !== product.id));
+            setStoredItems(items => items.filter(item => item.asin !== product.asin));
             toast.custom(() => {
               return (
                 <div className='flex items-center gap-4'>
