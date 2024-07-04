@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 import {
   Sheet,
   SheetClose,
@@ -19,25 +23,30 @@ import {
   AccordionItem,
   AccordionTrigger
 } from './ui/accordion';
-import { categories } from '../../data';
+import { categories } from '@/lib/store';
+import { UserButton, useAuth } from '@clerk/nextjs';
+import { capitalizeString } from '@/lib/utils';
 
 export function SideMenu() {
+  const [open, setOpen] = useState(false);
+  const { userId } = useAuth();
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           size={'sm'}
           variant={'secondary'}
-          className='size-8 p-0 rounded-full bg-zinc-100 lg:hidden'>
+          className='size-7 p-1 rounded-full bg-zinc-100 lg:hidden'>
           <svg
-            className='w-[22px] h-[22px] stroke-foreground'
+            className='size-[20px] stroke-foreground'
             fill='none'
             viewBox='0 0 24 24'
             xmlns='http://www.w3.org/2000/svg'>
             <path
               strokeLinecap='round'
               strokeLinejoin='round'
-              strokeWidth={2}
+              strokeWidth={3}
               d='M4 6h16M4 12h16m-7 6h7'
             />
           </svg>
@@ -45,16 +54,17 @@ export function SideMenu() {
       </SheetTrigger>
 
       <SheetContent side={'left'} className='flex flex-col'>
-        <SheetHeader className='text-start py-4'>
-          <SheetTitle className=''>
-            <Logo className='text-foreground font-medium text-lg' />
+        <SheetHeader className='flex-row items-center justify-between pt-4'>
+          <SheetTitle>
+            <Logo className='text-foreground font-medium' />
           </SheetTitle>
-          <Separator />
         </SheetHeader>
+        <Separator />
 
         <ul className='grid gap-4 pb-4 text-sm'>
-          <li className=''>
+          <li>
             <Link
+              onClick={() => setOpen(false)}
               href='/products'
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'>
               Shop
@@ -67,13 +77,14 @@ export function SideMenu() {
                   Categories
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className='py-2'>
+                  <ul className='py-2 grid grid-cols-2 gap-x-4'>
                     {categories.map(category => (
-                      <li key={category.id}>
+                      <li key={category}>
                         <Link
-                          href={`/products?category=${category.link}`}
-                          className='py-1 mx-4 text-xs inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'>
-                          {category.name}
+                          onClick={() => setOpen(false)}
+                          href={`/products?category=${category}`}
+                          className='p-1 text-xs inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'>
+                          {capitalizeString(category)}
                         </Link>
                       </li>
                     ))}
@@ -84,22 +95,25 @@ export function SideMenu() {
           </li>
           <li>
             <Link
+              onClick={() => setOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
-              href='/cart#cart-items'>
+              href='/cart#cart-list'>
               Cart
             </Link>
           </li>
           <li>
             <Link
+              onClick={() => setOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
-              href='/blogs'>
+              href='/'>
               Blogs
             </Link>
           </li>
           <li>
             <Link
+              onClick={() => setOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
-              href='/about'>
+              href='/'>
               About
             </Link>
           </li>
@@ -107,9 +121,12 @@ export function SideMenu() {
 
         <Separator />
 
-        <AuthButtons />
-
-        <Separator />
+        {!userId ? (
+          <>
+            <AuthButtons />
+            <Separator />
+          </>
+        ) : null}
 
         <SheetFooter className='mt-auto'>
           <SheetClose asChild className='my-4'>
