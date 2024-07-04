@@ -9,24 +9,28 @@ import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import type { ButtonProps } from '../ui/button';
 import { useLocalStorage } from '../hooks/use_local_storage';
+import { useUser } from '@clerk/nextjs';
 
 type AddToCartButtonProps = {
+  action?: 'addToCart' | 'BuyNow';
   product: Product;
   forceRedirect?: string;
 } & ButtonProps;
 
 export function AddToCartButton({
+  action,
   product,
   variant,
   forceRedirect = '',
   ...props
 }: AddToCartButtonProps) {
   const router = useRouter();
+  const { isSignedIn } = useUser();
   const [isMounted, setIsMounted] = useState(false);
   const [cart, setCartItem] = useLocalStorage<Product[]>('cart', []);
 
   let cartItem: Product | undefined;
-  let textContent;
+  let textContent = action === 'addToCart' ? 'Add to cart' : 'Buy now';
 
   useEffect(() => {
     setIsMounted(true);
@@ -38,7 +42,6 @@ export function AddToCartButton({
   }
 
   if (isMounted && cartItem) textContent = 'Remove from cart';
-  else textContent = 'Add to cart';
 
   return (
     <Button
@@ -51,6 +54,7 @@ export function AddToCartButton({
           product.cart_quantity = product.cart_quantity ? product.cart_quantity + 1 : 1;
           setCartItem(cart => [...cart, product]);
         }
+        if (forceRedirect && !cartItem) router.push(forceRedirect);
         toast.custom(() => {
           return (
             <div className='flex items-center gap-4'>
@@ -62,7 +66,6 @@ export function AddToCartButton({
               <p className='text-sm'>Item {cartItem ? 'removed' : 'added'} to cart</p>
             </div>
           );
-          if (forceRedirect) router.push(forceRedirect);
         });
       }}
       {...props}>
