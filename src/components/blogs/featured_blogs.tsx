@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { blogsData } from '../../../data';
+import { blogsData } from '../../../data/data';
 
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
@@ -15,8 +15,8 @@ export function LatestBlogs() {
   return (
     <section
       id='blogs'
-      className='px-6 py-20 mb-40 bg-secondary max-w-screen-xl lg:mx-auto'>
-      <h2 className='text-2xl font-bold mb-12'>Featured Blogs</h2>
+      className='px-6 py-10 pb-20 bg-secondary max-w-screen-xl lg:mx-auto'>
+      <h2 className='text-2xl font-bold mb-12'>Latest Tech Blogs</h2>
       <Carousel>
         <CarouselContent>
           {blogsData.map(item => (
