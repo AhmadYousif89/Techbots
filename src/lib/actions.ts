@@ -13,6 +13,7 @@ export async function getLocalProducts() {
 
 export async function getProductByAsin(asin: string) {
   const products = await getLocalProducts();
+  await new Promise(res => setTimeout(res, 2000));
   return products.find(product => product.asin === asin);
 }
 
@@ -39,4 +40,44 @@ export async function getProductsByColor(color: string) {
 export async function getSimilarProducts(category: Category, asin: string) {
   const products = await getProductsByCategory(category);
   return products.filter(product => product.asin !== asin);
+}
+
+export async function filterAndPaginateProducts(searchParams: {
+  [key: string]: string | undefined;
+}) {
+  let products = await getLocalProducts();
+  let totalProducts = products.length;
+
+  // Handle products filtering
+  let productsByCategory: Product[] = [];
+  let category = searchParams['category'] ?? '';
+  if (category) {
+    productsByCategory = await getProductsByCategory(category as Category);
+    products = productsByCategory;
+    totalProducts = products.length;
+  }
+  // Handle products pagination
+  const page = searchParams['page'] ?? '1';
+  const limitPerPage = searchParams['limit'] ?? '8';
+  const gridSize = searchParams['grid'] ?? '';
+  const totalPages = Math.ceil(totalProducts / +limitPerPage);
+  const start = (+page - 1) * +limitPerPage;
+  const end = start + +limitPerPage;
+  const hasPrevPage = start > 0;
+  const hasNextPage = end < totalProducts;
+  const paginatedProducts = products.slice(start, end);
+
+  return {
+    category,
+    start,
+    end,
+    totalProducts,
+    paginatedProducts,
+    hasPrevPage,
+    hasNextPage,
+    totalPages,
+    limitPerPage,
+    gridSize,
+    page
+  };
 }
