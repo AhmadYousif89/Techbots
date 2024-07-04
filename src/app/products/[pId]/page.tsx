@@ -116,7 +116,7 @@ export default async function SingleProductPage({
                 )}
               </div>
               <div className='flex items-center gap-8'>
-                <AddToCartButton product={product} />
+                <AddToCartButton action='addToCart' product={product} />
                 <AddToWishlistButton product={product} />
               </div>
             </div>

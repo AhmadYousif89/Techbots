@@ -70,7 +70,11 @@ export function ProductGrid({
 
       {products.map((product, index) => (
         <Suspense key={product.asin + index} fallback={<GridItemSkeleton />}>
-          <ProductGridItem key={product.asin} product={product} />
+          <ProductGridItem
+            key={product.asin}
+            product={product}
+            searchParams={searchParams}
+          />
         </Suspense>
       ))}
     </section>

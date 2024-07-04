@@ -1,15 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { SignedOut, SignInButton, SignedIn } from '@clerk/nextjs';
 import { Product } from '@/lib/types';
 
 import { Separator } from '../ui/separator';
 import { AddToCartButton } from '../cart/add_to_cart_button';
 import { AddToWishlistButton } from '../wishlist/add_to_wishlist_button';
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { RatingStars } from './reviews/rating_stars';
+import { Category } from '@/lib/store';
 
-export async function ProductGridItem({ product }: { product: Product }) {
+type Props = {
+  searchParams: { [key: string]: string | Category | undefined };
+  product: Product;
+};
+
+export async function ProductGridItem({ product, searchParams }: Props) {
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   return (
@@ -41,20 +46,14 @@ export async function ProductGridItem({ product }: { product: Product }) {
       </CardHeader>
       <Separator />
       <CardFooter className='p-0 pt-2 gap-4 justify-between'>
-        <SignedOut>
-          <div className='inline-flex items-center justify-center border whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent text-primary hover:bg-secondary/90 h-10 w-20 text-xs *:h-full *:w-full'>
-            <SignInButton forceRedirectUrl='/cart' mode='modal'>
-              Buy now
-            </SignInButton>
-          </div>
-        </SignedOut>
-        <SignedIn>
-          <AddToCartButton
-            className='text-xs lg:text-sm'
-            product={product}
-            forceRedirect='/cart'
-          />
-        </SignedIn>
+        <AddToCartButton
+          action='BuyNow'
+          className='text-xs lg:text-sm'
+          product={product}
+          forceRedirect={`/cart?page=${searchParams['page'] || ''}&limit=${
+            searchParams['limit'] || ''
+          }&category=${searchParams['category'] || ''}`}
+        />
         <AddToWishlistButton
           logoSize={18}
           className='text-xs hover:bg-transparent'
