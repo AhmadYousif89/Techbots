@@ -30,7 +30,7 @@ export function AddToWishlistButton({
     } else {
       setItem('');
     }
-  }, [wishlist.length]);
+  }, [wishlist.length, product.asin, wishlist]);
 
   return (
     <Button

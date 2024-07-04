@@ -25,7 +25,7 @@ export function BuyNowButton({ product }: BuyNowButtonProps) {
       });
       router.push('/cart');
     }
-  }, [isSignedIn, setCartItem, buyNowClicked]);
+  }, [isSignedIn, setCartItem, buyNowClicked, product, router]);
 
   return (
     <div
