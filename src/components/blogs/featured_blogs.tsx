@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Image from 'next/image';
 import { blogsData } from '../../../data/data';
 
@@ -26,18 +27,18 @@ export function LatestBlogs() {
                   <h3 className='text-lg font-semibold'>{item.title}</h3>
                   <p className='mt-2 text-sm text-gray-500'>{item.description}</p>
                 </CardHeader>
-                <CardContent className='mt-auto'>
+                <CardContent>
                   <Image
                     src={item.image}
                     alt={item.title}
-                    className='rounded-lg'
-                    width={500}
-                    height={250}
+                    className='rounded-lg object-contain'
+                    width={400}
+                    height={200}
                   />
                 </CardContent>
                 <CardFooter className='mt-auto'>
                   <Button size='sm' variant='outline'>
-                    Read More
+                    <Link href={item.url}>Read More</Link>
                   </Button>
                 </CardFooter>
               </Card>
