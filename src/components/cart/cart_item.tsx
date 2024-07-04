@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { Info, Minus, Plus, Trash2 } from 'lucide-react';
-import { ProductType } from '../../../data';
 
 import { Card, CardDescription, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -17,12 +17,12 @@ import {
   DialogTrigger
 } from '../ui/dialog';
 import Link from 'next/link';
-import { useState } from 'react';
+import { Product } from '@/lib/types';
 
-export function CartItem({ product }: { product: ProductType }) {
+export function CartItem({ product }: { product: Product }) {
   const [dialogIsOpen, setDialogState] = useState(false);
-  const [cart, setCart] = useLocalStorage<ProductType[]>('cart', []);
-  const currentProduct = cart.find(item => item.id === product.id);
+  const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
+  const currentProduct = cart.find(item => item.asin === product.asin);
 
   if (!currentProduct) {
     return null;
@@ -39,7 +39,7 @@ export function CartItem({ product }: { product: ProductType }) {
     <div className='flex gap-8 mt-4 even:pt-8'>
       <Card className='p-2 shadow w-full max-w-28 sm:max-w-36 self-start'>
         <Image
-          src={currentProduct.images[0]}
+          src={currentProduct.main_image.link}
           alt='Product Image'
           width={200}
           height={200}
@@ -48,64 +48,59 @@ export function CartItem({ product }: { product: ProductType }) {
 
       <div>
         <div className='flex gap-2 mb-2'>
-          {currentProduct.salePrice && (
-            <Badge
-              variant={'outline'}
-              className='bg-green-500 border-0 text-background shadow'>
-              On Sale
-            </Badge>
-          )}
+          <Badge
+            variant={'outline'}
+            className='bg-green-500 border-0 text-background shadow'>
+            On Sale
+          </Badge>
         </div>
-        <CardTitle className='text-sm font-medium'>
-          <Link href={`/products/${product.id}`}>
-            {currentProduct.name.split(' ').slice(0, 4).join(' ')}
+        <CardTitle className='text-lg font-medium'>
+          <Link href={`/products/${product.asin}`}>
+            {currentProduct.title.split(' ').slice(0, 4).join(' ')}
           </Link>
         </CardTitle>
-        <CardDescription className='py-2 max-w-[60ch]'>
-          {currentProduct.description.split(' ').slice(0, 15).join(' ')}...
+        <CardDescription className='pb-4 pt-2 text-xs max-w-[60ch]'>
+          {currentProduct.description?.split(' ').slice(0, 15).join(' ')}
+          {currentProduct.feature_bullets_flat.split(' ').slice(0, 15).join(' ')}
         </CardDescription>
 
-        <div className='flex items-center gap-4 my-4 font-medium'>
-          <span className='text-sm text-muted-foreground line-through'>
-            ${currentProduct.regularPrice}
-          </span>
-          <p className='font-medium'>
-            <Badge variant={'outline'} className='text-sm shadow-sm'>
-              $ {currentProduct.salePrice}
-            </Badge>
-          </p>
+        <div className='font-medium'>
+          <Badge variant={'outline'} className='text-sm shadow-sm'>
+            {currentProduct.price}
+          </Badge>
         </div>
 
         <div className='flex items-center gap-4 mt-6'>
           <Button
-            size='icon'
-            disabled={currentProduct.cartQuantity === currentProduct.quantity}
+            disabled={currentProduct.cart_quantity === currentProduct.stock_quantity}
             variant='outline'
-            className='size-8'
+            className='size-7 p-0'
             onClick={() => {
-              ++currentProduct.cartQuantity;
+              ++currentProduct.cart_quantity;
               setCart(cart => {
-                const item = cart.find(item => item.id === currentProduct.id);
-                const itemIndex = cart.findIndex(item => item.id === currentProduct.id);
+                const item = cart.find(item => item.asin === currentProduct.asin);
+                const itemIndex = cart.findIndex(
+                  item => item.asin === currentProduct.asin
+                );
                 if (item) {
-                  item.cartQuantity = currentProduct.cartQuantity;
+                  item.cart_quantity = currentProduct.cart_quantity;
                   cart[itemIndex] = item;
                 }
                 return cart;
               });
             }}>
-            <Plus size={20} />
+            <Plus className='size-5' />
           </Button>
           <Badge
             variant={'outline'}
-            className='p-2 w-16 h-8 grid place-content-center shadow-sm'>
-            {currentProduct.cartQuantity} / {currentProduct.quantity}
+            className='p-2 w-20 h-8 inline-grid place-content-center shadow-sm'>
+            {currentProduct.cart_quantity} / {currentProduct.stock_quantity}
           </Badge>
-          {currentProduct.cartQuantity === 1 ? (
+          {currentProduct.cart_quantity === 1 ? (
             <Dialog open={dialogIsOpen} onOpenChange={setDialogState}>
               <DialogTrigger asChild>
-                <Button size='icon' variant='destructive' className='size-8'>
-                  <Trash2 size={20} />
+                <Button variant='destructive' className='size-7 p-0'>
+                  <Trash2 className='size-5' />
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -121,8 +116,10 @@ export function CartItem({ product }: { product: ProductType }) {
                   </Button>
                   <Button
                     onClick={() => {
-                      --currentProduct.cartQuantity;
-                      setCart(cart => cart.filter(item => item.id !== currentProduct.id));
+                      --currentProduct.cart_quantity;
+                      setCart(cart =>
+                        cart.filter(item => item.asin !== currentProduct.asin)
+                      );
                       toast.custom(() => deleteItemNotification);
                     }}>
                     Continue
@@ -136,12 +133,14 @@ export function CartItem({ product }: { product: ProductType }) {
               variant='outline'
               className='size-8'
               onClick={() => {
-                --currentProduct.cartQuantity;
+                --currentProduct.cart_quantity;
                 setCart(cart => {
-                  const item = cart.find(item => item.id === currentProduct.id);
-                  const itemIndex = cart.findIndex(item => item.id === currentProduct.id);
+                  const item = cart.find(item => item.asin === currentProduct.asin);
+                  const itemIndex = cart.findIndex(
+                    item => item.asin === currentProduct.asin
+                  );
                   if (item) {
-                    item.cartQuantity = currentProduct.cartQuantity;
+                    item.cart_quantity = currentProduct.cart_quantity;
                     cart[itemIndex] = item;
                   }
                   return cart;

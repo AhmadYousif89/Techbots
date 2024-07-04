@@ -27,7 +27,7 @@ export function CartTabs() {
       className='bg-muted pt-10 pb-1'>
       <TabsList className='grid grid-cols-3 rounded-none h-20 pb-0 sm:px-0 sm:gap-8 md:max-w-screen-lg md:mx-auto md:gap-16 lg:max-w-screen-xl'>
         <TabsTrigger
-          id='cart-items'
+          id='cart-list'
           value='cart'
           className='h-full gap-2 rounded-bl-none rounded-br-none data-[state=active]:border-b-2 data-[state=active]:border-primary hover:bg-primary-foreground'>
           <span className='hidden sm:block'>1.</span> Shopping Cart

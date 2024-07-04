@@ -8,20 +8,21 @@ import { Separator } from '../ui/separator';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { useLocalStorage } from '../hooks/use_local_storage';
-import { ProductType } from '../../../data';
+import { Product } from '@/lib/types';
+import { getCartTotal } from '@/lib/utils';
 
 type ShippingType = 'free' | 'next';
-const TAXES = 10;
 
 export function CartShippingView() {
   const router = useRouter();
   const [shippingValue, setShippingValue] = useState<ShippingType>('free');
-  const [cart] = useLocalStorage<ProductType[]>('cart', []);
+  const [cart] = useLocalStorage<Product[]>('cart', []);
+  const VAT = 10;
 
   const onShippingChange = (value: ShippingType) => setShippingValue(value);
 
   return (
-    <Card className='rounded-none py-8'>
+    <Card className='rounded-none py-8 min-h-screen'>
       <CardContent className='grid gap-8 max-w-screen-md lg:grid-cols-2 lg:divide-x lg:justify-between lg:max-w-screen-xl'>
         <CardHeader className='px-0'>
           <CardTitle className='text-muted-foreground pb-8'>
@@ -90,9 +91,7 @@ export function CartShippingView() {
             {/* Subtotal */}
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Subtotal</p>
-              <span className='text-sm'>
-                ${cart.reduce((acc, item: ProductType) => acc + item.salePrice, 0)}
-              </span>
+              <span className='text-sm'>${getCartTotal(cart)}</span>
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium my-4'>
               <p className='text-sm'>Shipping</p>
@@ -100,27 +99,32 @@ export function CartShippingView() {
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Taxes</p>
-              <span className='text-sm'>${TAXES}</span>
+              <span className='text-sm'>${VAT}</span>
             </div>
             <Separator className='my-8' />
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
               <p>Total</p>
               <span>
-                $
-                {cart.reduce((acc, item: ProductType) => acc + item.salePrice, 0) +
-                  TAXES +
-                  (shippingValue === 'next' ? 20 : 0)}
+                ${getCartTotal(cart) + VAT + (shippingValue === 'next' ? 20 : 0)}
               </span>
             </div>
           </CardContent>
         </section>
       </CardContent>
-      <CardFooter className='p-6 lg:pl-16 lg:mt-8 lg:justify-center'>
+      <CardFooter className='gap-4 justify-end lg:justify-center lg:py-8'>
         <Button
           onClick={() => {
-            router.push('/cart#cart-payment');
+            router.push('/cart#cart-payment', { scroll: true });
           }}>
           Add your payment
+        </Button>
+        <Button
+          variant={'outline'}
+          className='w-28'
+          onClick={() => {
+            router.push('/cart#cart-list', { scroll: true });
+          }}>
+          Back
         </Button>
       </CardFooter>
     </Card>

@@ -24,30 +24,30 @@ import {
   SheetClose
 } from '../ui/sheet';
 import { Button } from '../ui/button';
-import { ProductType } from '../../../data';
 import { useMediaQuery } from '../hooks/use_media_query';
 import { useLocalStorage } from '../hooks/use_local_storage';
 import { Badge } from '../ui/badge';
 import { useCartMenuState } from '@/lib/store';
 import { ProductThumbnail } from '../products/product_thumpnail';
+import { Product } from '@/lib/types';
 
 export function CartMenu() {
   const router = useRouter();
   const { isOpen, setIsOpen } = useCartMenuState();
   const [cartCount, setCartCount] = useState(0);
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [cartItems] = useLocalStorage<ProductType[]>('cart', []);
+  const [cartItems] = useLocalStorage<Product[]>('cart', []);
 
   useEffect(() => {
     setCartCount(cartItems.length);
   }, [cartItems.length]);
 
   const cartButton = (
-    <Button className='relative bg-background text-primary rounded-full hover:bg-background size-8 md:size-9 p-0'>
-      <ShoppingBag size={22} />
-      <span className='absolute -top-2 -left-2 grid place-content-center rounded-full aspect-square w-5 sm:w-6 h-5 sm:h-6 bg-destructive text-secondary text-xs font-semibold'>
+    <Button className='relative ring-1 ring-input rounded-full ring-offset-1 size-7 p-0 hover:bg-background'>
+      <ShoppingBag size={18} className='fill-background stroke-primary' />
+      {/* <span className='absolute -top-2 -left-2 grid place-content-center rounded-full aspect-square size-6 bg-destructive text-secondary text-xs font-semibold'>
         {cartCount}
-      </span>
+      </span> */}
     </Button>
   );
 
@@ -128,12 +128,12 @@ export function CartMenu() {
 }
 
 function CartItems() {
-  const [cart] = useLocalStorage<ProductType[]>('cart', []);
+  const [cart] = useLocalStorage<Product[]>('cart', []);
 
   return (
     <section className='flex flex-col gap-4 overflow-y-auto py-4 px-4'>
       {cart.map(item => (
-        <ProductThumbnail product={item} key={item.id} type='cart' />
+        <ProductThumbnail product={item} key={item.asin} type='cart' />
       ))}
     </section>
   );

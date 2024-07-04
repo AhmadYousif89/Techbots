@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { ShoppingCart, Slash } from 'lucide-react';
 
 import { CartItem } from './cart_item';
-import { ProductType } from '../../../data';
 import { useLocalStorage } from '../hooks/use_local_storage';
 import {
   Card,
@@ -22,13 +21,16 @@ import {
   AccordionTrigger
 } from '../ui/accordion';
 import { Input } from '../ui/input';
+import { Product } from '@/lib/types';
+import { getCartTotal } from '@/lib/utils';
 
 export function CartListView({ setNextTab }: { setNextTab: (value: string) => void }) {
   const router = useRouter();
   const [couponValue, setCouponValue] = useState('');
   const [isInvalidCoupon, setIsInvalidCoupon] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [cart] = useLocalStorage<ProductType[]>('cart', []);
+  const [cart] = useLocalStorage<Product[]>('cart', []);
+  const VAT = 10;
 
   useEffect(() => {
     setCartCount(cart.length);
@@ -65,8 +67,8 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
             <CardTitle className='text-muted-foreground'>Cart Details</CardTitle>
           </CardHeader>
           <section className='flex flex-col gap-8 divide-y'>
-            {cart.map(item => (
-              <CartItem key={item.id} product={item} />
+            {cart.map((item, index) => (
+              <CartItem key={item.asin + index} product={item} />
             ))}
           </section>
         </div>
@@ -89,7 +91,6 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
                   className='focus-visible:rounded-none'
                   value={couponValue}
                   onChange={e => {
-                    console.log(e.target.value);
                     setIsInvalidCoupon(false);
                     setCouponValue(e.target.value);
                   }}
@@ -113,9 +114,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
           <CardContent className='my-8 px-0 pb-0'>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Subtotal</p>
-              <span className='text-sm'>
-                ${cart.reduce((acc, item: ProductType) => acc + item.salePrice, 0)}
-              </span>
+              <span className='text-sm'>${getCartTotal(cart)}</span>
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium my-4'>
               <p className='text-sm'>Shipping</p>
@@ -123,14 +122,12 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Taxes</p>
-              <span className='text-sm'>$10</span>
+              <span className='text-sm'>${VAT}</span>
             </div>
             <Separator className='my-8' />
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
               <p>Total</p>
-              <span>
-                ${cart.reduce((acc, item: ProductType) => acc + item.salePrice, 0) + 15}
-              </span>
+              <span>${getCartTotal(cart) + VAT}</span>
             </div>
           </CardContent>
         </section>
@@ -139,7 +136,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
   }
 
   return (
-    <Card className='py-8 rounded-none min-h-screen grid grid-rows-[1fr,auto]'>
+    <Card className='py-8 rounded-none min-h-screen'>
       <>{content}</>
       <CardFooter className='gap-4 justify-end lg:justify-center lg:ml-8 lg:py-8'>
         <Button
@@ -147,7 +144,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
           className='w-28'
           onClick={() => {
             setNextTab('details');
-            router.push('/cart#cart-details');
+            router.push('/cart#cart-details', { scroll: true });
           }}>
           Next
         </Button>

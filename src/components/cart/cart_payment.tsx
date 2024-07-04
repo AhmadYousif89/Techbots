@@ -10,7 +10,7 @@ import {
 
 export function CartPaymentView() {
   return (
-    <Card className='rounded-none py-10'>
+    <Card className='rounded-none py-10 min-h-screen'>
       <CardHeader className='space-y-4'>
         <CardTitle>Choose Your Payment</CardTitle>
         <CardDescription>
