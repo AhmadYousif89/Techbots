@@ -11,7 +11,8 @@ export function capitalizeString(str: string) {
 }
 
 export function getCartTotal(cart: Product[]) {
-  return cart.reduce((acc, item) => acc + convertPriceString(item.price), 0);
+  const total = cart.reduce((acc, item) => acc + convertPriceString(item.price), 0);
+  return +total.toFixed(2);
 }
 
 export function convertPriceString(price: string) {

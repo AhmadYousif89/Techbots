@@ -1,5 +1,15 @@
 import { create } from 'zustand';
 
+type SideMenuState = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+export const useSideMenuState = create<SideMenuState>(set => ({
+  isOpen: false,
+  setIsOpen: isOpen => set({ isOpen })
+}));
+
 type CartMenuState = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
