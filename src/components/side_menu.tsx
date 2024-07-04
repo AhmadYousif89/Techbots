@@ -1,12 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -24,7 +21,7 @@ import {
   AccordionTrigger
 } from './ui/accordion';
 import { categories, useSideMenuState } from '@/lib/store';
-import { SignOutButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignOutButton } from '@clerk/nextjs';
 import { capitalizeString } from '@/lib/utils';
 
 export function SideMenu() {

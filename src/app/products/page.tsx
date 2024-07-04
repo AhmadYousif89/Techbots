@@ -1,8 +1,4 @@
-import {
-  getProductsByCategory,
-  getLocalProducts,
-  filterAndPaginateProducts
-} from '@/lib/actions';
+import { filterAndPaginateProducts } from '@/lib/actions';
 import type { Category } from '@/lib/store';
 import { capitalizeString } from '@/lib/utils';
 

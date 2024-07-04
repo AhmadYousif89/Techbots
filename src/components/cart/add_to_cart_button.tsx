@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import type { ButtonProps } from '../ui/button';
 import { useLocalStorage } from '../hooks/use_local_storage';
-import { useUser } from '@clerk/nextjs';
 
 type AddToCartButtonProps = {
   action?: 'addToCart' | 'BuyNow';
@@ -25,7 +24,6 @@ export function AddToCartButton({
   ...props
 }: AddToCartButtonProps) {
   const router = useRouter();
-  const { isSignedIn } = useUser();
   const [isMounted, setIsMounted] = useState(false);
   const [cart, setCartItem] = useLocalStorage<Product[]>('cart', []);
 

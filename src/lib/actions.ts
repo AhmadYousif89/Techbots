@@ -51,7 +51,7 @@ export async function filterAndPaginateProducts(searchParams: {
 
   // Handle products filtering
   let productsByCategory: Product[] = [];
-  let category = searchParams['category'] ?? '';
+  const category = searchParams['category'] ?? '';
   if (category) {
     productsByCategory = await getProductsByCategory(category as Category);
     products = productsByCategory;

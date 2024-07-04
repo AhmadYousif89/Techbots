@@ -1,6 +1,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Fragment, useEffect, useState } from 'react';
-import { ShoppingCart, Slash, Trash2 } from 'lucide-react';
+import { ShoppingCart, Slash } from 'lucide-react';
 
 import { CartItem } from './cart_item';
 import { useLocalStorage } from '../hooks/use_local_storage';

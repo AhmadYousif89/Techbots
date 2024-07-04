@@ -135,12 +135,12 @@ type DeleteCartItemsProps = {
 };
 
 function DeleteCartItems({
-  action = 'deleteOne',
+  // action = 'deleteOne',
   currentProduct,
   deleteItemNotification
 }: DeleteCartItemsProps) {
   const [dialogIsOpen, setDialogState] = useState(false);
-  const [_, setCart] = useLocalStorage<Product[]>('cart', []);
+  const { '1': setCart } = useLocalStorage<Product[]>('cart', []);
 
   return (
     <Dialog open={dialogIsOpen} onOpenChange={setDialogState}>
