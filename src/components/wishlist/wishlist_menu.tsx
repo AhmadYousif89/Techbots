@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Heart, HeartCrack } from 'lucide-react';
+import { Product } from '@/lib/types';
 
 import {
   Drawer,
@@ -23,29 +24,28 @@ import {
   SheetFooter,
   SheetClose
 } from '../ui/sheet';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { ProductType } from '../../../data';
 import { WishlistItems } from './wishlist_items';
 import { useMediaQuery } from '../hooks/use_media_query';
 import { useLocalStorage } from '../hooks/use_local_storage';
-import { Badge } from '../ui/badge';
 
 export function WishListMenu() {
   const [open, setOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [wishlistItems] = useLocalStorage<ProductType[]>('wishlist', []);
+  const [wishlistItems] = useLocalStorage<Product[]>('wishlist', []);
 
   useEffect(() => {
     setWishlistCount(wishlistItems.length);
   }, [wishlistItems]);
 
   const WishListButton = (
-    <Button className='relative bg-background rounded-full size-8 md:size-9 p-0 text-primary hover:bg-background'>
-      <Heart size={22} />
-      <span className='absolute -top-2 -left-2 grid place-content-center rounded-full aspect-square w-5 sm:w-6 h-5 sm:h-6 bg-destructive text-secondary text-xs font-semibold'>
+    <Button className='relative ring-1 ring-input rounded-full ring-offset-1 size-7 p-0 hover:bg-background'>
+      <Heart size={20} className='fill-background stroke-primary' />
+      {/* <span className='absolute -top-2 -left-2 grid place-content-center rounded-full aspect-square size-6 bg-destructive text-secondary text-xs font-semibold'>
         {wishlistCount}
-      </span>
+      </span> */}
     </Button>
   );
 
