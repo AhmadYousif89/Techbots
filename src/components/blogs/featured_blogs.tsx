@@ -11,9 +11,11 @@ import {
   CarouselPrevious
 } from '../ui/carousel';
 
-export function FeaturedBlogs() {
+export function LatestBlogs() {
   return (
-    <section className='px-6 pb-28 bg-secondary max-w-screen-xl lg:mx-auto'>
+    <section
+      id='blogs'
+      className='px-6 py-20 mb-40 bg-secondary max-w-screen-xl lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Featured Blogs</h2>
       <Carousel>
         <CarouselContent>
