@@ -36,7 +36,7 @@ export function CartMenu() {
   const { isOpen, setIsOpen } = useCartMenuState();
   const [cartCount, setCartCount] = useState(0);
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [cartItems] = useLocalStorage<Product[]>('cart', []);
+  const [cartItems, setCart, removeCart] = useLocalStorage<Product[]>('cart', []);
 
   useEffect(() => {
     setCartCount(cartItems.length);
@@ -82,6 +82,14 @@ export function CartMenu() {
               Cart Items <ShoppingBag />
             </SheetTitle>
             <SheetDescription className='text-center'>{cartDescription}</SheetDescription>
+            {cartCount > 0 && (
+              <Button
+                variant={'link'}
+                onClick={() => removeCart()}
+                className='w-fit self-center'>
+                Remove all
+              </Button>
+            )}
           </SheetHeader>
           {cartCount === 0 ? (
             <section className='grid justify-center items-center'>

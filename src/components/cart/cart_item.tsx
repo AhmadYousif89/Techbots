@@ -20,7 +20,6 @@ import Link from 'next/link';
 import { Product } from '@/lib/types';
 
 export function CartItem({ product }: { product: Product }) {
-  const [dialogIsOpen, setDialogState] = useState(false);
   const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
   const currentProduct = cart.find(item => item.asin === product.asin);
 
@@ -97,36 +96,10 @@ export function CartItem({ product }: { product: Product }) {
             {currentProduct.cart_quantity} / {currentProduct.stock_quantity}
           </Badge>
           {currentProduct.cart_quantity === 1 ? (
-            <Dialog open={dialogIsOpen} onOpenChange={setDialogState}>
-              <DialogTrigger asChild>
-                <Button variant='destructive' className='size-7 p-0'>
-                  <Trash2 className='size-5' />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure?</DialogTitle>
-                  <DialogDescription className='py-4'>
-                    This will delete the selected item from your cart.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className='gap-2'>
-                  <Button variant={'outline'} onClick={() => setDialogState(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      --currentProduct.cart_quantity;
-                      setCart(cart =>
-                        cart.filter(item => item.asin !== currentProduct.asin)
-                      );
-                      toast.custom(() => deleteItemNotification);
-                    }}>
-                    Continue
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <DeleteCartItems
+              currentProduct={currentProduct}
+              deleteItemNotification={deleteItemNotification}
+            />
           ) : (
             <Button
               size='icon'
@@ -152,5 +125,51 @@ export function CartItem({ product }: { product: Product }) {
         </div>
       </div>
     </div>
+  );
+}
+
+type DeleteCartItemsProps = {
+  action?: 'deleteOne' | 'deleteAll';
+  currentProduct: Product;
+  deleteItemNotification: JSX.Element;
+};
+
+function DeleteCartItems({
+  action = 'deleteOne',
+  currentProduct,
+  deleteItemNotification
+}: DeleteCartItemsProps) {
+  const [dialogIsOpen, setDialogState] = useState(false);
+  const [_, setCart] = useLocalStorage<Product[]>('cart', []);
+
+  return (
+    <Dialog open={dialogIsOpen} onOpenChange={setDialogState}>
+      <DialogTrigger asChild>
+        <Button variant='destructive' className='size-7 p-0'>
+          <Trash2 className='size-5' />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogDescription className='py-4'>
+            This will delete the selected item from your cart.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className='gap-2'>
+          <Button variant={'outline'} onClick={() => setDialogState(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              --currentProduct.cart_quantity;
+              setCart(cart => cart.filter(item => item.asin !== currentProduct.asin));
+              toast.custom(() => deleteItemNotification);
+            }}>
+            Continue
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

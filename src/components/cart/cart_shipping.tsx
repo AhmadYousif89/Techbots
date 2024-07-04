@@ -18,6 +18,7 @@ export function CartShippingView() {
   const [shippingValue, setShippingValue] = useState<ShippingType>('free');
   const [cart] = useLocalStorage<Product[]>('cart', []);
   const VAT = 10;
+  const total = getCartTotal(cart);
 
   const onShippingChange = (value: ShippingType) => setShippingValue(value);
 
@@ -91,7 +92,7 @@ export function CartShippingView() {
             {/* Subtotal */}
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Subtotal</p>
-              <span className='text-sm'>${getCartTotal(cart)}</span>
+              <span className='text-sm'>${total}</span>
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium my-4'>
               <p className='text-sm'>Shipping</p>
@@ -105,7 +106,7 @@ export function CartShippingView() {
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
               <p>Total</p>
               <span>
-                ${getCartTotal(cart) + VAT + (shippingValue === 'next' ? 20 : 0)}
+                ${(total + VAT + (shippingValue === 'next' ? 20 : 0)).toFixed(2)}
               </span>
             </div>
           </CardContent>

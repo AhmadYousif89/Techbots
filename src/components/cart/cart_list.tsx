@@ -1,6 +1,6 @@
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { ShoppingCart, Slash } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Fragment, useEffect, useState } from 'react';
+import { ShoppingCart, Slash, Trash2 } from 'lucide-react';
 
 import { CartItem } from './cart_item';
 import { useLocalStorage } from '../hooks/use_local_storage';
@@ -26,11 +26,13 @@ import { getCartTotal } from '@/lib/utils';
 
 export function CartListView({ setNextTab }: { setNextTab: (value: string) => void }) {
   const router = useRouter();
+  const params = useSearchParams();
   const [couponValue, setCouponValue] = useState('');
   const [isInvalidCoupon, setIsInvalidCoupon] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [cart] = useLocalStorage<Product[]>('cart', []);
   const VAT = 10;
+  const total = getCartTotal(cart);
 
   useEffect(() => {
     setCartCount(cart.length);
@@ -63,12 +65,20 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
     content = (
       <CardContent className='pt-6 grid lg:grid-cols-2 lg:gap-8 lg:justify-between lg:divide-x'>
         <div className='row-[1]'>
-          <CardHeader className='px-0 pt-0'>
+          <CardHeader className='px-0 pt-0 flex-row justify-between items-center'>
             <CardTitle className='text-muted-foreground'>Cart Details</CardTitle>
+            {/* <Button
+              variant='secondary'
+              className='size-7 p-0 hover:bg-destructive hover:text-secondary'>
+              <Trash2 className='size-5' />
+            </Button> */}
           </CardHeader>
-          <section className='flex flex-col gap-8 divide-y'>
+          <section className='flex flex-col gap-8 '>
             {cart.map((item, index) => (
-              <CartItem key={item.asin + index} product={item} />
+              <Fragment key={item.asin + index}>
+                <CartItem product={item} />
+                <Separator className='last:hidden' />
+              </Fragment>
             ))}
           </section>
         </div>
@@ -114,7 +124,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
           <CardContent className='my-8 px-0 pb-0'>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Subtotal</p>
-              <span className='text-sm'>${getCartTotal(cart)}</span>
+              <span className='text-sm'>${total}</span>
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium my-4'>
               <p className='text-sm'>Shipping</p>
@@ -127,7 +137,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
             <Separator className='my-8' />
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
               <p>Total</p>
-              <span>${getCartTotal(cart) + VAT}</span>
+              <span>${total + VAT}</span>
             </div>
           </CardContent>
         </section>
@@ -152,7 +162,10 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
           variant={'outline'}
           className='w-28'
           onClick={() => {
-            router.push('/products');
+            const category = params.get('category') || '';
+            const page = params.get('page') || '1';
+            const limit = params.get('limit') || '8';
+            router.push(`/products?page=${page}&limit=${limit}&category=${category}`);
           }}>
           Cancle
         </Button>

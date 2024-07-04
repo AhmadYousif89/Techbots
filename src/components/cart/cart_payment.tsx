@@ -1,3 +1,4 @@
+import { useAuth } from '@clerk/nextjs';
 import { Button } from '../ui/button';
 import {
   Card,
@@ -7,8 +8,12 @@ import {
   CardHeader,
   CardTitle
 } from '../ui/card';
+import { useRouter } from 'next/navigation';
 
 export function CartPaymentView() {
+  const { userId } = useAuth();
+  const router = useRouter();
+
   return (
     <Card className='rounded-none py-10 min-h-screen'>
       <CardHeader className='space-y-4'>
@@ -19,7 +24,14 @@ export function CartPaymentView() {
       </CardHeader>
       <CardContent className='space-y-2'></CardContent>
       <CardFooter>
-        <Button>Confirm your order</Button>
+        <Button
+          onClick={() => {
+            if (!userId) {
+              router.push('/sign-in');
+            }
+          }}>
+          Confirm your order
+        </Button>
       </CardFooter>
     </Card>
   );
