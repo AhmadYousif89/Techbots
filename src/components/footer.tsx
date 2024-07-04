@@ -91,7 +91,7 @@ export function Footer() {
             <h3 className='text-xl font-bold mb-2'>Contact Us</h3>
             <Separator />
           </div>
-          <Link href={'https://github.com/AhmadYousif89'} className='block'>
+          <Link href={'https://github.com/AhmadYousif89'} className='block w-fit'>
             <div className='flex items-center gap-4 text-sm text-muted-foreground'>
               <p>Connect with us on </p>
               <svg
