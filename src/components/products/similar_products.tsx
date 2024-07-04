@@ -20,6 +20,7 @@ type SimilarProductsProps = {
 
 export async function SimilarProducts({ pId, category }: SimilarProductsProps) {
   const products = await getSimilarProducts(category as Category, pId);
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   return (
     <Carousel

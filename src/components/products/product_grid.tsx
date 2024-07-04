@@ -7,28 +7,28 @@ import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
 import PaginationButton from '../pagination_button';
 import { GridItemSkeleton } from './skeletons/grid_item_skeleton';
+import { Category } from '@/lib/store';
 
 type ProductGridProps = {
   products: Product[];
   hasPrevPage: boolean;
   hasNextPage: boolean;
-  category: string;
   totalPages: number;
-  page: number;
-  limit: string;
-  gridSize: string;
+  searchParams: { [key: string]: string | Category | undefined };
 };
 
-export async function ProductGrid({
+export function ProductGrid({
   products,
-  page,
-  limit,
-  gridSize,
-  category,
   totalPages,
   hasNextPage,
-  hasPrevPage
+  hasPrevPage,
+  searchParams
 }: ProductGridProps) {
+  const page = searchParams['page'] || '1';
+  const limit = searchParams['limit'] || '8';
+  const category = searchParams['category'] || '';
+  const gridSize = searchParams['grid'] || '';
+
   return (
     <section
       className={cn(

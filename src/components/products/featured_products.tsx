@@ -10,11 +10,11 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '../ui/carousel';
-import { featuredProducts } from '../../../data';
+import { featuredProducts } from '../../../data/data';
 
 export function FeaturedProducts() {
   return (
-    <section className='px-6 py-20 mb-40 bg-secondary max-w-screen-xl lg:mx-auto'>
+    <section className='px-6 py-20 bg-secondary max-w-screen-xl lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Featured Products</h2>
       <Carousel opts={{ align: 'end' }}>
         <CarouselContent>

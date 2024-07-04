@@ -10,16 +10,17 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/
 import { RatingStars } from './reviews/rating_stars';
 
 export async function ProductGridItem({ product }: { product: Product }) {
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   return (
-    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] p-2 shadow-none border-0'>
+    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] max-w-xs justify-self-center p-2 shadow-none border-0'>
       <Link href={`/products/${product.asin}`} className='place-self-center'>
         <Image
           src={product.main_image.link}
           alt={product.title}
-          width={100}
+          width={150}
           height={150}
-          className='size-28 sm:size-36 md:size-44 object-contain'
+          className='size-28 sm:size-36 md:size-44 lg:size-60 object-contain'
         />
       </Link>
       <Separator />
