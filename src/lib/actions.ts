@@ -23,7 +23,8 @@ export async function getProductsByCategory(category: Category) {
   return result;
 }
 
-export function getColorList(products: Product[]) {
+export async function getColorList() {
+  const products = await getLocalProducts();
   return products.reduce((acc, product) => {
     if (product.color && !acc.includes(product.color)) {
       acc.push(product.color);
