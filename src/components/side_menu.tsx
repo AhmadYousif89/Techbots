@@ -23,16 +23,15 @@ import {
   AccordionItem,
   AccordionTrigger
 } from './ui/accordion';
-import { categories } from '@/lib/store';
-import { UserButton, useAuth } from '@clerk/nextjs';
+import { categories, useSideMenuState } from '@/lib/store';
+import { SignOutButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { capitalizeString } from '@/lib/utils';
 
 export function SideMenu() {
-  const [open, setOpen] = useState(false);
-  const { userId } = useAuth();
+  const { isOpen, setIsOpen } = useSideMenuState();
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           size={'sm'}
@@ -64,7 +63,7 @@ export function SideMenu() {
         <ul className='grid gap-4 pb-4 text-sm'>
           <li>
             <Link
-              onClick={() => setOpen(false)}
+              onClick={() => setIsOpen(false)}
               href='/products'
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'>
               Shop
@@ -81,7 +80,7 @@ export function SideMenu() {
                     {categories.map(category => (
                       <li key={category}>
                         <Link
-                          onClick={() => setOpen(false)}
+                          onClick={() => setIsOpen(false)}
                           href={`/products?category=${category}`}
                           className='p-1 text-xs inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'>
                           {capitalizeString(category)}
@@ -95,7 +94,7 @@ export function SideMenu() {
           </li>
           <li>
             <Link
-              onClick={() => setOpen(false)}
+              onClick={() => setIsOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
               href='/cart#cart-list'>
               Cart
@@ -103,7 +102,7 @@ export function SideMenu() {
           </li>
           <li>
             <Link
-              onClick={() => setOpen(false)}
+              onClick={() => setIsOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
               href='/'>
               Blogs
@@ -111,7 +110,7 @@ export function SideMenu() {
           </li>
           <li>
             <Link
-              onClick={() => setOpen(false)}
+              onClick={() => setIsOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
               href='/'>
               About
@@ -121,14 +120,11 @@ export function SideMenu() {
 
         <Separator />
 
-        {!userId ? (
-          <>
-            <AuthButtons />
-            <Separator />
-          </>
-        ) : null}
+        <AuthButtons />
 
-        <SheetFooter className='mt-auto'>
+        <Separator />
+
+        <SheetFooter className='mt-auto sm:flex-col'>
           <SheetClose asChild className='my-4'>
             <Button variant={'outline'}>Close</Button>
           </SheetClose>
