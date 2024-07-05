@@ -37,9 +37,9 @@ const slides = [
     img: 'https://m.media-amazon.com/images/I/719qgNv-ubL.jpg'
   },
   {
-    url: '/products?category=gaming',
+    url: '/products?category=accessories',
     title: 'Get the best gaming experience with our latest gaming accessories',
-    img: 'https://m.media-amazon.com/images/I/71qhLg1DPVL._AC_SL1500_.jpg'
+    img: 'https://images.unsplash.com/photo-1581351123004-757df051db8e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
 ];
 
