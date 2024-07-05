@@ -63,8 +63,8 @@ export function ProductCarousel({ product }: { product: Product }) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className='absolute top-44 left-5' />
-          <CarouselNext className='absolute top-44 right-5 lg:right-0' />
+          <CarouselPrevious className='absolute top-48 left-5' />
+          <CarouselNext className='absolute top-48 right-5 lg:right-0' />
         </Carousel>
       </ResizablePanel>
     </ResizablePanelGroup>
