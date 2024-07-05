@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { CheckSquare, Info } from 'lucide-react';
+import { Ban, CheckSquare, Info } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { toast } from 'sonner';
 
@@ -43,12 +43,18 @@ export function AddToCartButton({
 
   return (
     <Button
-      variant={variant ? variant : isMounted && cartItem ? 'destructive' : 'default'}
+      variant={variant ? variant : isMounted && cartItem ? 'outline' : 'default'}
+      className='text-xs'
       onClick={() => {
         if (cartItem) {
           product.cart_quantity = product.cart_quantity ? product.cart_quantity - 1 : 0;
           setCartItem(cart => cart.filter(i => i.asin !== product.asin));
         } else {
+          if (product.stock_quantity < 1 || !product.stock_quantity) {
+            return toast.error('Product out of stock', {
+              icon: <Ban className='text-red-400' />
+            });
+          }
           product.cart_quantity = product.cart_quantity ? product.cart_quantity + 1 : 1;
           setCartItem(cart => [...cart, product]);
         }
