@@ -48,7 +48,7 @@ export function ProductReviews({
 
   const ratingTotal = product.ratings_total;
 
-  if (ratingTotal === 0) {
+  if (ratingTotal === 0 || filteredReviews.length === 0) {
     return (
       <Card className='space-y-2'>
         <CardHeader>
@@ -134,10 +134,10 @@ export function ProductReviews({
                   <CircleUserRound strokeWidth={1} size={40} className='my-auto' />
                   <div className=''>
                     <h4 className='text-sm font-medium col-[2] row-[1]'>
-                      {review.profile.name}
+                      {review?.profile?.name ?? 'Anonymous'}
                     </h4>
                     <p className='text-xs text-muted-foreground font-medium mt-1 row-[1] col-[2]'>
-                      {new Date(review.date.utc).toLocaleString()}
+                      {new Date(review?.date?.utc).toLocaleString()}
                     </p>
                     <RatingStars
                       size='sm'
