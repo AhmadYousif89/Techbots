@@ -44,17 +44,16 @@ export async function getSimilarProducts(category: Category, asin: string) {
 }
 
 export async function filterAndPaginateProducts(searchParams: {
-  [key: string]: string | undefined;
+  [key: string]: string | Category | undefined;
 }) {
   let products = await getLocalProducts();
   let totalProducts = products.length;
 
   // Handle products filtering
   let productsByCategory: Product[] = [];
-  const category = searchParams['category'] ?? '';
+  const category = (searchParams['category'] as Category) ?? '';
   if (category) {
-    productsByCategory = await getProductsByCategory(category as Category);
-    products = productsByCategory;
+    products = products.filter(product => product.category === category);
     totalProducts = products.length;
   }
   // Handle products pagination

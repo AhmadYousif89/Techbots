@@ -1,3 +1,5 @@
+import { Category } from './store';
+
 type RatingBreakdown = {
   percentage: number;
   count: number;
@@ -67,7 +69,7 @@ export type Product = {
   brand: string;
   color: string;
   price: string;
-  category: string;
+  category: Category;
   description: string | null;
   rating: number;
   ratings_total: number;
