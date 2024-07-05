@@ -61,8 +61,8 @@ export default async function SingleProductPage({
   const hasNextPage = end < filteredReviews.length;
   filteredReviews = filteredReviews.slice(start, end);
 
-  const productSpecs = parseDataString(product.specifications_flat);
-  const productFeatures = parseDataString(product.feature_bullets_flat);
+  const productSpecs = parseKeyValueString(product.specifications_flat, 'colon');
+  const productFeatures = parseKeyValueString(product.feature_bullets_flat, 'brackets');
 
   return (
     <main className='grid min-h-screen max-w-screen-xl mx-auto'>
@@ -84,15 +84,22 @@ export default async function SingleProductPage({
                 productRating={product.rating}
                 reviewsCount={product.ratings_total.toLocaleString()}
               />
-              <Badge
-                variant={product.stock_quantity > 0 ? 'outline' : 'destructive'}
-                className={cn(
-                  product.stock_quantity > 0
-                    ? 'bg-emerald-500 text-secondary border-0'
-                    : ''
-                )}>
-                {product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock'}
-              </Badge>
+              <div className='flex items-center justify-between gap-4'>
+                <Badge
+                  variant={product.stock_quantity > 0 ? 'outline' : 'destructive'}
+                  className={cn(
+                    product.stock_quantity > 0
+                      ? 'bg-emerald-500 text-secondary border-0'
+                      : ''
+                  )}>
+                  {product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                </Badge>
+                {product.color && (
+                  <div className='flex items-center text-muted-foreground font-medium text-sm ml-2'>
+                    Color : <Badge className='ml-4'>{product.color}</Badge>
+                  </div>
+                )}
+              </div>
               <Separator />
             </div>
           </CardHeader>
@@ -102,22 +109,17 @@ export default async function SingleProductPage({
                 {product.description}
               </CardDescription>
             )}
-            <div className='flex gap-8 justify-between'>
-              <div className='space-y-4'>
+            <div className='flex flex-col gap-8'>
+              <div className='flex items-center justify-between gap-4 col-span-full'>
                 <Badge className='text-sm shadow-sm py-1' variant={'outline'}>
                   <p className='cursor-default text-muted-foreground font-medium'>
                     {product.price}
                   </p>
                 </Badge>
-                {product.color && (
-                  <div className='flex items-center font-medium text-sm ml-2'>
-                    Color <span className='text-foreground ml-4'>{product.color}</span>
-                  </div>
-                )}
-              </div>
-              <div className='flex items-center gap-8'>
-                <AddToCartButton action='addToCart' product={product} />
-                <AddToWishlistButton product={product} />
+                <div className='flex items-center gap-4 lg:gap-8'>
+                  <AddToCartButton action='addToCart' product={product} />
+                  <AddToWishlistButton product={product} />
+                </div>
               </div>
             </div>
           </CardContent>
@@ -172,17 +174,28 @@ export default async function SingleProductPage({
   );
 }
 
-function parseDataString(dataString: string) {
-  const dataObject: { [key: string]: string } = {};
-  if (!dataString) return dataObject;
-  const entries = dataString.split('. ');
-  entries.forEach(entry => {
-    const [key, value] = entry.split(': ');
-    if (key && value) {
-      dataObject[key] = value;
-    }
-  });
-  return dataObject;
+function parseKeyValueString(input: string, delimiterType: 'brackets' | 'colon') {
+  let regex;
+
+  if (delimiterType === 'brackets') {
+    // Regex for [key] value format
+    regex = /\[([^\]]+)\]\s*([^[]+)/g;
+  } else if (delimiterType === 'colon') {
+    // Regex for key: value format
+    regex = /([^:]+):\s*([^\.]+(?:\.\s|$))/g;
+  } else {
+    throw new Error('Unsupported delimiter type');
+  }
+  const parsedDict: { [key: string]: string } = {};
+  let match;
+
+  while ((match = regex.exec(input))) {
+    const key = match[1]?.trim();
+    const value = match[2]?.trim();
+    parsedDict[key] = value;
+  }
+
+  return parsedDict;
 }
 
 type ProductDetailsTableProps = {
