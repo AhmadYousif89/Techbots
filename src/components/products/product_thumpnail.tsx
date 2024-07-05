@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import { Product } from '@/lib/types';
 import { Info, Trash2 } from 'lucide-react';
-import { useCartMenuState } from '@/lib/store';
+import { useCartMenuState, useWishlistMenuState } from '@/lib/store';
 
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -17,7 +17,8 @@ type ProductThumbnailProps = {
 };
 
 export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
-  const { setIsOpen } = useCartMenuState();
+  const { setIsOpen: setIsCartOpen } = useCartMenuState();
+  const { setIsOpen: setIsWishlistOpen } = useWishlistMenuState();
   const { '1': setStoredItems } = useLocalStorage<Product[]>(type, []);
 
   return (
@@ -35,7 +36,12 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
             <Badge variant='outline' className='font-medium mb-1 -ml-1 w-fit'>
               {product.category}
             </Badge>
-            <Link href={`/products/${product.asin}`} onClick={() => setIsOpen(false)}>
+            <Link
+              href={`/products/${product.asin}`}
+              onClick={() => {
+                if (type === 'cart') setIsCartOpen(false);
+                if (type === 'wishlist') setIsWishlistOpen(false);
+              }}>
               {product.title.split(' ').slice(0, 4).join(' ')}
             </Link>
           </CardTitle>
