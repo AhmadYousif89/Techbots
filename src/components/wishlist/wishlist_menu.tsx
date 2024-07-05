@@ -29,12 +29,13 @@ import { Button } from '../ui/button';
 import { WishlistItems } from './wishlist_items';
 import { useMediaQuery } from '../hooks/use_media_query';
 import { useLocalStorage } from '../hooks/use_local_storage';
+import { useWishlistMenuState } from '@/lib/store';
 
 export function WishListMenu() {
-  const [open, setOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [wishlistItems] = useLocalStorage<Product[]>('wishlist', []);
+  const [wishlistItems, _, removeWishlist] = useLocalStorage<Product[]>('wishlist', []);
+  const { isOpen, setIsOpen } = useWishlistMenuState();
 
   useEffect(() => {
     setWishlistCount(wishlistItems.length);
@@ -61,7 +62,7 @@ export function WishListMenu() {
 
   if (isNotMobile) {
     return (
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{WishListButton}</SheetTrigger>
         <SheetContent className='grid grid-rows-[auto,1fr,auto]'>
           <SheetHeader className='my-8'>
@@ -71,6 +72,14 @@ export function WishListMenu() {
             <SheetDescription className='text-center'>
               {wishlistDescription}
             </SheetDescription>
+            {wishlistCount > 0 && (
+              <Button
+                variant={'link'}
+                onClick={() => removeWishlist()}
+                className='w-fit self-center'>
+                Remove all
+              </Button>
+            )}
           </SheetHeader>
           {wishlistCount === 0 ? (
             <section className='grid justify-center items-center'>
@@ -92,7 +101,7 @@ export function WishListMenu() {
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{WishListButton}</DrawerTrigger>
       <DrawerContent className='space-y-4'>
         <DrawerHeader>
