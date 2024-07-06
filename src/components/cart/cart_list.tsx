@@ -137,7 +137,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
             <Separator className='my-8' />
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
               <p>Total</p>
-              <span>${total + VAT}</span>
+              <span>${(total + VAT).toFixed(2)}</span>
             </div>
           </CardContent>
         </section>
