@@ -49,8 +49,6 @@ export async function filterAndPaginateProducts(searchParams: {
   let products = await getLocalProducts();
   let totalProducts = products.length;
 
-  // Handle products filtering
-  let productsByCategory: Product[] = [];
   const category = (searchParams['category'] as Category) ?? '';
   if (category) {
     products = products.filter(product => product.category === category);
