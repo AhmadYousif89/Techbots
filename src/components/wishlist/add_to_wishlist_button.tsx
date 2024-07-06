@@ -35,6 +35,7 @@ export function AddToWishlistButton({
   return (
     <Button
       variant='ghost'
+      title={item ? 'Remove from wishlist' : 'Add to wishlist'}
       className={className + 'rounded-full aspect-square p-0'}
       onClick={() => {
         toast.custom(() => {
