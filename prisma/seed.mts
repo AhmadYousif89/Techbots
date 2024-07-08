@@ -104,60 +104,6 @@ async function main() {
         continue;
       }
 
-      // Seed RatingDetails
-      const fiveStarDetail = await prisma.ratingDetail.create({
-        data: {
-          percentage: product.ratingBreakdown.five_star.percentage,
-          count: product.ratingBreakdown.five_star.count
-        }
-      });
-
-      const fourStarDetail = await prisma.ratingDetail.create({
-        data: {
-          percentage: product.ratingBreakdown.four_star.percentage,
-          count: product.ratingBreakdown.four_star.count
-        }
-      });
-
-      const threeStarDetail = await prisma.ratingDetail.create({
-        data: {
-          percentage: product.ratingBreakdown.three_star.percentage,
-          count: product.ratingBreakdown.three_star.count
-        }
-      });
-
-      const twoStarDetail = await prisma.ratingDetail.create({
-        data: {
-          percentage: product.ratingBreakdown.two_star.percentage,
-          count: product.ratingBreakdown.two_star.count
-        }
-      });
-
-      const oneStarDetail = await prisma.ratingDetail.create({
-        data: {
-          percentage: product.ratingBreakdown.one_star.percentage,
-          count: product.ratingBreakdown.one_star.count
-        }
-      });
-
-      // Seed RatingBreakdown
-      const ratingBreakdown = await prisma.ratingBreakdown.create({
-        data: {
-          five_star: { connect: { id: fiveStarDetail.id } },
-          four_star: { connect: { id: fourStarDetail.id } },
-          three_star: { connect: { id: threeStarDetail.id } },
-          two_star: { connect: { id: twoStarDetail.id } },
-          one_star: { connect: { id: oneStarDetail.id } }
-        }
-      });
-
-      // Seed Main Image
-      const mainImage = await prisma.mainImage.create({
-        data: {
-          link: product.mainImage.link
-        }
-      });
-
       // Seed Product
       const createdProduct = await prisma.product.create({
         data: {
@@ -166,33 +112,18 @@ async function main() {
           brand: product.brand,
           color: product.color,
           price: product.price,
+          mainImage: product.main_image.link,
           category: product.category,
           description: product.description,
           rating: product.rating,
-          ratings_total: product.ratingsTotal,
-          ratingBreakdownId: ratingBreakdown.id,
-          mainImageId: mainImage.id,
-          images_count: product.images_count,
-          videos_count: product.videos_count,
-          specifications_flat: product.specificationsFlat,
-          feature_bullets_flat: product.featureBulletsFlat,
-          stock_quantity: product.stockQuantity
+          ratingsTotal: product.ratings_total,
+          imagesCount: product.images_count,
+          specificationsFlat: product.specifications_flat,
+          featureBulletsFlat: product.feature_bullets_flat,
+          stockQuantity: product.stock_quantity,
+          ratingBreakdown: product.rating_breakdown
         }
       });
-
-      // Update Main Image to include productId
-      await prisma.mainImage.update({
-        where: { id: mainImage.id },
-        data: { productId: createdProduct.id }
-      });
-
-      // Update RatingBreakdown to include productId
-      if (ratingBreakdown) {
-        await prisma.ratingBreakdown.update({
-          where: { id: ratingBreakdown.id },
-          data: { productId: createdProduct.id }
-        });
-      }
 
       // Seed Other Product Images
       for (const image of product.images) {
@@ -205,27 +136,6 @@ async function main() {
         });
       }
 
-      // Seed Videos
-      if (product.videos) {
-        for (const video of product.videos) {
-          await prisma.video.create({
-            data: {
-              duration_seconds: video.duration_seconds,
-              width: video.width,
-              height: video.height,
-              link: video.link,
-              thumbnail: video.thumbnail,
-              is_hero_video: video.is_hero_video,
-              variant: video.variant,
-              group_id: video.group_id,
-              group_type: video.group_type,
-              title: video.title,
-              productId: createdProduct.id
-            }
-          });
-        }
-      }
-
       // Seed Top Reviews and related Review Images and Profile
       for (const review of product.top_reviews) {
         const createdReview = await prisma.review.create({
@@ -234,28 +144,15 @@ async function main() {
             title: review.title,
             body: review.body,
             asin: review.asin,
-            body_html: review.body_html,
+            bodyHtml: review.body_html,
             link: review.link,
             rating: review.rating,
             date: review.date,
             profile: review.profile,
-            vine_program: review.vine_program,
-            verified_purchase: review.verified_purchase,
-            review_country: review.review_country,
-            is_global_review: review.is_global_review,
+            reviewCountry: review.review_country,
             productId: createdProduct.id
           }
         });
-        if (review.images) {
-          for (const image of review.images) {
-            await prisma.mainImage.create({
-              data: {
-                link: image.link,
-                reviewId: createdReview.id
-              }
-            });
-          }
-        }
       }
 
       console.log(`Product with asin ${product.asin} seeded successfully.`);
