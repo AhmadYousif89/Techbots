@@ -1,19 +1,71 @@
-import { Category } from './store';
+import { Category } from '@/app/products/_actions/actions';
 
-type RatingBreakdown = {
+export type SearchParams = { [key: string]: string | Category | undefined };
+
+type Cart = {
+  id: number;
+  user: User;
+  userId: number;
+  products: Product[];
+  quantity: number;
+  total: number;
+  date: Date;
+};
+
+type User = {
+  id: number;
+  email: string;
+  name?: string;
+  password?: string;
+  image?: string;
+  Cart?: Cart;
+};
+
+export type RatingDetails = {
   percentage: number;
   count: number;
 };
 
-type ReviewDate = {
+export type RatingBreakdown = {
+  five_star: RatingDetails;
+  four_star: RatingDetails;
+  three_star: RatingDetails;
+  two_star: RatingDetails;
+  one_star: RatingDetails;
+};
+
+export type ReviewDate = {
   raw: string;
   utc: string;
 };
 
-type ReviewProfile = {
-  name: string;
-  link: string;
+export type ReviewProfile = {
   id: string;
+  name: string | null;
+  link: string;
+};
+
+type Product = {
+  asin: string;
+  title: string;
+  brand: string;
+  color: string | null;
+  price: string;
+  category: Category;
+  description: string | null;
+  rating: number;
+  ratings_total: number;
+  rating_breakdown: RatingBreakdown;
+  main_image: ProductImage;
+  images: ProductImage[];
+  images_count: number;
+  videos: ProductVideo[];
+  videos_count: number | null;
+  top_reviews: Review[];
+  specifications_flat: string;
+  feature_bullets_flat: string;
+  cart_quantity: number;
+  stock_quantity: number;
 };
 
 type ReviewImage = {
@@ -53,36 +105,4 @@ type ProductVideo = {
   group_id: string;
   group_type: string;
   title: string;
-};
-
-type RatingBreakdownDetails = {
-  five_star: RatingBreakdown;
-  four_star: RatingBreakdown;
-  three_star: RatingBreakdown;
-  two_star: RatingBreakdown;
-  one_star: RatingBreakdown;
-};
-
-export type Product = {
-  title: string;
-  asin: string;
-  brand: string;
-  color: string;
-  price: string;
-  category: Category;
-  description: string | null;
-  rating: number;
-  ratings_total: number;
-  rating_breakdown: RatingBreakdownDetails;
-  main_image: ProductImage;
-  images: ProductImage[];
-  images_count: number;
-  videos: ProductVideo[] | null;
-  videos_count: number | null;
-  top_reviews: Review[];
-  specifications_flat: string;
-  feature_bullets_flat: string;
-  is_stock: boolean;
-  cart_quantity: number;
-  stock_quantity: number;
 };

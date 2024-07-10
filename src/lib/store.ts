@@ -30,18 +30,12 @@ export const useWishlistMenuState = create<WishlistMenuState>(set => ({
   setIsOpen: isOpen => set({ isOpen })
 }));
 
-export const categories = [
-  'laptops',
-  'computers',
-  'cpu',
-  'gaming-laptops',
-  'accessories',
-  'gpu',
-  'headphones',
-  'powerbanks',
-  'monitors',
-  'mobiles',
-  'routers',
-  'watches'
-] as const;
-export type Category = (typeof categories)[number];
+type FilterContentState = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+export const useFilterContentState = create<FilterContentState>(set => ({
+  isOpen: false,
+  setIsOpen: isOpen => set({ isOpen })
+}));
