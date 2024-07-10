@@ -11,7 +11,7 @@ type PageProps = {
 };
 
 export default async function Page({ searchParams }: PageProps) {
-  let items: Partial<Product>[] = [];
+  const items: Partial<Product>[] = [];
   Object.entries(searchParams).map(item => {
     const prod = {
       asin: item[1]?.split(' ')[0],
