@@ -20,9 +20,10 @@ import {
   AccordionItem,
   AccordionTrigger
 } from './ui/accordion';
-import { categories, useSideMenuState } from '@/lib/store';
-import { SignOutButton } from '@clerk/nextjs';
+import { useSideMenuState } from '@/lib/store';
+import { SignOutButton, UserButton } from '@clerk/nextjs';
 import { capitalizeString } from '@/lib/utils';
+import { categories } from '@/app/products/_actions/actions';
 
 export function SideMenu() {
   const { isOpen, setIsOpen } = useSideMenuState();
@@ -54,6 +55,16 @@ export function SideMenu() {
           <SheetTitle>
             <Logo className='text-foreground font-medium' />
           </SheetTitle>
+          <UserButton
+            afterSignOutUrl='/'
+            appearance={{
+              elements: {
+                userPreviewMainIdentifier: 'capitalize font-bold',
+                userPreviewSecondaryIdentifier: 'font-medium',
+                userButtonPopoverCard: { pointerEvents: 'initial' }
+              }
+            }}
+          />
         </SheetHeader>
         <Separator />
 
@@ -93,7 +104,7 @@ export function SideMenu() {
             <Link
               onClick={() => setIsOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
-              href='/cart#cart-list'>
+              href='/cart'>
               Cart
             </Link>
           </li>
@@ -101,7 +112,7 @@ export function SideMenu() {
             <Link
               onClick={() => setIsOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
-              href='/'>
+              href='/#blogs'>
               Blogs
             </Link>
           </li>
@@ -109,7 +120,7 @@ export function SideMenu() {
             <Link
               onClick={() => setIsOpen(false)}
               className='pb-1 w-full inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'
-              href='/'>
+              href='/#footer'>
               About
             </Link>
           </li>
