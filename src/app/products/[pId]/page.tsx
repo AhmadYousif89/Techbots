@@ -1,5 +1,7 @@
+import { Suspense } from 'react';
 import { cn } from '@/lib/utils';
-import { getProductByAsin } from '@/lib/actions';
+import { SearchParams } from '@/lib/types';
+import { getProductByAsin } from '../_actions/actions';
 
 import {
   Card,
@@ -11,58 +13,46 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { RatingStars } from '@/components/products/reviews/rating_stars';
-import { AddToCartButton } from '@/components/cart/add_to_cart_button';
-import { SimilarProducts } from '@/components/products/similar_products';
+import { RatingStars } from '@/app/products/_components/reviews/rating_stars';
+import { AddToCartButton } from '@/app/cart/_components/add_to_cart_button';
+import { SimilarProducts } from '@/app/products/_components/similar_products';
 import { AddToWishlistButton } from '@/components/wishlist/add_to_wishlist_button';
-import { ProductReviews } from '@/components/products/reviews/product_reviews';
-import { ProductCarousel } from '@/components/products/product_carousel';
-import { Suspense } from 'react';
-import { SimilarItemSkeleton } from '@/components/products/skeletons/similar_item_skeleton';
-import { ItemCarouselSkeleton } from '@/components/products/skeletons/item_carousel_skeleton';
+import { ProductReviews } from '@/app/products/_components/reviews/product_reviews';
+import { ProductCarousel } from '@/app/products/_components/product_carousel';
+import { SimilarItemSkeleton } from '@/app/products/_components/skeletons/similar_item_skeleton';
+import { ItemCarouselSkeleton } from '@/app/products/_components/skeletons/item_carousel_skeleton';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
+import { notFound } from 'next/navigation';
 
 type PageProps = {
   params: { pId: string };
-  searchParams: { [key: string]: string | undefined };
+  searchParams: SearchParams;
 };
 
-export default async function SingleProductPage({
-  params: { pId },
-  searchParams
-}: PageProps) {
-  const product = await getProductByAsin(pId);
+export default async function SingleProductPage({ params, searchParams }: PageProps) {
+  const { pId } = params;
+  const {
+    product,
+    filteredReviews,
+    selectedRating,
+    page,
+    limit,
+    totalPages,
+    hasPrevPage,
+    hasNextPage
+  } = await getProductByAsin(pId, searchParams);
 
   if (!product) {
-    return (
-      <main className='grid justify-center items-center min-h-screen max-w-screen-xl mx-auto bg-foreground'>
-        <p className='text-xl'>Product not found</p>
-      </main>
-    );
+    return notFound();
   }
 
-  const reviews = product.top_reviews != null ? product.top_reviews : [];
-  const selectedRating = searchParams['filterByRating'] ?? '';
-  const page = searchParams['page'] ?? '1';
-  const limit = searchParams['limit'] ?? '5';
-  const start = (+page - 1) * +limit;
-  const end = start + +limit;
-  let filteredReviews =
-    reviews && selectedRating
-      ? reviews.filter(review => review.rating === +selectedRating)
-      : reviews;
-  const totalPages = Math.ceil(filteredReviews.length / +limit);
-  const hasPrevPage = start > 0;
-  const hasNextPage = end < filteredReviews.length;
-  filteredReviews = filteredReviews.slice(start, end);
-
-  const productSpecs = parseKeyValueString(product.specifications_flat, 'colon');
-  const productFeatures = parseKeyValueString(product.feature_bullets_flat, 'brackets');
+  const productSpecs = parseProductDetails(product.specificationsFlat);
+  const productFeatures = parseProductDetails(product.featureBulletsFlat);
 
   return (
     <main className='grid min-h-screen max-w-screen-xl mx-auto'>
@@ -82,17 +72,17 @@ export default async function SingleProductPage({
               </CardTitle>
               <RatingStars
                 productRating={product.rating}
-                reviewsCount={product.ratings_total.toLocaleString()}
+                reviewsCount={product.ratingsTotal.toLocaleString()}
               />
               <div className='flex items-center justify-between gap-4'>
                 <Badge
-                  variant={product.stock_quantity > 0 ? 'outline' : 'destructive'}
+                  variant={product.stockQuantity > 0 ? 'outline' : 'destructive'}
                   className={cn(
-                    product.stock_quantity > 0
+                    product.stockQuantity > 0
                       ? 'bg-emerald-500 text-secondary border-0'
                       : ''
                   )}>
-                  {product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                  {product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}
                 </Badge>
                 {product.color && (
                   <div className='flex items-center text-muted-foreground font-medium text-sm ml-2'>
@@ -113,12 +103,12 @@ export default async function SingleProductPage({
               <div className='flex items-center justify-between gap-4 col-span-full'>
                 <Badge className='text-sm shadow-sm py-1' variant={'outline'}>
                   <p className='cursor-default text-muted-foreground font-medium'>
-                    {product.price}
+                    $ {product.price.toFixed(2)}
                   </p>
                 </Badge>
                 <div className='flex items-center gap-4 lg:gap-8'>
                   <AddToCartButton action='addToCart' product={product} />
-                  <AddToWishlistButton product={product} />
+                  <AddToWishlistButton logoSize={20} product={product} />
                 </div>
               </div>
             </div>
@@ -174,28 +164,26 @@ export default async function SingleProductPage({
   );
 }
 
-function parseKeyValueString(input: string, delimiterType: 'brackets' | 'colon') {
-  let regex;
+function parseProductDetails(data: string | null) {
+  const obj: { [key: string]: string } = {};
+  if (!data) return obj;
+  const parts = data.split('. ');
 
-  if (delimiterType === 'brackets') {
-    // Regex for [key] value format
-    regex = /\[([^\]]+)\]\s*([^[]+)/g;
-  } else if (delimiterType === 'colon') {
-    // Regex for key: value format
-    regex = /([^:]+):\s*([^\.]+(?:\.\s|$))/g;
-  } else {
-    throw new Error('Unsupported delimiter type');
-  }
-  const parsedDict: { [key: string]: string } = {};
-  let match;
+  for (let i = 0; i < parts.length; i++) {
+    let part = parts[i].trim();
+    // Check if this part contains a colon and is not the last part
+    if (part.includes(':') && i < parts.length - 1) {
+      let [key, value] = part.split(':').map(item => item.trim());
+      // Remove brackets from keys if present
+      if (key.startsWith('[') && key.endsWith(']')) {
+        key = key.slice(1, -1);
+      }
 
-  while ((match = regex.exec(input))) {
-    const key = match[1]?.trim();
-    const value = match[2]?.trim();
-    parsedDict[key] = value;
+      obj[key] = value;
+    }
   }
 
-  return parsedDict;
+  return obj;
 }
 
 type ProductDetailsTableProps = {

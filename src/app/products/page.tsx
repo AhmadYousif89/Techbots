@@ -1,5 +1,3 @@
-import { filterAndPaginateProducts } from '@/lib/actions';
-import type { Category } from '@/lib/store';
 import { capitalizeString } from '@/lib/utils';
 
 import {
@@ -12,11 +10,13 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ProductGrid } from '@/components/products/product_grid';
-import { FilterProducts } from '@/components/products/filters/filter_products';
+import { ProductGrid } from '@/app/products/_components/product_grid';
+import { FilterProducts } from '@/app/products/_components/filters/filter_products';
+import { SearchParams } from '@/lib/types';
+import { getFilteredProducts } from './_actions/actions';
 
 type PageProps = {
-  searchParams: { [key: string]: string | Category | undefined };
+  searchParams: SearchParams;
 };
 
 export default async function ProductsPage({ searchParams }: PageProps) {
@@ -29,7 +29,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     totalPages,
     hasNextPage,
     hasPrevPage
-  } = await filterAndPaginateProducts(searchParams);
+  } = await getFilteredProducts(searchParams);
 
   return (
     <main className='min-h-screen max-w-screen-xl mx-auto bg-background'>
