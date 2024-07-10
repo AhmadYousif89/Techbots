@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { extractSearchParams } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 
-type ApplyFiltersButtonProps = {};
-
-export function ApplyFiltersButton({}: ApplyFiltersButtonProps) {
+export function ApplyFiltersButton() {
   const params = useSearchParams();
   const { page, limit, category, sort, min, max, grid } = extractSearchParams(
     params.entries()
