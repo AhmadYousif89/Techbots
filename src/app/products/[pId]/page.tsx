@@ -170,10 +170,12 @@ function parseProductDetails(data: string | null) {
   const parts = data.split('. ');
 
   for (let i = 0; i < parts.length; i++) {
-    let part = parts[i].trim();
+    const part = parts[i].trim();
     // Check if this part contains a colon and is not the last part
     if (part.includes(':') && i < parts.length - 1) {
-      let [key, value] = part.split(':').map(item => item.trim());
+      const item = part.split(':').map(item => item.trim());
+      let key = item[0];
+      const value = item[1];
       // Remove brackets from keys if present
       if (key.startsWith('[') && key.endsWith(']')) {
         key = key.slice(1, -1);
