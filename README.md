@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TechBots
 
-## Getting Started
+![TechBots](public/images/main.png)
 
-First, run the development server:
+## Introduction
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**TechBots** is an e-commerce platform dedicated to providing a comprehensive selection of computer and electronics parts. Users can browse products, read detailed reviews, manage their shopping cart, and place orders seamlessly.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Deployed Site:** [TechBots](https://techBots.com)
+- **Final Project Blog Article:** [TechBots Development Journey](https://medium.com/techBots-journey)
+- **Authors LinkedIn:**
+  - [Alice Johnson](https://www.linkedin.com/in/alicejohnson)
+  - [Bob Smith](https://www.linkedin.com/in/bobsmith)
+  - [Carol White](https://www.linkedin.com/in/carolwhite)
+  - [Dave Brown](https://www.linkedin.com/in/davebrown)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+To run TechBots locally, follow these steps:
 
-## Learn More
+1. **Clone the repository:**
 
-To learn more about Next.js, take a look at the following resources:
+   ```sh
+   git clone https://github.com/ahmadyousif89/techbots.git
+   cd techBots
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install the node module depenencies:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```sh
+   npm install
+   ```
 
-## Deploy on Vercel
+3. **Set up the database:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```sh
+   npx prisma db push
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+4. **Seed products into the database:**
+
+   ```sh
+   npm run seed
+   ```
+
+5. **Run the development server:**
+
+   ```sh
+   npm run dev
+   ```
+
+6. **Access the application:**
+   Open your web browser and go to `http://localhost:3000`
+
+## Usage
+
+1. **Register an account:**
+
+   - Go to the registration page and create a new account.
+
+2. **Browse products:**
+
+   - Explore various categories of computer and electronics parts.
+
+3. **Manage your cart:**
+
+   - Add items to your cart, update quantities, and remove items as needed.
+
+4. **Place an order:**
+
+   - Proceed to checkout, enter your shipping information, and complete the payment process.
+
+5. **Write reviews:**
+   - Share your feedback on purchased products by writing reviews.
+
+## Contributing
+
+We welcome contributions from the community! To contribute to TechBots:
+
+1. **Fork the repository:**
+
+   - Click on the "Fork" button at the top right corner of the repo page.
+
+2. **Clone your fork:**
+
+   ```sh
+   git clone https://github.com/ahmadyousif89/techbots.git
+   cd techbots
+   ```
+
+3. **Create a new branch:**
+
+   ```sh
+   git checkout -b feature/your-feature-name
+   ```
+
+4. **Make your changes:**
+
+   - Implement your feature or bug fix.
+
+5. **Commit your changes:**
+
+   ```sh
+   git add .
+   git commit -m "Add feature/your-feature-name"
+   ```
+
+6. **Push to your fork:**
+
+   ```sh
+   git push origin feature/your-feature-name
+   ```
+
+7. **Create a pull request:**
+   - Go to the original repository and click on "New Pull Request."
+
+## Related Projects
+
+Here are some projects related to TechBots:
+
+- **Newegg:** A popular e-commerce platform for computer hardware and consumer electronics.
+- **Amazon Electronics:** The electronics section of Amazon, featuring a wide range of products.
+- **PCPartPicker:** A platform for building and sharing PC part lists, with price comparisons and compatibility checks.
+
+## Licensing
+
+TechBots is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+---
+
+Thank you for using TechBots! For any questions or feedback, please contact us through our [LinkedIn page](https://www.linkedin.com/in/dev-ahmadyousif/).
