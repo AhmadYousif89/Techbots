@@ -93,8 +93,8 @@ function PaymentInformation() {
     //   setIsloading(false);
     //   return
     // }
-    // const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/checkout/stripe/success`;
-    const url = `http://localhost:3000/checkout/stripe/success`;
+    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/checkout/stripe/success`;
+    // const url = `http://localhost:3000/checkout/stripe/success`;
     stripe
       .confirmPayment({
         elements,
