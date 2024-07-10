@@ -45,7 +45,7 @@ export function CartPaymentView() {
       router.push(`/checkout/stripe?${ids}`);
       setHasOrder(false);
     }
-  }, [orders, router, setFormData, setHasOrder]);
+  }, [items, orders, router, setFormData, setHasOrder]);
 
   const confirmOrder = () => {
     if (!userId) {
