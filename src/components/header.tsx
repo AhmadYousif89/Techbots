@@ -1,10 +1,4 @@
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs';
+import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import { User } from 'lucide-react';
 
 import { Logo } from './logo';
@@ -21,10 +15,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from './ui/dropdown-menu';
-import { Button } from './ui/button';
 import { Separator } from './ui/separator';
+import { auth } from '@clerk/nextjs/server';
 
 export function Header() {
+  const { userId } = auth();
+
   return (
     <header className='sticky top-0 z-20 h-20 px-8 bg-foreground/85 backdrop-blur-sm'>
       <div className='flex items-center justify-between max-w-screen-xl h-full mx-auto'>
@@ -34,7 +30,7 @@ export function Header() {
         <div className='flex items-center gap-4 lg:gap-8'>
           <WishListMenu />
           <CartMenu />
-          <SignedIn>
+          {userId ? (
             <div className='hidden lg:grid place-content-center ring-1 ring-input rounded-full ring-offset-1 size-7 bg-muted-foreground'>
               <UserButton
                 afterSignOutUrl='/'
@@ -46,8 +42,7 @@ export function Header() {
                 }}
               />
             </div>
-          </SignedIn>
-          <SignedOut>
+          ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className='ring-1 ring-input rounded-full ring-offset-1 size-7 grid place-content-center cursor-pointer text-secondary bg-primary hover:bg-secondary hover:text-primary'>
@@ -67,7 +62,7 @@ export function Header() {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-          </SignedOut>
+          )}
         </div>
       </div>
     </header>
