@@ -9,15 +9,15 @@ import { User } from 'lucide-react';
 
 import { Logo } from './logo';
 import { SideMenu } from './side_menu';
-import { CartMenu } from './cart/cart_menu';
+import { CartMenu } from '../app/cart/_components/cart_menu';
 import { MainNav } from './main_nav';
 import { WishListMenu } from './wishlist/wishlist_menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from './ui/dropdown-menu';
@@ -35,14 +35,22 @@ export function Header() {
           <WishListMenu />
           <CartMenu />
           <SignedIn>
-            <div className='ring-1 ring-input rounded-full ring-offset-1 size-7 grid place-content-center bg-muted-foreground'>
-              <UserButton afterSignOutUrl='/'></UserButton>
+            <div className='hidden lg:grid place-content-center ring-1 ring-input rounded-full ring-offset-1 size-7 bg-muted-foreground'>
+              <UserButton
+                afterSignOutUrl='/'
+                appearance={{
+                  elements: {
+                    userPreviewMainIdentifier: 'capitalize font-bold',
+                    userPreviewSecondaryIdentifier: 'font-medium'
+                  }
+                }}
+              />
             </div>
           </SignedIn>
           <SignedOut>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className='ring-1 ring-input rounded-full ring-offset-1 size-7 grid place-content-center cursor-pointer text-secondary'>
+                <div className='ring-1 ring-input rounded-full ring-offset-1 size-7 grid place-content-center cursor-pointer text-secondary bg-primary hover:bg-secondary hover:text-primary'>
                   <User className='size-6' />
                 </div>
               </DropdownMenuTrigger>
@@ -50,16 +58,12 @@ export function Header() {
                 <DropdownMenuLabel>Account</DropdownMenuLabel>
                 <Separator />
                 <DropdownMenuRadioGroup className='*:p-4 divide-y'>
-                  <DropdownMenuRadioItem
-                    value='signin'
-                    className='hover:bg-muted *:text-xs *:font-medium'>
+                  <DropdownMenuItem className='hover:bg-muted *:text-xs *:font-medium'>
                     <SignInButton mode='modal'>Login</SignInButton>
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem
-                    value='signup'
-                    className='hover:bg-muted *:text-xs *:font-medium'>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='hover:bg-muted *:text-xs *:font-medium'>
                     <SignUpButton mode='modal' />
-                  </DropdownMenuRadioItem>
+                  </DropdownMenuItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>

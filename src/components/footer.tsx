@@ -1,10 +1,11 @@
-import { Computer, Copyright } from 'lucide-react';
-import { Button } from './ui/button';
 import Link from 'next/link';
+import { Computer, Copyright } from 'lucide-react';
+
 import { Logo } from './logo';
+import { Button } from './ui/button';
 import { Separator } from './ui/separator';
-import { categories } from '@/lib/store';
 import { capitalizeString } from '@/lib/utils';
+import { categories } from '@/app/products/_actions/actions';
 
 export function Footer() {
   return (
@@ -40,28 +41,36 @@ export function Footer() {
               <ul className='border-l'>
                 <li>
                   <Link href={'/'}>
-                    <Button variant={'link'} className='text-xs sm:text-sm'>
+                    <Button
+                      variant={'link'}
+                      className='text-xs sm:text-sm hover:text-muted-foreground'>
                       Home
                     </Button>
                   </Link>
                 </li>
                 <li>
                   <Link href={'/products'}>
-                    <Button variant={'link'} className='text-xs sm:text-sm'>
+                    <Button
+                      variant={'link'}
+                      className='text-xs sm:text-sm hover:text-muted-foreground'>
                       Products
                     </Button>
                   </Link>
                 </li>
                 <li>
                   <Link href={'/#blogs'}>
-                    <Button variant={'link'} className='text-xs sm:text-sm'>
+                    <Button
+                      variant={'link'}
+                      className='text-xs sm:text-sm hover:text-muted-foreground'>
                       Blogs
                     </Button>
                   </Link>
                 </li>
                 <li>
                   <Link href={'/cart'}>
-                    <Button variant={'link'} className='text-xs sm:text-sm'>
+                    <Button
+                      variant={'link'}
+                      className='text-xs sm:text-sm hover:text-muted-foreground'>
                       Shopping Cart
                     </Button>
                   </Link>
@@ -75,7 +84,9 @@ export function Footer() {
                 {categories.map(category => (
                   <li key={category}>
                     <Link href={`/products?category=${category}`}>
-                      <Button variant={'link'} className='text-xs sm:text-sm'>
+                      <Button
+                        variant={'link'}
+                        className='text-xs sm:text-sm hover:text-muted-foreground'>
                         {capitalizeString(category)}
                       </Button>
                     </Link>
