@@ -1,4 +1,4 @@
-import { CartTabs } from '@/components/cart/cart_tabs';
+import { CartTabs } from '@/app/cart/_components/cart_tabs';
 
 export default function CartPage() {
   return (
