@@ -1,4 +1,5 @@
 import json
+from random import randint
 
 
 productTypes = [
@@ -30,6 +31,15 @@ def load_json_file(file_path):
 all_products = []
 for productType in productTypes:
     json_data = load_json_file(f'./data/fetched_{productType}.json')
+    # check stock_quantity field and a random value if it's not present
+    for product in json_data:
+        if 'price' in product:
+            # convert price from "$1,000.00" to 1000.00
+            product['price'] = float(
+                product['price'].replace(',', '').replace('$', '')
+            )
+        if 'stock_quantity' not in product:
+            product['stock_quantity'] = randint(5, 50)
     all_products += json_data
 
 with open('./data/all_products.json', 'w') as file:
