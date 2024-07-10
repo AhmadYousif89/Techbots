@@ -1,18 +1,14 @@
 # TechBots
 
-![TechBots](public/images/main.png)
+![TechBots](public/images/home-full.png)
 
 ## Introduction
 
 **TechBots** is an e-commerce platform dedicated to providing a comprehensive selection of computer and electronics parts. Users can browse products, read detailed reviews, manage their shopping cart, and place orders seamlessly.
 
-- **Deployed Site:** [TechBots](https://techBots.com)
+- **Deployed Site:** [TechBots](https://techBots.vercel.app/)
 - **Final Project Blog Article:** [TechBots Development Journey](https://medium.com/techBots-journey)
-- **Authors LinkedIn:**
-  - [Alice Johnson](https://www.linkedin.com/in/alicejohnson)
-  - [Bob Smith](https://www.linkedin.com/in/bobsmith)
-  - [Carol White](https://www.linkedin.com/in/carolwhite)
-  - [Dave Brown](https://www.linkedin.com/in/davebrown)
+- **Authors LinkedIn:** [Ahmad Yousif](https://www.linkedin.com/in/dev-ahmadyousif/)
 
 ## Installation
 
@@ -37,7 +33,7 @@ To run TechBots locally, follow these steps:
    npx prisma db push
    ```
 
-4. **Seed products into the database:**
+4. **Seed products into the database (one time action):**
 
    ```sh
    npm run seed
@@ -57,21 +53,33 @@ To run TechBots locally, follow these steps:
 1. **Register an account:**
 
    - Go to the registration page and create a new account.
+     ![Signup](public/images/auth-1.png)
+     ![Signin](public/images/auth-2.png)
+     ![UserProfile](public/images/auth-3.png)
 
 2. **Browse products:**
 
    - Explore various categories of computer and electronics parts.
+     ![Products](public/images/p1.png)
+     ![Products](public/images/sp-full.png)
 
 3. **Manage your cart:**
 
    - Add items to your cart, update quantities, and remove items as needed.
+     ![Cart](public/images/cart-1.png)
+     ![Shipping-1](public/images/cart-ship1.png)
+     ![Shipping-2](public/images/cart-ship2.png)
+     ![Shipping-3](public/images/cart-ship3.png)
 
 4. **Place an order:**
 
    - Proceed to checkout, enter your shipping information, and complete the payment process.
+     ![Orders](public/images/orders.png)
+     ![Order](public/images/order.png)
 
 5. **Write reviews:**
    - Share your feedback on purchased products by writing reviews.
+     ![Review](public/images/review.png)
 
 ## Contributing
 
