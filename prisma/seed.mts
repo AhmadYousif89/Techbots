@@ -13,43 +13,46 @@ const ratingDetailSchema = z.object({
 
 const imageSchema = z.object({
   link: z.string(),
-  variant: z.string().nullable()
+  variant: z.string().nullish()
 });
 
 const mainImageSchema = z.object({
   link: z.string()
 });
 
-const videoSchema = z.object({
-  duration_seconds: z.number(),
-  width: z.number(),
-  height: z.number(),
-  link: z.string(),
-  thumbnail: z.string(),
-  is_hero_video: z.boolean(),
-  variant: z.string(),
-  group_id: z.string(),
-  group_type: z.string(),
-  title: z.string()
-});
+const videoSchema = z
+  .object({
+    duration_seconds: z.number(),
+    width: z.number(),
+    height: z.number(),
+    link: z.string(),
+    thumbnail: z.string(),
+    is_hero_video: z.boolean(),
+    variant: z.string(),
+    group_id: z.string(),
+    group_type: z.string().nullish(),
+    title: z.string()
+  })
+  .nullish();
 
 const reviewSchema = z.object({
-  id: z.string(),
   title: z.string(),
   body: z.string(),
-  asin: z.string(),
+  asin: z.string().nullish(),
   body_html: z.string(),
-  link: z.string(),
+  link: z.string().nullish(),
   rating: z.number(),
   date: z.object({
     raw: z.string(),
     utc: z.string()
   }),
-  profile: z.object({
-    id: z.string(),
-    name: z.string().nullish(),
-    link: z.string()
-  }),
+  profile: z
+    .object({
+      id: z.string().nullish(),
+      name: z.string().nullish(),
+      link: z.string().nullish()
+    })
+    .nullish(),
   vine_program: z.boolean(),
   verified_purchase: z.boolean(),
   images: z.array(mainImageSchema).nullish(),
@@ -61,10 +64,10 @@ const productSchema = z.object({
   asin: z.string(),
   title: z.string(),
   brand: z.string(),
-  color: z.string().nullable(),
-  price: z.string(),
+  color: z.string().nullish(),
+  price: z.number(),
   category: z.string(),
-  description: z.string().nullable(),
+  description: z.string().nullish(),
   rating: z.number(),
   ratings_total: z.number(),
   rating_breakdown: z.object({
@@ -77,11 +80,11 @@ const productSchema = z.object({
   main_image: mainImageSchema,
   images: z.array(imageSchema),
   images_count: z.number(),
-  videos: z.array(videoSchema).nullable(),
-  videos_count: z.number().nullable(),
+  videos: z.array(videoSchema).nullish(),
+  videos_count: z.number().nullish(),
   top_reviews: z.array(reviewSchema),
-  specifications_flat: z.string(),
-  feature_bullets_flat: z.string(),
+  specifications_flat: z.string().nullish(),
+  feature_bullets_flat: z.string().nullish(),
   stock_quantity: z.number()
 });
 
@@ -92,7 +95,7 @@ const path = './data/products.json';
 async function main() {
   const data = JSON.parse(readFileSync(path, 'utf8')) as Product[];
 
-  for (const product of data.slice(0, 2)) {
+  for (const product of data.slice(8, -1)) {
     try {
       productSchema.parse(product); // Validate the product data
       const existingProduct = await prisma.product.findUnique({
@@ -138,9 +141,8 @@ async function main() {
 
       // Seed Top Reviews and related Review Images and Profile
       for (const review of product.top_reviews) {
-        const createdReview = await prisma.review.create({
+        await prisma.review.create({
           data: {
-            id: review.id,
             title: review.title,
             body: review.body,
             asin: review.asin,
@@ -148,7 +150,7 @@ async function main() {
             link: review.link,
             rating: review.rating,
             date: review.date,
-            profile: review.profile,
+            profile: review.profile ?? undefined,
             reviewCountry: review.review_country,
             productId: createdProduct.id
           }
@@ -168,5 +170,8 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    // print the total number of products
+    const totalProducts = await prisma.product.count();
+    console.log(`Total products: ${totalProducts}`);
     await prisma.$disconnect();
   });
