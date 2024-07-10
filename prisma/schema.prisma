@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,116 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique @map("clerk_user_id")
+  email       String   @unique
+  username    String?  @default("Anonymous")
+  imageUrl    String?
+  Cart        Cart?
+  Order       Order[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Cart {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String    @unique
+  products  Product[]
+  count     Int
+  total     Float
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("carts")
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  shippingInfo Json        @map("shipping_info")
+  pricePaid    Float       @map("price_paid")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  orderItems   OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  count     Int
+
+  @@map("order_items")
+}
+
+model Product {
+  id                 String      @id @default(cuid())
+  asin               String      @unique
+  title              String
+  brand              String
+  color              String?
+  price              Int
+  category           String
+  description        String?
+  rating             Float
+  ratingsTotal       Int         @map("ratings_total")
+  ratingBreakdown    Json        @map("rating_breakdown")
+  mainImage          String      @map("main_image")
+  images             Image[]
+  imagesCount        Int         @map("images_count")
+  top_reviews        Review[]
+  specificationsFlat String?     @map("specifications_flat")
+  featureBulletsFlat String?     @map("feature_bullets_flat")
+  stockQuantity      Int         @map("stock_quantity")
+  Cart               Cart?       @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  cartId             String?     @map("cart_id")
+  orderItems         OrderItem[]
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  link      String
+  variant   String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId String?
+  Review    Review?  @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+  reviewId  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("images")
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  title         String
+  asin          String?
+  body          String
+  bodyHtml      String   @map("body_html")
+  link          String?
+  rating        Float
+  date          Json
+  profile       Json?
+  images        Image[]
+  reviewCountry String   @map("review_country")
+  product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId     String?  @map("product_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("reviews")
 }
