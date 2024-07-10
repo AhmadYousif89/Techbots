@@ -40,7 +40,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
 
   if (isMounted()) {
     cartCount = cart.length;
-    VAT = total * 0.2;
+    VAT = +(total * 0.2).toFixed(2);
   }
 
   useEffect(() => {

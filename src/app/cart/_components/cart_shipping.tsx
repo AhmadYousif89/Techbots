@@ -74,7 +74,7 @@ export function CartShippingView() {
   let VAT = 0;
 
   if (isMounted()) {
-    VAT = total * 0.2;
+    VAT = +(total * 0.2).toFixed(2);
   }
 
   const onFirstNameChange = (value: string, name: ShippingFormKeys) => {

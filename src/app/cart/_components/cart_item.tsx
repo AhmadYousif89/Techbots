@@ -62,7 +62,7 @@ export function CartItem({ product }: { product: Product }) {
         <CardDescription className='pb-4 pt-2 text-xs max-w-[60ch]'>
           {currentProduct.description?.split(' ').slice(0, 10).join(' ')}
           {!currentProduct.description &&
-            currentProduct.featureBulletsFlat?.split('. ').slice(1, 4).join(' ')}
+            currentProduct.featureBulletsFlat?.split('. ').slice(1, 3).join(' ')}
           {!currentProduct.description &&
             !currentProduct.featureBulletsFlat &&
             currentProduct.specificationsFlat?.split('. ').slice(0, 3).join(' ')}
