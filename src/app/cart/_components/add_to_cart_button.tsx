@@ -30,8 +30,7 @@ export function AddToCartButton({
   const isMounted = useIsMounted();
   const [cart, setCartItem] = useLocalStorage<Product[]>('cart', []);
 
-  let cartItem: Product | undefined;
-  cartItem = cart.find(item => item.asin === product.asin);
+  const cartItem = cart.find(item => item.asin === product.asin);
   let textContent: React.ReactNode = action === 'addToCart' ? 'Add to cart' : 'Buy now';
 
   if (isMounted() && cartItem)
