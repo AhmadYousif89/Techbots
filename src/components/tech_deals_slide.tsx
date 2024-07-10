@@ -1,7 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getProductsByCategory } from '@/lib/actions';
-import { RatingStars } from './products/reviews/rating_stars';
 
 import {
   Carousel,
@@ -11,6 +9,9 @@ import {
   CarouselPrevious
 } from './ui/carousel';
 import { Card, CardContent } from './ui/card';
+import { getProductsByCategory } from '@/app/products/_actions/actions';
+import { RatingStars } from '../app/products/_components/reviews/rating_stars';
+import { Button } from './ui/button';
 
 export async function TechDealsSlide() {
   const gpu = (await getProductsByCategory('gpu')).slice(0, 2);
@@ -21,7 +22,12 @@ export async function TechDealsSlide() {
 
   return (
     <section className='bg-secondary py-10 px-6'>
-      <h2 className='text-2xl font-bold mb-12'>Tech Deals</h2>
+      <div className='flex items-center gap-4 mb-12'>
+        <h2 className='text-xl lg:text-2xl font-bold'>Tech Deals</h2>
+        <Button variant={'link'} className='hover:text-muted-foreground'>
+          <Link href='/products?category=laptops'>View All</Link>
+        </Button>
+      </div>
       <Carousel
         className='mx-auto max-w-[min(320px,80vw)] sm:max-w-xl md:max-w-2xl lg:max-w-screen-md xl:max-w-screen-lg'
         opts={{ dragFree: true, skipSnaps: true, align: 'start' }}>
@@ -35,7 +41,7 @@ export async function TechDealsSlide() {
                   href={`/products/${product.asin}`}
                   className='grid place-content-center'>
                   <Image
-                    src={product.main_image.link}
+                    src={product.mainImage}
                     alt={product.title}
                     width={150}
                     height={150}
