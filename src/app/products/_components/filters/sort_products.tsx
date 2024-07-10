@@ -12,9 +12,7 @@ import { useState } from 'react';
 import { SortValue } from '../../_actions/actions';
 import { extractSearchParams } from '@/lib/utils';
 
-type SortProductsProps = {};
-
-export function SortProducts({}: SortProductsProps) {
+export function SortProducts() {
   const router = useRouter();
   const params = useSearchParams();
   const [value, setValue] = useState<SortValue | ''>('');
