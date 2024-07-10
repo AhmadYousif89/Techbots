@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Heart, HeartCrack } from 'lucide-react';
-import { Product } from '@/lib/types';
+import { Product } from '@/app/products/_actions/actions';
 
 import {
   Drawer,
@@ -30,16 +29,18 @@ import { WishlistItems } from './wishlist_items';
 import { useMediaQuery } from '../hooks/use_media_query';
 import { useLocalStorage } from '../hooks/use_local_storage';
 import { useWishlistMenuState } from '@/lib/store';
+import { useIsMounted } from '../hooks/use_isMounted';
 
 export function WishListMenu() {
-  const [wishlistCount, setWishlistCount] = useState(0);
   const isNotMobile = useMediaQuery('(min-width: 639px');
   const [wishlistItems, _, removeWishlist] = useLocalStorage<Product[]>('wishlist', []);
   const { isOpen, setIsOpen } = useWishlistMenuState();
+  const isMounted = useIsMounted();
+  let wishlistCount = 0;
 
-  useEffect(() => {
-    setWishlistCount(wishlistItems.length);
-  }, [wishlistItems]);
+  if (isMounted()) {
+    wishlistCount = wishlistItems.length;
+  }
 
   const WishListButton = (
     <Button className='relative ring-1 ring-input rounded-full ring-offset-1 size-7 p-0 hover:bg-background'>
@@ -76,8 +77,8 @@ export function WishListMenu() {
               <Button
                 variant={'link'}
                 onClick={() => removeWishlist()}
-                className='w-fit self-center'>
-                Remove all
+                className='w-fit py-1 pb-2 px-3 h-auto rounded self-center text-destructive hover:bg-destructive/20'>
+                Delete all
               </Button>
             )}
           </SheetHeader>

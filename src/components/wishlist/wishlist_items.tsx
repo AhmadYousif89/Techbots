@@ -1,6 +1,6 @@
-import { Product } from '@/lib/types';
+import { Product } from '@/app/products/_actions/actions';
 import { useLocalStorage } from '../hooks/use_local_storage';
-import { ProductThumbnail } from '../products/product_thumpnail';
+import { ProductThumbnail } from '../../app/products/_components/product_thumpnail';
 
 export function WishlistItems() {
   const [wishlistItems] = useLocalStorage<Product[]>('wishlist', []);

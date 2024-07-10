@@ -1,13 +1,13 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Product } from '@/app/products/_actions/actions';
 import { Heart, Info } from 'lucide-react';
 
 import { Button } from '../ui/button';
 import { useLocalStorage } from '../hooks/use_local_storage';
-import { useEffect, useState } from 'react';
-import { Product } from '@/lib/types';
 
 type AddToWishlistButtonProps = {
   product: Product;
@@ -36,7 +36,7 @@ export function AddToWishlistButton({
     <Button
       variant='ghost'
       title={item ? 'Remove from wishlist' : 'Add to wishlist'}
-      className={className + 'rounded-full aspect-square p-0'}
+      className={cn(className, 'rounded-full aspect-square p-0')}
       onClick={() => {
         toast.custom(() => {
           if (item) {
