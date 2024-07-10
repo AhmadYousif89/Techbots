@@ -31,7 +31,7 @@ export function extractSearchParams(
   let params: { [key: string]: any } = {};
 
   if (Symbol.iterator in Object(searchParams)) {
-    for (let [key, value] of searchParams as IterableIterator<[string, string]>) {
+    for (const [key, value] of searchParams as IterableIterator<[string, string]>) {
       params[key] = value;
     }
   } else {
