@@ -24,7 +24,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang='en'>
         <body
-          className={`${inter.className} bg-[url('/lp-01.png')] bg-no-repeat bg-cover`}>
+          className={`${inter.className} bg-[url('/images/bg.png')] bg-no-repeat bg-cover`}>
           <Header />
           {children}
           <Footer />

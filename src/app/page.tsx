@@ -1,6 +1,6 @@
 import { HomeSlider } from '@/components/slider';
-import { FeaturedProducts } from '@/components/products/featured_products';
-import { LatestBlogs } from '@/components/blogs/featured_blogs';
+import { FeaturedProducts } from '@/app/products/_components/featured_products';
+import { LatestBlogs } from '@/app/blogs/_components/featured_blogs';
 import { PopularItemsSlide } from '@/components/popular_items_slide';
 import { TechDealsSlide } from '@/components/tech_deals_slide';
 
