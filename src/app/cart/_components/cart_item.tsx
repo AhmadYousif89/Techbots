@@ -60,12 +60,12 @@ export function CartItem({ product }: { product: Product }) {
           </Link>
         </CardTitle>
         <CardDescription className='pb-4 pt-2 text-xs max-w-[60ch]'>
-          {currentProduct.description?.split(' ').slice(0, 15).join(' ')}
+          {currentProduct.description?.split(' ').slice(0, 10).join(' ')}
           {!currentProduct.description &&
             currentProduct.featureBulletsFlat?.split('. ').slice(1, 4).join(' ')}
           {!currentProduct.description &&
             !currentProduct.featureBulletsFlat &&
-            currentProduct.specificationsFlat?.split('. ').slice(0, 5).join(' ')}
+            currentProduct.specificationsFlat?.split('. ').slice(0, 3).join(' ')}
         </CardDescription>
 
         <div className='font-medium'>
