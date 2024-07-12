@@ -38,7 +38,6 @@ export function ReviewsRatingBars({
   return (
     <Card className='w-full py-4 px-2 max-w-sm shadow-sm space-y-2'>
       {keys.map((rate, index) => {
-        console.log(ratingBreakdown);
         const starIndex = 5 - index;
         const ratingDetail = ratingBreakdown[
           rate as keyof RatingBreakdown
