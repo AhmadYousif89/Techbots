@@ -8,7 +8,7 @@ import {
   useStripe
 } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { SearchParams } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -36,7 +36,7 @@ import { userOrderExists } from '../_actions/actions';
 
 type CheckoutProps = {
   searchParams: SearchParams;
-  products: Product[];
+  products: TProduct[];
   clientSecret: string;
 };
 
@@ -56,7 +56,7 @@ function PaymentInformation() {
   const [isLoading, setIsloading] = useState(false);
   const [email, setEmail] = useState('');
   const { data, setFormData } = useShippingFormStore();
-  const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
   const isMounted = useIsMounted();
   let total: number = 0;
   let itemsCount;

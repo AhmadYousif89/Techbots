@@ -1,6 +1,6 @@
 import { SearchParams } from '@/lib/types';
 import { Checkout } from '../_component/checkout';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import prisma from '@/lib/db';
 import Stripe from 'stripe';
 
@@ -11,12 +11,12 @@ type PageProps = {
 };
 
 export default async function Page({ searchParams }: PageProps) {
-  const items: Partial<Product>[] = [];
+  const items: Partial<TProduct>[] = [];
   Object.entries(searchParams).map(item => {
     const prod = {
       asin: item[1]?.split(' ')[0],
       cartQuantity: item[1]?.split(' ')[1]
-    } as Partial<Product>;
+    } as Partial<TProduct>;
     items.push(prod);
   });
 
@@ -26,7 +26,7 @@ export default async function Page({ searchParams }: PageProps) {
         in: items.map(item => item.asin) as string[]
       }
     }
-  })) as Product[];
+  })) as TProduct[];
 
   const totalAmount = products.reduce((acc, item) => {
     const cartItem = items.find(cartItem => cartItem.asin === item.asin);
