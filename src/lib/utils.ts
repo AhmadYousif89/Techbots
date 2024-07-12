@@ -39,7 +39,7 @@ export function extractSearchParams(
     params = searchParams;
   }
 
-  let result = {
+  const result = {
     page: '1',
     limit: customLimit,
     category: '' as Category,

@@ -102,7 +102,7 @@ export async function getFilteredProducts({ searchParams }: FilterProductsProps)
     'highest-price': { price: 'desc' }
   };
 
-  let products = await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where: category ? { category } : undefined,
     orderBy: sortOptions[sort] ?? { brand: 'asc' },
     take: +limit,
