@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import PaginationButton from '@/components/pagination_button';
+import { PaginationButton } from '@/app/products/_components/pagination_button';
 import { extractSearchParams } from '@/lib/utils';
 
 type PaginationSectionProps = {

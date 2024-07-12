@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Product } from '../../_actions/actions';
+import { TProduct } from '../../_actions/actions';
 import { extractSearchParams } from '@/lib/utils';
 import { ReviewsRatingBars } from './rating_bars';
 import { PaginationSection } from './paginated_reviews';
@@ -23,7 +23,7 @@ type ProductReviewsProps = {
 };
 
 type ProductReview = Pick<
-  Product,
+  TProduct,
   'asin' | 'rating' | 'ratingsTotal' | 'ratingBreakdown'
 >;
 
