@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Dialog,
   DialogContent,
@@ -15,8 +17,9 @@ import { toast } from 'sonner';
 import { Ban, CheckSquare, Star } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Product } from '../../_actions/actions';
 
-export function AddReview({ productName }: { productName: string }) {
+export function AddReview({ product }: { product: Partial<Product> }) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
@@ -30,7 +33,7 @@ export function AddReview({ productName }: { productName: string }) {
         <DialogHeader>
           <DialogTitle>Customer Review</DialogTitle>
           <DialogDescription>
-            Review for {productName.split(' ').slice(0, 3).join(' ')}
+            Review for {product?.title?.split(' ').slice(0, 3).join(' ')}
           </DialogDescription>
         </DialogHeader>
         <div className='grid mb-4'>

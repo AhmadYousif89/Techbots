@@ -1,17 +1,9 @@
-'use client';
-
-import { useRouter, useSearchParams } from 'next/navigation';
+import prisma from '@/lib/db';
 import { ChevronLeft, ChevronRight, CircleUserRound } from 'lucide-react';
 
 import { AddReview } from './add_review';
 import { RatingStars } from './rating_stars';
 
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import PaginationButton from '@/components/pagination_button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import {
   Card,
   CardContent,
@@ -19,41 +11,54 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '@/components/ui/tooltip';
-import { Prisma } from '@prisma/client';
-import { RatingBreakdown, ReviewDate, ReviewProfile } from '@/lib/types';
 import { Product } from '../../_actions/actions';
+import { extractSearchParams } from '@/lib/utils';
+import { ReviewsRatingBars } from './rating_bars';
+import { PaginationSection } from './paginated_reviews';
+import { RatingBreakdown, ReviewDate, ReviewProfile, SearchParams } from '@/lib/types';
 
 type ProductReviewsProps = {
-  product: Product;
-  selectedRating: string;
-  page: string;
-  limit: string;
-  filteredReviews: Product['top_reviews'];
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  totalPages: number;
+  asin: string;
+  searchParams: SearchParams;
 };
-export function ProductReviews({
-  product,
-  filteredReviews,
-  selectedRating,
-  page,
-  limit,
-  hasPrevPage,
-  hasNextPage,
-  totalPages
-}: ProductReviewsProps) {
-  const router = useRouter();
 
-  const ratingTotal = product.ratingsTotal;
+type ProductReview = Pick<
+  Product,
+  'asin' | 'rating' | 'ratingsTotal' | 'ratingBreakdown'
+>;
 
-  if (ratingTotal === 0 || filteredReviews.length === 0) {
+export async function ProductReviews({ asin, searchParams }: ProductReviewsProps) {
+  const { page, limit, selectedRating } = extractSearchParams(searchParams, '5');
+  const start = (+page - 1) * +limit;
+  const end = start + +limit;
+
+  const reviews = await prisma.review.findMany({
+    where: { asin, rating: selectedRating ? +selectedRating : undefined },
+    orderBy: { date: 'desc' },
+    include: {
+      product: {
+        where: { asin },
+        select: { asin: true, rating: true, ratingsTotal: true, ratingBreakdown: true }
+      }
+    },
+    skip: start,
+    take: +limit
+  });
+
+  const totalReviews = await prisma.review.count({
+    where: { asin, rating: selectedRating ? +selectedRating : undefined }
+  });
+  const totalPages = Math.ceil(totalReviews / +limit);
+  const hasNextPage = end < totalReviews;
+  const hasPrevPage = start > 0;
+
+  if (!reviews) throw new Error(`Reviews for product with ASIN ${asin} not found!`);
+  const product = reviews[0]?.product;
+  if (!product) throw new Error(`Product with ASIN ${asin} not found!`);
+
+  const ratingsTotal = product?.ratingsTotal ?? 0;
+
+  if (ratingsTotal === 0 || reviews.length === 0) {
     return (
       <Card className='space-y-2'>
         <CardHeader>
@@ -65,74 +70,33 @@ export function ProductReviews({
           </p>
         </CardContent>
         <CardFooter>
-          <Button>Write a review</Button>
+          <AddReview product={product} />
         </CardFooter>
       </Card>
     );
   }
 
-  let reviewsTitle = 'Top Reviews';
-  for (let i = 0; i < 5; i++) {
-    if (selectedRating === `${5 - i}`) {
-      reviewsTitle = `${5 - i} Star Reviews`;
-      break;
-    }
-  }
-
   let content;
-  if (filteredReviews.length === 0) {
+  if (selectedRating && reviews.length === 0) {
     content = <p> No reviews for this rating! </p>;
   }
 
   return (
     <section className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8'>
-      <RatingOverview product={product} />
+      <RatingOverview product={product} searchParams={searchParams} />
 
       <Card className='p-6 flex-1 lg:basis-full'>
         <div className='space-y-8'>
-          <div className='flex justify-between items-center'>
-            <CardTitle className='font-medium text-xl mb-auto'>{reviewsTitle}</CardTitle>
-            <div className='grid items-center gap-y-2'>
-              <Button
-                size='sm'
-                variant='outline'
-                className='place-self-center'
-                disabled={!selectedRating}
-                onClick={() => {
-                  router.push(
-                    `/products/${product.asin}?page=1&limit=${limit}&filterByRating=#reviews`
-                  );
-                }}>
-                View All
-              </Button>
-
-              <div className='flex items-center gap-4'>
-                <PaginationButton
-                  elementId='reviews'
-                  disabled={!hasPrevPage}
-                  href={`/products/${product.asin}?page=${
-                    +page - 1
-                  }&limit=${limit}&filterByRating=${selectedRating}#reviews`}>
-                  <ChevronLeft />
-                </PaginationButton>
-                <span className='text-foreground text-sm'>
-                  {page} / {totalPages}
-                </span>
-                <PaginationButton
-                  elementId='reviews'
-                  disabled={!hasNextPage}
-                  href={`/products/${product.asin}?page=${
-                    +page + 1
-                  }&limit=${limit}&filterByRating=${selectedRating}#reviews`}>
-                  <ChevronRight />
-                </PaginationButton>
-              </div>
-            </div>
-          </div>
+          <PaginationSection
+            asin={asin}
+            hasPrevPage={hasPrevPage}
+            hasNextPage={hasNextPage}
+            totalPages={totalPages}
+          />
 
           {content && <CardContent>{content}</CardContent>}
 
-          {filteredReviews.map((review, index) => {
+          {reviews.map((review, index) => {
             let reviewer;
             let time = 'a few moments ago';
             if (review.profile && typeof review.profile === 'object') {
@@ -170,88 +134,41 @@ export function ProductReviews({
           })}
         </div>
         <CardFooter className='p-6 px-0'>
-          <AddReview productName={product.title} />
+          <AddReview product={product} />
         </CardFooter>
       </Card>
     </section>
   );
 }
 
-function RatingOverview({ product }: { product: Product }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+type RatingOverviewProps = { product: ProductReview; searchParams: SearchParams };
 
-  const limit = searchParams.get('limit') ?? '5';
-  const selectedRating = searchParams.get('filterByRating') ?? '';
+function RatingOverview({ product, searchParams }: RatingOverviewProps) {
+  const { selectedRating } = extractSearchParams(searchParams, '5');
+  const { asin, rating, ratingsTotal } = product;
   const ratingBreakdown = product.ratingBreakdown as RatingBreakdown;
-  const totalReviewsCount = product.ratingsTotal;
 
   return (
     <div className='grid gap-4 flex-1 lg:basis-1/2'>
       <Card className='grid items-center justify-center max-w-32 aspect-square p-4 shadow-sm'>
         <h3 className='grid items-center justify-center place-self-center size-12 text-2xl font-semibold rounded-full ring-1 ring-zinc-300 shadow-sm aspect-square p-2 text-muted-foreground'>
-          {product.rating}
+          {rating}
         </h3>
         <RatingStars
-          productRating={product.rating}
-          reviewsCount={product.ratingsTotal}
+          productRating={rating}
+          reviewsCount={ratingsTotal}
           showTotalReviews={false}
           size={'sm'}
         />
         <p className='text-sm text-center text-muted-foreground font-medium'>
-          {product.ratingsTotal.toLocaleString()} rating
+          {ratingsTotal.toLocaleString()} rating
         </p>
       </Card>
-
-      <Card className='w-full py-4 px-2 max-w-sm shadow-sm space-y-2'>
-        {Array.from(Object.keys(ratingBreakdown)).map((rate, index) => {
-          const starIndex = 5 - index;
-          const ratingCount = ratingBreakdown[rate as keyof typeof ratingBreakdown].count;
-          const ratingPercentage =
-            ratingBreakdown[rate as keyof typeof ratingBreakdown].percentage;
-
-          return (
-            <TooltipProvider key={starIndex}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={+selectedRating == starIndex ? 'outline' : 'ghost'}
-                    onClick={() => {
-                      router.push(
-                        `/products/${product.asin}?page=1&limit=${limit}&filterByRating=${starIndex}#reviews`
-                      );
-                    }}
-                    className='w-full grid grid-cols-[auto,1fr,auto] items-center gap-2 h-8 py-0'>
-                    <p className='flex items-center justify-center'>
-                      <span className='text-sm mr-1 text-muted-foreground font-semibold'>
-                        {starIndex}
-                      </span>
-                      <span className='text-xl text-yellow-500'>★</span>
-                    </p>
-                    <Progress
-                      value={ratingPercentage}
-                      className='h-2 [&>*]:bg-yellow-500'
-                    />
-                    <p className='text-sm text-muted-foreground font-medium text-center cursor-default'>
-                      {ratingPercentage}%
-                    </p>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className='text-xs'>
-                    <span className='font-bold'>{ratingCount} </span>
-                    <span>review{ratingCount !== 1 ? 's' : ''} represents </span>
-                    <span className='font-bold'>{ratingPercentage}% </span>of the total
-                    <span className='font-bold'> {totalReviewsCount} </span>
-                    reviews of the <span className='font-bold'>{starIndex} </span>
-                    star rating.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          );
-        })}
-      </Card>
+      <ReviewsRatingBars
+        asin={asin}
+        ratingsTotal={ratingsTotal}
+        ratingBreakdown={ratingBreakdown}
+      />
     </div>
   );
 }
