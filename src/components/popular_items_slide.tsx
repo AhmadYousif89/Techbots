@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { RatingStars } from '../app/products/_components/reviews/rating_stars';
 
 import {
   Carousel,
@@ -9,9 +8,10 @@ import {
   CarouselNext,
   CarouselPrevious
 } from './ui/carousel';
+import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { getProductsByCategory } from '@/app/products/_actions/actions';
-import { Button } from './ui/button';
+import { RatingStars } from '../app/products/_components/reviews/rating_stars';
 
 export async function PopularItemsSlide() {
   const laptops = (await getProductsByCategory('laptops')).slice(0, 2);
