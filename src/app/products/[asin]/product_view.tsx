@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { SearchParams } from '@/lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
-import { getProductByAsin } from '../_actions/actions';
 import { RatingStars } from '../_components/reviews/rating_stars';
 import {
   Card,
@@ -24,6 +23,9 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
+import prisma from '@/lib/db';
+import { TProduct } from '../_actions/actions';
+import { Image } from '@prisma/client';
 
 function parseProductDetails(data: string | null) {
   const obj: { [key: string]: string } = {};
@@ -55,19 +57,22 @@ type SingleProductViewProps = {
 };
 
 export async function SingleProductView({ asin, searchParams }: SingleProductViewProps) {
-  const product = await getProductByAsin(asin, searchParams);
-
-  const productSpecs = parseProductDetails(product.specificationsFlat);
-  const productFeatures = parseProductDetails(product.featureBulletsFlat);
+  const product = (await prisma.product.findUnique({
+    where: { asin },
+    include: { images: true }
+  })) as TProduct; // TODO: Fix this type casting
 
   if (!product) {
     return notFound();
   }
 
+  const productSpecs = parseProductDetails(product.specificationsFlat);
+  const productFeatures = parseProductDetails(product.featureBulletsFlat);
+
   return (
     <Card className='grid items-center pb-10 lg:pb-10 rounded-none lg:grid-cols-2 lg:gap-10'>
       <Suspense fallback={<ItemCarouselSkeleton />}>
-        <ProductCarousel product={product} />
+        <ProductCarousel {...product} />
       </Suspense>
 
       <div>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { SearchParams } from '@/lib/types';
-import { Product } from '../_actions/actions';
+import { TProduct } from '../_actions/actions';
 import { extractSearchParams } from '@/lib/utils';
 import { RatingStars } from './reviews/rating_stars';
 
@@ -12,7 +12,7 @@ import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
   searchParams: SearchParams;
-  product: Product;
+  product: TProduct;
 };
 
 export async function ProductGridItem({ product, searchParams }: Props) {

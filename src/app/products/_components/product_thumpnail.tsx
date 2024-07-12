@@ -9,18 +9,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
-import { Product } from '../_actions/actions';
+import { TProduct } from '../_actions/actions';
 import { capitalizeString } from '@/lib/utils';
 
 type ProductThumbnailProps = {
-  product: Product;
+  product: TProduct;
   type: 'cart' | 'wishlist';
 };
 
 export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
   const { setIsOpen: setIsCartOpen } = useCartMenuState();
   const { setIsOpen: setIsWishlistOpen } = useWishlistMenuState();
-  const { '1': setStoredItems } = useLocalStorage<Product[]>(type, []);
+  const { '1': setStoredItems } = useLocalStorage<TProduct[]>(type, []);
 
   return (
     <Card className='flex items-center p-2'>

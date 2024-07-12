@@ -18,9 +18,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from '@/components/ui/resizable';
-import { Product } from '../_actions/actions';
+import { TProduct } from '../_actions/actions';
 
-export function ProductCarousel({ product }: { product: Product }) {
+export function ProductCarousel(product: any) {
   const [imageIndex, setImageIndex] = useState(0);
 
   return (
@@ -54,7 +54,7 @@ export function ProductCarousel({ product }: { product: Product }) {
           className='max-w-screen-md mx-auto'
           opts={{ dragFree: true, align: 'start' }}>
           <CarouselContent className='py-8 pl-4'>
-            {product.images.map((image, index) => (
+            {product.images.map((image: { link: string }, index: number) => (
               <CarouselItem key={index} className='grid basis-32'>
                 <Card
                   className={cn([

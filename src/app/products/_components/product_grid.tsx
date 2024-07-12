@@ -6,25 +6,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
-import PaginationButton from '@/components/pagination_button';
+import { PaginationSummary } from './pagination_summary';
+import { SortValue, TProduct } from '../_actions/actions';
 import { GridItemsSkeleton } from './skeletons/grid_item_skeleton';
-import { Product, getFilteredProducts, getProducts } from '../_actions/actions';
+import { ProductPaginationButtons } from './product_pagination_buttons';
 
 type ProductGridProps = {
   searchParams: SearchParams;
 };
 
 export async function ProductGrid({ searchParams }: ProductGridProps) {
-  const { page, limit, category, sort, min, max, grid } =
-    extractSearchParams(searchParams);
-
-  const totalCount = await prisma.product.count();
-  const totalPages = Math.ceil(totalCount / +limit);
-  const start = (+page - 1) * +limit;
-  const end = start + +limit;
-  const hasNextPage = end < totalCount;
-  const hasPrevPage = start > 0;
-  const params = new URLSearchParams({ limit, category, sort, min, max, grid });
+  const { grid } = extractSearchParams(searchParams);
 
   return (
     <section
@@ -40,36 +32,20 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
       )}>
       <div className='flex items-center col-span-full'>
         <ProductGridSize />
-        <div className='flex items-center justify-center gap-4 ml-auto'>
-          <PaginationButton
-            className='size-7'
-            elementId='reviews'
-            disabled={!hasPrevPage}
-            href={`/products/?page=${+page - 1}&${params.toString()}`}>
-            <ChevronLeft className='size-4' />
-          </PaginationButton>
-          <span className='text-foreground text-sm'>
-            {page} / {totalPages}
-          </span>
-          <PaginationButton
-            className='size-7'
-            elementId='reviews'
-            disabled={!hasNextPage}
-            href={`/products/?page=${+page + 1}&${params.toString()}`}>
-            <ChevronRight className='size-4' />
-          </PaginationButton>
-        </div>
+        <PaginationSummary className='sm:hidden' searchParams={searchParams} />
+        <ProductPaginationButtons {...searchParams} />
       </div>
 
       <Suspense fallback={<GridItemsSkeleton />}>
-        <DisplayProductsGrid searchParams={searchParams} />
+        <DisplayProductsGrid {...searchParams} />
       </Suspense>
     </section>
   );
 }
 
-async function DisplayProductsGrid({ searchParams }: { searchParams: SearchParams }) {
-  const { products } = await getFilteredProducts({ searchParams });
+async function DisplayProductsGrid(searchParams: SearchParams) {
+  const products = await getFilteredProducts(searchParams);
+
   return (
     <>
       {products.map((product, index) => (
@@ -81,4 +57,26 @@ async function DisplayProductsGrid({ searchParams }: { searchParams: SearchParam
       ))}
     </>
   );
+}
+
+export async function getFilteredProducts(searchParams: SearchParams) {
+  const { page, limit, category, sort } = extractSearchParams(searchParams);
+  const start = (+page - 1) * +limit;
+  const end = start + +limit;
+
+  const sortOptions: Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>> = {
+    popular: { rating: 'desc' },
+    newest: { createdAt: 'desc' },
+    'lowest-price': { price: 'asc' },
+    'highest-price': { price: 'desc' }
+  };
+
+  const products = await prisma.product.findMany({
+    where: category ? { category } : undefined,
+    orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
+    take: +limit,
+    skip: start
+  });
+
+  return products as TProduct[];
 }
