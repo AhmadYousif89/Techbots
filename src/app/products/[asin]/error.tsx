@@ -10,6 +10,11 @@ import {
 import { Button } from '@/components/ui/button';
 
 export default function ErrorPage() {
+  const category = location.search
+    .split('&')
+    .filter(x => x.includes('category'))[0]
+    .split('=')[1];
+
   return (
     <main className='min-h-screen max-w-screen-xl mx-auto bg-background grid place-content-center'>
       <Card className='p-4 rounded-none max-w-screen-lg mx-auto'>
@@ -29,7 +34,7 @@ export default function ErrorPage() {
           </Button>
           <Button
             className='text-xs w-20'
-            onClick={() => location.replace(location.pathname)}>
+            onClick={() => location.replace(location.pathname + `?category=${category}`)}>
             Back
           </Button>
         </CardFooter>
