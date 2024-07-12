@@ -74,7 +74,7 @@ export function WishListMenu() {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{WishListButton}</SheetTrigger>
-        <SheetContent className='grid grid-rows-[auto,1fr,auto]'>
+        <SheetContent className='grid grid-rows-[auto,1fr,auto] min-w-[450px]'>
           <SheetHeader className='my-8'>
             <SheetTitle className='flex items-center justify-center gap-2 text-xl mb-2'>
               Wishlist <Heart className='size-6 text-destructive' />
