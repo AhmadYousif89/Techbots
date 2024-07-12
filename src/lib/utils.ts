@@ -1,4 +1,4 @@
-import { Category, Product, SortValue } from '@/app/products/_actions/actions';
+import { Category, TProduct, SortValue } from '@/app/products/_actions/actions';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { SearchParams } from './types';
@@ -12,7 +12,7 @@ export function capitalizeString(str: string) {
   return str[0].toUpperCase().concat(str.slice(1).replace('-', ' '));
 }
 
-export function getCartTotal(cart: Product[]) {
+export function getCartTotal(cart: TProduct[]) {
   const total = cart.reduce(
     (acc, item) => acc + item.price * (item.cartQuantity || 1),
     0
@@ -20,7 +20,7 @@ export function getCartTotal(cart: Product[]) {
   return +total.toFixed(2);
 }
 
-export function getCartCount(cart: Product[]) {
+export function getCartCount(cart: TProduct[]) {
   const count = cart.reduce((acc, item) => acc + (item.cartQuantity || 1), 0);
   return count;
 }
