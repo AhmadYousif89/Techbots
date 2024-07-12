@@ -1,14 +1,14 @@
-import { FeaturedProducts } from '@/app/products/_components/featured_products';
-import { LatestBlogs } from '@/app/blogs/_components/featured_blogs';
-import { PopularItemsSlide } from '@/components/popular_items_slide';
-import { TechDealsSlide } from '@/components/tech_deals_slide';
+import { HotProducts } from '@/app/hot_products';
+import { LatestBlogs } from '@/app/featured_blogs';
+import { PopularItemsSlide } from '@/app/popular_items_slide';
+import { TechDealsSlide } from '@/app/tech_deals_slide';
 import { HomeSlider } from '@/components/slider';
 
 export default function Home() {
   return (
     <main className='min-h-svh max-w-screen-xl mx-auto'>
       <HomeSlider />
-      <FeaturedProducts />
+      <HotProducts />
       <PopularItemsSlide />
       <TechDealsSlide />
       <LatestBlogs />

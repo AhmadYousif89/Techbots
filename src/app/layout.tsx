@@ -4,7 +4,7 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
+import { Footer } from '@/app/footer';
 
 const inter = Inter({
   subsets: ['latin']
