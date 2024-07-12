@@ -1,11 +1,13 @@
-'use client';
-
-import { Suspense, useEffect, useState } from 'react';
-import { Search } from 'lucide-react';
 import Image from 'next/image';
+import { Suspense } from 'react';
+import Link from 'next/link';
+
+import prisma from '@/lib/db';
+import { Search } from 'lucide-react';
+import { capitalizeString } from '@/lib/utils';
 
 import {
-  CommandDialog,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -13,104 +15,91 @@ import {
   CommandList
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { Category } from '../../_actions/actions';
-import { capitalizeString } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { SearchItemSkeleton } from '../skeletons/search_item_skeleton';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 type Data = {
   asin: string;
-  image: string;
   title: string;
+  mainImage: string;
   category: Category;
 };
-type SearchProductsProps = {
-  data: Data[];
-};
 
-export function SearchProducts({ data }: SearchProductsProps) {
-  const [open, setOpen] = useState(false);
-
-  const categories = [...new Set(data.map(i => i.category))];
-  const itemsByCategory = data.reduce((list, item) => {
-    list[item.category] = [...(list[item.category] ?? []), item];
-    return list;
-  }, {} as Record<Category, typeof data>);
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen(open => !open);
+export async function SearchProducts() {
+  let categories: Category[] = [];
+  let itemsByCategory: Record<string, Data[]> = {};
+  try {
+    const data = (await prisma.product.findMany({
+      select: {
+        asin: true,
+        title: true,
+        category: true,
+        mainImage: true
       }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
+    })) as Data[];
+
+    categories = [...new Set(data.map(i => i.category))];
+    itemsByCategory = data.reduce((list: Record<string, Data[]>, p) => {
+      const item: Data = {
+        asin: p.asin,
+        title: p.title,
+        mainImage: p.mainImage,
+        category: p.category as Category
+      };
+      list[p.category] = [...(list[p.category] ?? []), item];
+      return list;
+    }, {});
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch search data!');
+  }
 
   return (
-    <Button
-      title='search'
-      variant={'ghost'}
-      className='group size-auto p-0 aspect-square rounded-full ring-2 ring-input hover:bg-input'>
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder='Type something to search...' />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          {categories.map((category, i) => (
-            <Suspense key={i} fallback={<Skeleton className='w-20 h-2 bg-input' />}>
-              <CommandGroup
-                key={i + '-' + category}
-                className='pb-4'
-                heading={capitalizeString(category)}>
-                {itemsByCategory[category].map((item, i) => (
-                  <Suspense key={i} fallback={<SearchItemSkeleton />}>
-                    <RenderCommandItems item={item} setOpen={setOpen} />
-                  </Suspense>
-                ))}
-              </CommandGroup>
-            </Suspense>
-          ))}
-        </CommandList>
-      </CommandDialog>
-      <Search
-        strokeWidth={2.5}
-        className='size-6 p-1 text-muted-foreground'
-        onClick={() => setOpen(true)}
-      />
-    </Button>
-  );
-}
-
-function RenderCommandItems({
-  item,
-  setOpen
-}: {
-  item: Data;
-  setOpen: (open: boolean) => void;
-}) {
-  const router = useRouter();
-
-  return (
-    <CommandItem className='!p-0 my-2 cursor-pointer'>
-      <div
-        className='flex items-center gap-4'
-        onClick={() => {
-          setOpen(false);
-          router.push(`/products/${item.asin}`);
-        }}>
-        <Image
-          src={item.image}
-          alt={item.title}
-          width={48}
-          height={48}
-          className='size-12'
-        />
-        <p className='text-xs text-muted-foreground font-medium'>
-          {item.title.split(' ').slice(0, 8).join(' ')}
-        </p>
-      </div>
-    </CommandItem>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          title='search'
+          variant={'ghost'}
+          className='group size-auto p-0 aspect-square rounded-full ring-2 ring-input hover:bg-input'>
+          <Search strokeWidth={2.5} className='size-6 p-1 text-muted-foreground' />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='p-4'>
+        <Command>
+          <CommandInput placeholder='Type something to search...' />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            {categories.map((category, i) => (
+              <Suspense key={i} fallback={<Skeleton className='w-20 h-2 bg-input' />}>
+                <CommandGroup
+                  key={i + '-' + category}
+                  className='pb-4'
+                  heading={capitalizeString(category)}>
+                  {itemsByCategory[category].map((item, i) => (
+                    <CommandItem key={i} className='!p-0 my-2 cursor-pointer'>
+                      <Link
+                        href={`/products/${item.asin}?category=${item.category}`}
+                        className='flex items-center gap-4'>
+                        <Image
+                          src={item.mainImage}
+                          alt={item.title}
+                          width={48}
+                          height={48}
+                          className='size-12'
+                        />
+                        <p className='text-xs text-muted-foreground font-medium'>
+                          {item.title.split(' ').slice(0, 8).join(' ')}
+                        </p>
+                      </Link>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Suspense>
+            ))}
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }

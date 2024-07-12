@@ -1,6 +1,4 @@
-import { Product, Category, getColorList } from '@/app/products/_actions/actions';
 import { FilterContentCategory } from './filter_content_category';
-import { FilterContentColors } from './filter_content_color';
 import { FilterContentPrice } from './filter_content_price';
 import { Separator } from '@/components/ui/separator';
 import { SearchParams } from '@/lib/types';
