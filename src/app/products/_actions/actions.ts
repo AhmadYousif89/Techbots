@@ -3,29 +3,30 @@ import { SearchParams } from '@/lib/types';
 import { extractSearchParams } from '@/lib/utils';
 
 export const categories = [
-  'laptops',
-  'computers',
-  'cpu',
   'gaming-laptops',
+  'laptops',
   'accessories',
+  'cpu',
+  'computers',
   'gpu',
+  'monitors',
   'headphones',
   'powerbanks',
-  'monitors',
   'mobiles',
   'routers',
-  'watches'
+  'watches',
+  ''
 ] as const;
 export type Category = (typeof categories)[number];
-export type SortValue = 'popular' | 'newest' | 'lowest-price' | 'highest-price';
+export type SortValue = 'popular' | 'newest' | 'lowest-price' | 'highest-price' | '';
 
 export async function getProducts() {
-  const data = await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     include: { top_reviews: true, images: true },
     orderBy: { title: 'asc' }
   });
 
-  return data;
+  return products;
 }
 
 export type Product = Awaited<ReturnType<typeof getProducts>>[number] & {
@@ -36,43 +37,24 @@ export type Product = Awaited<ReturnType<typeof getProducts>>[number] & {
 export async function getProductByAsin(asin: string, searchParams: SearchParams) {
   const product = (await prisma.product.findUnique({
     where: { asin },
-    include: { top_reviews: true, images: true }
+    include: {
+      images: true
+    }
   })) as Product;
 
-  const { page, limit, selectedRating } = extractSearchParams(searchParams, '5');
+  if (!product) {
+    throw new Error(`Product with ASIN ${asin} not found`);
+  }
 
-  const reviews = product?.top_reviews ?? [];
-  const start = (+page - 1) * +limit;
-  const end = start + +limit;
-  let filteredReviews =
-    reviews && selectedRating
-      ? reviews.filter(review => review.rating === +selectedRating)
-      : reviews;
-  const totalPages = Math.ceil(filteredReviews.length / +limit);
-  const hasPrevPage = start > 0;
-  const hasNextPage = end < filteredReviews.length;
-  filteredReviews = filteredReviews.slice(start, end);
-
-  return {
-    product,
-    filteredReviews,
-    selectedRating,
-    page,
-    limit,
-    start,
-    end,
-    totalPages,
-    hasPrevPage,
-    hasNextPage
-  };
+  return product;
 }
 
 export async function getProductsByCategory(category: Category) {
-  const data = await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where: { category }
   });
 
-  return data as Product[];
+  return products as Product[];
 }
 
 export async function getColorList() {
@@ -83,7 +65,7 @@ export async function getColorList() {
 
 export async function searchProducts() {
   const products = (await getProducts()) as Product[];
-  const data = products.map(product => {
+  const results = products.map(product => {
     return {
       asin: product.asin,
       image: product.mainImage,
@@ -91,7 +73,7 @@ export async function searchProducts() {
       category: product.category
     };
   });
-  return data;
+  return results;
 }
 
 export async function getProductsByColor(color: string) {
@@ -104,49 +86,40 @@ export async function getSimilarProducts(category: Category, asin: string) {
   return products.filter(product => product.asin !== asin);
 }
 
-export async function getFilteredProducts(searchParams: {
-  [key: string]: string | Category | undefined;
-}) {
+type FilterProductsProps = {
+  searchParams: SearchParams;
+};
+
+export async function getFilteredProducts({ searchParams }: FilterProductsProps) {
   const { page, limit, category, sort } = extractSearchParams(searchParams);
-
-  let products = (await getProducts()) as Product[];
-  let totalProducts = products.length;
-
-  if (category) {
-    products = await getProductsByCategory(category);
-    totalProducts = products.length;
-  }
-  if (sort === 'popular') {
-    products = (await prisma.product.findMany({
-      orderBy: { rating: 'desc' }
-    })) as Product[];
-  } else if (sort === 'newest') {
-    products = (await prisma.product.findMany({
-      orderBy: { createdAt: 'desc' }
-    })) as Product[];
-  } else if (sort === 'lowest-price') {
-    products = (await prisma.product.findMany({
-      orderBy: { price: 'asc' }
-    })) as Product[];
-  } else if (sort === 'highest-price') {
-    products = (await prisma.product.findMany({
-      orderBy: { price: 'desc' }
-    })) as Product[];
-  }
-  // Handle products pagination
-  const totalPages = Math.ceil(totalProducts / +limit);
   const start = (+page - 1) * +limit;
   const end = start + +limit;
+
+  const sortOptions: { [key: string]: any } = {
+    popular: { rating: 'desc' },
+    newest: { createdAt: 'desc' },
+    'lowest-price': { price: 'asc' },
+    'highest-price': { price: 'desc' }
+  };
+
+  let products = await prisma.product.findMany({
+    where: category ? { category } : undefined,
+    orderBy: sortOptions[sort] ?? { brand: 'asc' },
+    take: +limit,
+    skip: start
+  });
+
+  const totalCount = await prisma.product.count();
+  const totalPages = Math.ceil(totalCount / +limit);
+  const hasNextPage = end < totalCount;
   const hasPrevPage = start > 0;
-  const hasNextPage = end < totalProducts;
-  const paginatedProducts = products.slice(start, end) as Product[];
 
   return {
-    category,
-    start,
     end,
-    totalProducts,
-    paginatedProducts,
+    start,
+    category,
+    totalCount,
+    products: products as Product[],
     hasPrevPage,
     hasNextPage,
     totalPages,
