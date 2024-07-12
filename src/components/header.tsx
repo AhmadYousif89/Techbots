@@ -44,7 +44,7 @@ export function Header() {
             </div>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger asChild className='hidden lg:flex'>
                 <div className='ring-1 ring-input rounded-full ring-offset-1 size-7 grid place-content-center cursor-pointer text-secondary bg-primary hover:bg-secondary hover:text-primary'>
                   <User className='size-6' />
                 </div>
