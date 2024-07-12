@@ -4,10 +4,6 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.pexels.com'
-      },
-      {
-        protocol: 'https',
         hostname: 'm.media-amazon.com'
       },
       {
@@ -17,10 +13,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com'
-      },
-      {
-        protocol: 'https',
-        hostname: 'staticg.sportskeeda.com'
       }
     ]
   }
