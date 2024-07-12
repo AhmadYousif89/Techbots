@@ -1,31 +1,30 @@
+import prisma from '@/lib/db';
 import { Suspense } from 'react';
+import { SearchParams } from '@/lib/types';
 import { cn, extractSearchParams } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
 import PaginationButton from '@/components/pagination_button';
-import { GridItemSkeleton } from './skeletons/grid_item_skeleton';
-import { SearchParams } from '@/lib/types';
-import { Product } from '../_actions/actions';
+import { GridItemsSkeleton } from './skeletons/grid_item_skeleton';
+import { Product, getFilteredProducts, getProducts } from '../_actions/actions';
 
 type ProductGridProps = {
-  products: Product[];
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  totalPages: number;
   searchParams: SearchParams;
 };
 
-export function ProductGrid({
-  products,
-  totalPages,
-  hasNextPage,
-  hasPrevPage,
-  searchParams
-}: ProductGridProps) {
-  const { page, category, grid, limit, sort } = extractSearchParams(searchParams);
-  const params = new URLSearchParams({ limit, category, sort, grid });
+export async function ProductGrid({ searchParams }: ProductGridProps) {
+  const { page, limit, category, sort, min, max, grid } =
+    extractSearchParams(searchParams);
+
+  const totalCount = await prisma.product.count();
+  const totalPages = Math.ceil(totalCount / +limit);
+  const start = (+page - 1) * +limit;
+  const end = start + +limit;
+  const hasNextPage = end < totalCount;
+  const hasPrevPage = start > 0;
+  const params = new URLSearchParams({ limit, category, sort, min, max, grid });
 
   return (
     <section
@@ -41,7 +40,7 @@ export function ProductGrid({
       )}>
       <div className='flex items-center col-span-full'>
         <ProductGridSize />
-        <div className='flex items-center gap-4 ml-auto'>
+        <div className='flex items-center justify-center gap-4 ml-auto'>
           <PaginationButton
             className='size-7'
             elementId='reviews'
@@ -62,15 +61,24 @@ export function ProductGrid({
         </div>
       </div>
 
-      {products.map((product, index) => (
-        <Suspense key={product.asin + index} fallback={<GridItemSkeleton />}>
-          <ProductGridItem
-            key={product.asin}
-            product={product}
-            searchParams={searchParams}
-          />
-        </Suspense>
-      ))}
+      <Suspense fallback={<GridItemsSkeleton />}>
+        <DisplayProductsGrid searchParams={searchParams} />
+      </Suspense>
     </section>
+  );
+}
+
+async function DisplayProductsGrid({ searchParams }: { searchParams: SearchParams }) {
+  const { products } = await getFilteredProducts({ searchParams });
+  return (
+    <>
+      {products.map((product, index) => (
+        <ProductGridItem
+          key={product.asin + index}
+          searchParams={searchParams}
+          product={product}
+        />
+      ))}
+    </>
   );
 }
