@@ -1,4 +1,9 @@
 'use client';
+import Link from 'next/link';
+import { Logo } from './logo';
+import { useSideMenuState } from '@/lib/store';
+import { capitalizeString } from '@/lib/utils';
+import { SignOutButton, UserButton } from '@clerk/nextjs';
 
 import {
   Sheet,
@@ -8,21 +13,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger
-} from '@/components/ui/sheet';
-import { Button } from './ui/button';
-import { Separator } from './ui/separator';
-import { Logo } from './logo';
-import Link from 'next/link';
-import { AuthButtons } from './auth/auth_buttons';
+} from './ui/sheet';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from './ui/accordion';
-import { useSideMenuState } from '@/lib/store';
-import { SignOutButton, UserButton } from '@clerk/nextjs';
-import { capitalizeString } from '@/lib/utils';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
+import { AuthButtons } from './auth_buttons';
 import { categories } from '@/app/products/_actions/actions';
 
 export function SideMenu() {
@@ -33,17 +33,16 @@ export function SideMenu() {
       <SheetTrigger asChild>
         <Button
           size={'sm'}
-          variant={'secondary'}
-          className='size-7 p-1 rounded-full bg-zinc-100 lg:hidden'>
+          className='size-7 p-1 bg-primary hover:bg-secondary hover:ring-primary *:hover:stroke-primary ring-2 ring-input lg:hidden transition-all'>
           <svg
-            className='size-[20px] stroke-foreground'
+            className='size-[20px] stroke-background'
             fill='none'
             viewBox='0 0 24 24'
             xmlns='http://www.w3.org/2000/svg'>
             <path
               strokeLinecap='round'
               strokeLinejoin='round'
-              strokeWidth={3}
+              strokeWidth={2}
               d='M4 6h16M4 12h16m-7 6h7'
             />
           </svg>
