@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { Heart, Info } from 'lucide-react';
 
 import { Button } from '../ui/button';
 import { useLocalStorage } from '../hooks/use_local_storage';
 
 type AddToWishlistButtonProps = {
-  product: Product;
+  product: TProduct;
   className?: string;
   logoSize?: number;
 };
@@ -21,10 +21,10 @@ export function AddToWishlistButton({
   logoSize = 24
 }: AddToWishlistButtonProps) {
   const [item, setItem] = useState('');
-  const [wishlist, setWishlist] = useLocalStorage<Product[]>('wishlist', []);
+  const [wishlist, setWishlist] = useLocalStorage<TProduct[]>('wishlist', []);
 
   useEffect(() => {
-    const wishItem = wishlist.find((item: Product) => item.asin === product.asin);
+    const wishItem = wishlist.find((item: TProduct) => item.asin === product.asin);
     if (wishItem) {
       setItem(wishItem.brand);
     } else {
