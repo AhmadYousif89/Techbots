@@ -1,7 +1,6 @@
 'use client';
 
 import { ChangeEventHandler, useState } from 'react';
-import { Product } from '@/app/products/_actions/actions';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Input } from '@/components/ui/input';
@@ -9,9 +8,7 @@ import { extractSearchParams } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useFilterContentState } from '@/lib/store';
 
-type Props = { products: Product[] };
-
-export function FilterContentPrice({ products }: Props) {
+export function FilterContentPrice() {
   const router = useRouter();
   const [min, setMin] = useState('');
   const [max, setMax] = useState('');

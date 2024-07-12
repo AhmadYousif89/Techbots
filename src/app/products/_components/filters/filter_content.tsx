@@ -1,13 +1,8 @@
+import { Product, Category, getColorList } from '@/app/products/_actions/actions';
 import { FilterContentCategory } from './filter_content_category';
 import { FilterContentColors } from './filter_content_color';
 import { FilterContentPrice } from './filter_content_price';
 import { Separator } from '@/components/ui/separator';
-import {
-  Product,
-  Category,
-  getFilteredProducts,
-  getColorList
-} from '@/app/products/_actions/actions';
 import { SearchParams } from '@/lib/types';
 
 type FilterContentProps = {
@@ -15,8 +10,7 @@ type FilterContentProps = {
 };
 
 export async function FilterContent({ searchParams }: FilterContentProps) {
-  const { paginatedProducts: products } = await getFilteredProducts(searchParams);
-  const colors = await getColorList();
+  // const colors = await getColorList();
 
   return (
     <div className='p-4'>
@@ -30,14 +24,14 @@ export async function FilterContent({ searchParams }: FilterContentProps) {
 
         {/* Colors */}
         <section className='mb-8 mt-4 sm:mt-0 sm:ml-[10%] sm:col-[2] sm:row-[1]'>
-          <FilterContentColors colors={colors} />
+          {/* <FilterContentColors colors={colors} /> */}
         </section>
 
         <Separator className='col-span-full lg:w-px lg:h-auto lg:col-[3] lg:row-[1]' />
 
         {/* Price */}
         <section className='mb-8 mt-4 lg:mt-0 lg:ml-[10%] col-[1] lg:col-[3] lg:row-[1]'>
-          <FilterContentPrice products={products} />
+          <FilterContentPrice />
         </section>
       </div>
     </div>

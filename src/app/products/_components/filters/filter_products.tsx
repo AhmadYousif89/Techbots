@@ -27,7 +27,7 @@ type FilterProductsProps = {
 };
 
 export async function FilterProducts({ searchParams }: FilterProductsProps) {
-  const data = await searchProducts();
+  // const data = await searchProducts();
   const cf = searchParams['cf'];
 
   return (
@@ -59,7 +59,7 @@ export async function FilterProducts({ searchParams }: FilterProductsProps) {
 
         <div className='absolute right-0 md:right-2 top-[14px]'>
           <div className='flex items-center gap-4'>
-            <SearchProducts data={data} />
+            {/* <SearchProducts data={data} /> */}
             <SortProducts />
           </div>
         </div>
