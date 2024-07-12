@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart, HeartCrack } from 'lucide-react';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 
 import {
   Drawer,
@@ -33,7 +33,7 @@ import { ProductThumbnail } from '@/app/products/_components/product_thumpnail';
 
 export function WishListMenu() {
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [wishlistItems, _, removeWishlist] = useLocalStorage<Product[]>('wishlist', []);
+  const [wishlistItems, _, removeWishlist] = useLocalStorage<TProduct[]>('wishlist', []);
   const { isOpen, setIsOpen } = useWishlistMenuState();
   const isMounted = useIsMounted();
   let wishlistCount = 0;
@@ -43,10 +43,10 @@ export function WishListMenu() {
   }
 
   const WishListButton = (
-    <Button className='relative ring-1 ring-input rounded-full ring-offset-1 size-7 p-1 hover:bg-background'>
+    <Button className='relative ring-2 ring-input hover:ring-primary size-7 p-1 hover:bg-background transition-all'>
       <Heart className='fill-background stroke-primary' />
-      <span className='absolute -top-3 -left-3 grid place-content-center rounded-full aspect-square size-5 bg-destructive ring-1 ring-background text-secondary text-xs font-semibold'>
-        {wishlistCount}
+      <span className='absolute -top-3 -left-3 grid place-content-center rounded-full aspect-square size-5 bg-destructive ring-1 ring-background text-secondary text-[9px] font-semibold'>
+        {wishlistCount > 99 ? '99+' : wishlistCount}
       </span>
     </Button>
   );
@@ -133,7 +133,7 @@ export function WishListMenu() {
 }
 
 function WishlistItems() {
-  const [wishlistItems] = useLocalStorage<Product[]>('wishlist', []);
+  const [wishlistItems] = useLocalStorage<TProduct[]>('wishlist', []);
 
   return (
     <section className='grid sm:flex sm:flex-col gap-4 overflow-auto max-h-96 sm:max-h-screen p-4 sm:px-0'>
