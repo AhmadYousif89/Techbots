@@ -35,20 +35,20 @@ export function CartMenu() {
   const router = useRouter();
   const { isOpen, setIsOpen } = useCartMenuState();
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [cartItems, setCart, removeCart] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCart, removeCart] = useLocalStorage<Product[]>('cart', []);
   const isMounted = useIsMounted();
   let cartCount = 0;
 
   if (isMounted()) {
-    cartCount = cartItems.length;
+    cartCount = cart.length;
   }
 
   const cartButton = (
     <Button className='relative ring-1 ring-input rounded-full ring-offset-1 size-7 p-0 hover:bg-background'>
       <ShoppingBag size={18} className='fill-background stroke-primary' />
-      {/* <span className='absolute -top-2 -left-2 grid place-content-center rounded-full aspect-square size-6 bg-destructive text-secondary text-xs font-semibold'>
+      <span className='absolute -top-3 -left-3 grid place-content-center rounded-full aspect-square size-5 bg-destructive ring-1 ring-background text-secondary text-xs font-semibold'>
         {cartCount}
-      </span> */}
+      </span>
     </Button>
   );
 
@@ -73,33 +73,39 @@ export function CartMenu() {
     </>
   );
 
+  const deleteAllButton = (
+    <Button
+      variant={'link'}
+      onClick={() => removeCart()}
+      className='w-full py-1 pb-2 px-3 mb-2 h-auto rounded self-center text-destructive hover:bg-destructive/20'>
+      Delete all
+    </Button>
+  );
+
   if (isNotMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{cartButton}</SheetTrigger>
-        <SheetContent className='grid grid-rows-[auto,1fr,auto]'>
+        <SheetContent className='grid grid-rows-[auto,1fr,auto] min-w-[450px]'>
           <SheetHeader className='mt-8'>
             <SheetTitle className='flex items-center justify-center gap-4 text-2xl'>
               Cart Items <ShoppingBag />
             </SheetTitle>
             <SheetDescription className='text-center'>{cartDescription}</SheetDescription>
-            {cartCount > 0 && (
-              <Button
-                variant={'link'}
-                onClick={() => removeCart()}
-                className='w-fit py-1 pb-2 px-3 h-auto rounded self-center text-destructive hover:bg-destructive/20'>
-                Delete all
-              </Button>
-            )}
+            {cartCount > 0 && deleteAllButton}
           </SheetHeader>
           {cartCount === 0 ? (
             <section className='grid justify-center items-center'>
-              <Slash strokeWidth={1} className='w-64 h-64'>
+              <Slash strokeWidth={1} className='w-52 h-52'>
                 <ShoppingCart strokeWidth={1} className='text-muted-foreground' />
               </Slash>
             </section>
           ) : (
-            <CartItems />
+            <section className='flex flex-col gap-4 overflow-auto py-4 px-4'>
+              {cart.map(item => (
+                <ProductThumbnail product={item} key={item.asin} type='cart' />
+              ))}
+            </section>
           )}
           <SheetFooter className='flex gap-4 sm:flex-col sm:space-x-0'>
             <SheetClose asChild>{cartMenuButton}</SheetClose>
@@ -112,13 +118,14 @@ export function CartMenu() {
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{cartButton}</DrawerTrigger>
-      <DrawerContent className='space-y-4'>
+      <DrawerContent className='max-w-[450px] mx-auto px-4'>
         <DrawerHeader>
-          <DrawerTitle className='flex items-center justify-center gap-4 text-2xl'>
-            Cart Items <ShoppingBag />
+          <DrawerTitle className='flex items-center justify-center gap-4 text-xl mb-2'>
+            Cart Items <ShoppingBag className='size-5' />
           </DrawerTitle>
           <DrawerDescription>{cartDescription}</DrawerDescription>
         </DrawerHeader>
+        {cartCount > 0 && deleteAllButton}
         {cartCount === 0 ? (
           <section className='grid justify-center'>
             <Slash strokeWidth={1} className='w-32 h-32'>
@@ -126,24 +133,16 @@ export function CartMenu() {
             </Slash>
           </section>
         ) : (
-          <CartItems />
+          <section className='flex flex-col gap-4 overflow-auto max-h-96 py-4 px-4'>
+            {cart.map(item => (
+              <ProductThumbnail product={item} key={item.asin} type='cart' />
+            ))}
+          </section>
         )}
         <DrawerFooter>
           <DrawerClose asChild>{cartMenuButton}</DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  );
-}
-
-function CartItems() {
-  const [cart] = useLocalStorage<Product[]>('cart', []);
-
-  return (
-    <section className='flex flex-col gap-4 overflow-y-auto py-4 px-4'>
-      {cart.map(item => (
-        <ProductThumbnail product={item} key={item.asin} type='cart' />
-      ))}
-    </section>
   );
 }
