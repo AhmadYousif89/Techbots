@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
 import { useMediaQuery } from '@/components/hooks/use_media_query';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
@@ -35,7 +35,7 @@ export function CartMenu() {
   const router = useRouter();
   const { isOpen, setIsOpen } = useCartMenuState();
   const isNotMobile = useMediaQuery('(min-width: 639px');
-  const [cart, setCart, removeCart] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCart, removeCart] = useLocalStorage<TProduct[]>('cart', []);
   const isMounted = useIsMounted();
   let cartCount = 0;
 
@@ -44,10 +44,10 @@ export function CartMenu() {
   }
 
   const cartButton = (
-    <Button className='relative ring-1 ring-input rounded-full ring-offset-1 size-7 p-0 hover:bg-background'>
+    <Button className='relative ring-2 ring-input hover:ring-primary size-7 p-0 hover:bg-background transition-all'>
       <ShoppingBag size={18} className='fill-background stroke-primary' />
-      <span className='absolute -top-3 -left-3 grid place-content-center rounded-full aspect-square size-5 bg-destructive ring-1 ring-background text-secondary text-xs font-semibold'>
-        {cartCount}
+      <span className='absolute -top-3 -left-3 grid place-content-center rounded-full aspect-square size-5 bg-destructive ring-1 ring-background text-secondary text-[9px] font-semibold'>
+        {cartCount > 99 ? '99+' : cartCount}
       </span>
     </Button>
   );

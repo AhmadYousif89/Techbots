@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { getCartCount, getCartTotal } from '@/lib/utils';
 import { z } from 'zod';
 
@@ -54,7 +54,7 @@ const initTouchState = {
 export type Order = {
   id: string;
   userId: string;
-  items: Partial<Product>[]; //  { asin: BSKXOZA23, quantity: 1 }
+  items: Partial<TProduct>[]; //  { asin: BSKXOZA23, quantity: 1 }
   shippingInfo: ShippingForm;
   total: number;
 };
@@ -63,7 +63,7 @@ type ShippingFormKeys = keyof ShippingForm;
 export function CartShippingView() {
   const router = useRouter();
   const { userId } = useAuth();
-  const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
   const [hasOrder, setHasOrder] = useLocalStorage('hasOrder', false);
   const { data, setFormData } = useShippingFormStore();
   const [touchState, setTouchState] =

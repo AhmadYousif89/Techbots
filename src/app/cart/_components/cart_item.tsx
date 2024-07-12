@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { Info, Minus, Plus, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/dialog';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
 
-export function CartItem({ product }: { product: Product }) {
-  const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
+export function CartItem({ product }: { product: TProduct }) {
+  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
   const currentProduct = cart.find(item => item.asin === product.asin);
 
   if (!currentProduct) {
@@ -137,7 +137,7 @@ export function CartItem({ product }: { product: Product }) {
 
 type DeleteCartItemsProps = {
   action?: 'deleteOne' | 'deleteAll';
-  product: Product;
+  product: TProduct;
   deleteItemNotification: JSX.Element;
 };
 
@@ -147,7 +147,7 @@ function DeleteCartItems({
   deleteItemNotification
 }: DeleteCartItemsProps) {
   const [dialogIsOpen, setDialogState] = useState(false);
-  const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
   const isMounted = useIsMounted();
   let cartCount = 0;
 

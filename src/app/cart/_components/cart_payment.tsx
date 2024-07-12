@@ -13,14 +13,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import { Order } from './cart_shipping';
 import { useShippingFormStore } from '../_store/shipping_form';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { useEffect } from 'react';
 
 export function CartPaymentView() {
   const router = useRouter();
   const { userId } = useAuth();
   const params = useSearchParams();
-  const [cart, setCart] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
   const [orders, setOrder] = useLocalStorage<Order[]>('order', []);
   const [hasOrder, setHasOrder] = useLocalStorage('hasOrder', false);
   const { data, setFormData } = useShippingFormStore();

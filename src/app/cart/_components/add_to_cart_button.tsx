@@ -10,10 +10,10 @@ import { Button } from '@/components/ui/button';
 import type { ButtonProps } from '@/components/ui/button';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 
 type AddToCartButtonProps = {
-  product: Product;
+  product: TProduct;
   forceRedirect?: string;
   action?: 'addToCart' | 'BuyNow';
 } & ButtonProps;
@@ -28,7 +28,7 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const router = useRouter();
   const isMounted = useIsMounted();
-  const [cart, setCartItem] = useLocalStorage<Product[]>('cart', []);
+  const [cart, setCartItem] = useLocalStorage<TProduct[]>('cart', []);
 
   const cartItem = cart.find(item => item.asin === product.asin);
   let textContent: React.ReactNode = action === 'addToCart' ? 'Add to cart' : 'Buy now';

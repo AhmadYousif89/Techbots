@@ -23,7 +23,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
-import { Product } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_actions/actions';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
 
 export function CartListView({ setNextTab }: { setNextTab: (value: string) => void }) {
@@ -31,7 +31,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
   const params = useSearchParams();
   const [couponValue, setCouponValue] = useState('');
   const [isInvalidCoupon, setIsInvalidCoupon] = useState(false);
-  const [cart] = useLocalStorage<Product[]>('cart', []);
+  const [cart] = useLocalStorage<TProduct[]>('cart', []);
   const total = getCartTotal(cart);
   const isMounted = useIsMounted();
 
