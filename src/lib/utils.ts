@@ -8,6 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function capitalizeString(str: string) {
+  if (!str) return '';
   return str[0].toUpperCase().concat(str.slice(1).replace('-', ' '));
 }
 
@@ -26,7 +27,7 @@ export function getCartCount(cart: Product[]) {
 
 export function extractSearchParams(
   searchParams: SearchParams | IterableIterator<[string, string]>,
-  customLimit: string = '8'
+  customLimit = '8'
 ) {
   let params: { [key: string]: any } = {};
 
@@ -37,20 +38,24 @@ export function extractSearchParams(
   } else {
     params = searchParams;
   }
-  const page = params['page'] ?? '1';
-  const limit = params['limit'] ?? customLimit;
-  const category = (params['category'] as Category) ?? '';
-  const sort = (params['sort'] as SortValue) ?? '';
-  const grid = params['grid'] ?? '';
-  const selectedRating = params['filterByRating'] ?? '';
-  const min = params['min'] ?? '';
-  const max = params['max'] ?? '';
 
-  return { page, limit, category, sort, grid, selectedRating, min, max };
-}
+  let result = {
+    page: '1',
+    limit: customLimit,
+    category: '' as Category,
+    sort: '' as SortValue,
+    grid: '4',
+    selectedRating: '',
+    min: '',
+    max: ''
+  };
+  type Result = typeof result;
 
-export function convertPriceString(price: string) {
-  let numericPrice = price.replace('$', '');
-  numericPrice = numericPrice.replace(/,/g, '');
-  return parseFloat(numericPrice);
+  for (const key in params) {
+    if (Object.prototype.hasOwnProperty.call(params, key)) {
+      result[key as keyof Result] = params[key];
+    }
+  }
+
+  return result;
 }
