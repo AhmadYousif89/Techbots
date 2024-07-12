@@ -1,15 +1,15 @@
 export const featuredProducts = [
   {
-    id: 3001,
-    name: 'Sony Wireless Headphones',
+    id: 1,
+    name: 'Bose QuietComfort Ultra',
     description: 'Discover the latest HQ headphones',
-    price: '$150.00',
-    buttonTitle: 'Browse Deals',
+    price: '$429.00',
+    buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/G951N5B/highlights-One.webp',
-    url: '/products?category=headphones'
+    url: '/products/B0CCZ1L489?category=headphones'
   },
   {
-    id: 3002,
+    id: 2,
     name: 'Colorful Redmi Note 6 Pro',
     description: 'Shop the latest mobiles flagship',
     price: '$330.00',
@@ -18,7 +18,7 @@ export const featuredProducts = [
     url: '/products?category=mobiles'
   },
   {
-    id: 3003,
+    id: 3,
     name: '10000 mAh Power Bank',
     description: 'High quality power banks',
     price: '$90.00',
