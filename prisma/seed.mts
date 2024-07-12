@@ -13,8 +13,10 @@ const ratingDetailSchema = z.object({
 
 const imageSchema = z.object({
   link: z.string(),
-  variant: z.string().nullish()
+  variant: z.string()
 });
+
+type Image = z.infer<typeof imageSchema>;
 
 const mainImageSchema = z.object({
   link: z.string()
@@ -60,6 +62,8 @@ const reviewSchema = z.object({
   is_global_review: z.boolean()
 });
 
+type Review = z.infer<typeof reviewSchema>;
+
 const productSchema = z.object({
   asin: z.string(),
   title: z.string(),
@@ -93,9 +97,9 @@ export type Product = z.infer<typeof productSchema>;
 const path = './data/products.json';
 
 async function main() {
-  const data = JSON.parse(readFileSync(path, 'utf8')) as Product[];
+  const data = JSON.parse(readFileSync(path, 'utf8'));
 
-  for (const product of data.slice(8, -1)) {
+  for (const product of data) {
     try {
       productSchema.parse(product); // Validate the product data
       const existingProduct = await prisma.product.findUnique({
@@ -107,55 +111,52 @@ async function main() {
         continue;
       }
 
-      // Seed Product
-      const createdProduct = await prisma.product.create({
-        data: {
-          asin: product.asin,
-          title: product.title,
-          brand: product.brand,
-          color: product.color,
-          price: product.price,
-          mainImage: product.main_image.link,
-          category: product.category,
-          description: product.description,
-          rating: product.rating,
-          ratingsTotal: product.ratings_total,
-          imagesCount: product.images_count,
-          specificationsFlat: product.specifications_flat,
-          featureBulletsFlat: product.feature_bullets_flat,
-          stockQuantity: product.stock_quantity,
-          ratingBreakdown: product.rating_breakdown
-        }
-      });
-
-      // Seed Other Product Images
-      for (const image of product.images) {
-        await prisma.image.create({
+      await prisma.$transaction([
+        prisma.product.create({
           data: {
-            link: image.link,
-            variant: image.variant,
-            productId: createdProduct.id
+            asin: product.asin,
+            title: product.title,
+            brand: product.brand,
+            color: product.color,
+            price: product.price,
+            mainImage: product.main_image.link,
+            category: product.category,
+            description: product.description,
+            rating: product.rating,
+            ratingsTotal: product.ratings_total,
+            imagesCount: product.images_count,
+            specificationsFlat: product.specifications_flat,
+            featureBulletsFlat: product.feature_bullets_flat,
+            stockQuantity: product.stock_quantity,
+            ratingBreakdown: product.rating_breakdown
           }
-        });
-      }
-
-      // Seed Top Reviews and related Review Images and Profile
-      for (const review of product.top_reviews) {
-        await prisma.review.create({
-          data: {
-            title: review.title,
-            body: review.body,
-            asin: review.asin,
-            bodyHtml: review.body_html,
-            link: review.link,
-            rating: review.rating,
-            date: review.date,
-            profile: review.profile ?? undefined,
-            reviewCountry: review.review_country,
-            productId: createdProduct.id
-          }
-        });
-      }
+        }),
+        ...product.images.map((image: Image) =>
+          prisma.image.create({
+            data: {
+              link: image.link,
+              variant: image.variant,
+              productAsin: product.asin
+            }
+          })
+        ),
+        ...product.top_reviews.map((review: Review) =>
+          prisma.review.create({
+            data: {
+              title: review.title,
+              body: review.body,
+              asin: review.asin,
+              bodyHtml: review.body_html,
+              link: review.link,
+              rating: review.rating,
+              date: review.date,
+              profile: review.profile ?? undefined,
+              reviewCountry: review.review_country,
+              productId: product.id
+            }
+          })
+        )
+      ]);
 
       console.log(`Product with asin ${product.asin} seeded successfully.`);
     } catch (error) {
@@ -170,7 +171,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    // print the total number of products
     const totalProducts = await prisma.product.count();
     console.log(`Total products: ${totalProducts}`);
     await prisma.$disconnect();

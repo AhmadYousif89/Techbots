@@ -87,14 +87,14 @@ model Product {
 }
 
 model Image {
-  id        String   @id @default(cuid())
-  link      String
-  variant   String?
-  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  productId String?
-  Review    Review?  @relation(fields: [reviewId], references: [id], onDelete: SetNull)
-  reviewId  String?
-  createdAt DateTime @default(now()) @map("created_at")
+  id          String   @id @default(cuid())
+  link        String
+  variant     String?
+  product     Product? @relation(fields: [productAsin], references: [asin], onDelete: SetNull)
+  productAsin String?
+  Review      Review?  @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+  reviewId    String?
+  createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("images")
 }
