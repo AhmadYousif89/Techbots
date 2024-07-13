@@ -1,8 +1,8 @@
 import prisma from '@/lib/db';
-import { ChevronLeft, ChevronRight, CircleUserRound } from 'lucide-react';
-
-import { AddReview } from './add_review';
-import { RatingStars } from './rating_stars';
+import { notFound } from 'next/navigation';
+import { TProduct } from '@/app/products/_lib/types';
+import { extractSearchParams } from '@/app/products/_lib/utils';
+import { RatingBreakdown, SearchParams } from '@/app/products/_lib/types';
 
 import {
   Card,
@@ -11,21 +11,16 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { TProduct } from '../../_actions/actions';
-import { extractSearchParams } from '@/lib/utils';
+import { AddReview } from './add_review';
+import { ReviewItem } from './review_item';
+import { RatingStars } from './rating_stars';
 import { ReviewsRatingBars } from './rating_bars';
-import { PaginationSection } from './paginated_reviews';
-import { RatingBreakdown, ReviewDate, ReviewProfile, SearchParams } from '@/lib/types';
+import { ReviewsPaginationButtons } from './pagination_buttons';
 
 type ProductReviewsProps = {
   asin: string;
   searchParams: SearchParams;
 };
-
-type ProductReview = Pick<
-  TProduct,
-  'asin' | 'rating' | 'ratingsTotal' | 'ratingBreakdown'
->;
 
 export async function ProductReviews({ asin, searchParams }: ProductReviewsProps) {
   const { page, limit, selectedRating } = extractSearchParams(searchParams, '5');
@@ -37,7 +32,6 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
     orderBy: { date: 'desc' },
     include: {
       product: {
-        where: { asin },
         select: { asin: true, rating: true, ratingsTotal: true, ratingBreakdown: true }
       }
     },
@@ -45,18 +39,18 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
     take: +limit
   });
 
-  const totalReviews = await prisma.review.count({
-    where: { asin, rating: selectedRating ? +selectedRating : undefined }
-  });
-  const totalPages = Math.ceil(totalReviews / +limit);
-  const hasNextPage = end < totalReviews;
+  // const reviewsCount = await prisma.review.count({
+  //   where: { asin, rating: selectedRating ? +selectedRating : undefined }
+  // });
+  const reviewsCount = reviews.length;
+  const totalPages = Math.ceil(reviewsCount / +limit);
+  const hasNextPage = end < reviewsCount;
   const hasPrevPage = start > 0;
 
-  if (!reviews) throw new Error(`Reviews for product with ASIN ${asin} not found!`);
-  const product = reviews[0]?.product;
-  if (!product) throw new Error(`Product with ASIN ${asin} not found!`);
+  const product = reviews[0].product;
+  if (!product) return notFound();
 
-  const ratingsTotal = product?.ratingsTotal ?? 0;
+  const ratingsTotal = product.ratingsTotal;
 
   if (ratingsTotal === 0 || reviews.length === 0) {
     return (
@@ -87,7 +81,7 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
 
       <Card className='p-6 flex-1 lg:basis-full'>
         <div className='space-y-8'>
-          <PaginationSection
+          <ReviewsPaginationButtons
             asin={asin}
             hasPrevPage={hasPrevPage}
             hasNextPage={hasNextPage}
@@ -96,42 +90,9 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
 
           {content && <CardContent>{content}</CardContent>}
 
-          {reviews.map((review, index) => {
-            let reviewer;
-            let time = 'a few moments ago';
-            if (review.profile && typeof review.profile === 'object') {
-              const profile = review.profile as ReviewProfile;
-              reviewer = profile.name ?? 'Anonymous';
-            }
-            if (review.date && typeof review.date === 'object') {
-              const date = review.date as ReviewDate;
-              time = date.utc;
-            }
-
-            return (
-              <article key={index} className='space-y-2'>
-                <div className='flex flex-col'>
-                  <CardHeader className='flex-row p-0 gap-4'>
-                    <CircleUserRound strokeWidth={1} size={40} className='my-auto' />
-                    <div className=''>
-                      <h4 className='text-sm font-medium col-[2] row-[1]'>{reviewer}</h4>
-                      <p className='text-xs text-muted-foreground font-medium mt-1 row-[1] col-[2]'>
-                        {new Date(time).toLocaleString()}
-                      </p>
-                      <RatingStars
-                        size='sm'
-                        productRating={review.rating}
-                        showTotalReviews={false}
-                      />
-                    </div>
-                  </CardHeader>
-                </div>
-                <CardContent className='text-muted-foreground'>
-                  {review.body.split('Read')[0]}
-                </CardContent>
-              </article>
-            );
-          })}
+          {reviews.map(review => (
+            <ReviewItem key={review.id} {...review} />
+          ))}
         </div>
         <CardFooter className='p-6 px-0'>
           <AddReview product={product} />
@@ -141,6 +102,10 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
   );
 }
 
+type ProductReview = Pick<
+  TProduct,
+  'asin' | 'rating' | 'ratingsTotal' | 'ratingBreakdown'
+>;
 type RatingOverviewProps = { product: ProductReview; searchParams: SearchParams };
 
 function RatingOverview({ product, searchParams }: RatingOverviewProps) {

@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { RatingBreakdown, RatingDetails } from '@/lib/types';
+import { RatingBreakdown, RatingDetails } from '@/app/products/_lib/types';
 
 import {
   Tooltip,
@@ -11,7 +11,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { extractSearchParams } from '@/lib/utils';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 
 type ReviewsRatingBarsProps = {
   asin: string;

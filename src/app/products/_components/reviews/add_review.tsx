@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { Ban, CheckSquare, Star } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { TProduct } from '../../_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 
 export function AddReview({ product }: { product: Partial<TProduct> }) {
   const [open, setOpen] = useState(false);
