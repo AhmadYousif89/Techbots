@@ -23,7 +23,7 @@ export function Header() {
 
   return (
     <header className='sticky top-0 z-20 h-20 px-8 bg-foreground/85 backdrop-blur-sm'>
-      <div className='flex items-center justify-between max-w-screen-xl h-full mx-auto'>
+      <div className='flex items-center justify-between max-w-screen-xl h-full mx-auto lg:border-b'>
         <SideMenu />
         <Logo />
         <MainNav />
