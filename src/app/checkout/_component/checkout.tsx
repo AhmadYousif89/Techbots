@@ -8,8 +8,8 @@ import {
   useStripe
 } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { TProduct } from '@/app/products/_actions/actions';
-import { SearchParams } from '@/lib/types';
+import { TProduct } from '@/app/products/_lib/types';
+import { SearchParams } from '@/app/products/_lib/types';
 import { Separator } from '@/components/ui/separator';
 import {
   Card,

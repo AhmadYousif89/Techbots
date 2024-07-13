@@ -1,6 +1,6 @@
-import { SearchParams } from '@/lib/types';
+import { SearchParams } from '@/app/products/_lib/types';
 import { Checkout } from '../_component/checkout';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 import prisma from '@/lib/db';
 import Stripe from 'stripe';
 

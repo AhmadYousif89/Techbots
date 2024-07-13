@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
-import { SearchParams } from '@/lib/types';
+import { SearchParams } from '@/app/products/_lib/types';
 
 import {
   Card,
