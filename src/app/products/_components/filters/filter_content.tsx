@@ -1,7 +1,7 @@
-import { FilterContentCategory } from './filter_content_category';
-import { FilterContentPrice } from './filter_content_price';
 import { Separator } from '@/components/ui/separator';
-import { SearchParams } from '@/lib/types';
+import { SearchParams } from '@/app/products/_lib/types';
+import { FilterContentPrice } from './filter_content_price';
+import { FilterContentCategory } from './filter_content_category';
 
 type FilterContentProps = {
   searchParams: SearchParams;

@@ -15,7 +15,7 @@ import {
   CommandList
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Category } from '../../_actions/actions';
+import { Category } from '@/app/products/_lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 

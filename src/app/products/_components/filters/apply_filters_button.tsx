@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { extractSearchParams } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
+import { extractSearchParams } from '@/app/products/_lib/utils';
+import { Button } from '@/components/ui/button';
 
 export function ApplyFiltersButton() {
   const params = useSearchParams();

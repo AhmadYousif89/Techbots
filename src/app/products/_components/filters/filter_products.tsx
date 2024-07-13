@@ -1,5 +1,6 @@
-import { SearchParams } from '@/lib/types';
 import { Filter, Search } from 'lucide-react';
+import { SearchParams } from '@/app/products/_lib/types';
+
 import { SortProducts } from './sort_products';
 import { FilterContent } from './filter_content';
 import { SearchProducts } from './search_products';

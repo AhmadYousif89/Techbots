@@ -1,4 +1,6 @@
 'use client';
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   Select,
@@ -7,10 +9,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import { SortValue } from '../../_actions/actions';
-import { extractSearchParams } from '@/lib/utils';
+import { SortValue } from '@/app/products/_lib/types';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 
 export function SortProducts() {
   const router = useRouter();

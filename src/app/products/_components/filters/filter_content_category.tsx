@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { capitalizeString } from '@/lib/utils';
-import { categories } from '@/app/products/_actions/actions';
+import { categories } from '@/app/products/_lib/types';
 
 export async function FilterContentCategory() {
   return (

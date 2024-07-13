@@ -2,11 +2,11 @@
 
 import { ChangeEventHandler, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { extractSearchParams } from '@/app/products/_lib/utils';
+import { useFilterContentState } from '@/lib/store';
 
 import { Input } from '@/components/ui/input';
-import { extractSearchParams } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useFilterContentState } from '@/lib/store';
 
 export function FilterContentPrice() {
   const router = useRouter();
