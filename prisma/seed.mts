@@ -11,12 +11,11 @@ const ratingDetailSchema = z.object({
   count: z.number()
 });
 
-const imageSchema = z.object({
+const productImageSchema = z.object({
   link: z.string(),
   variant: z.string()
 });
-
-type Image = z.infer<typeof imageSchema>;
+type PImage = z.infer<typeof productImageSchema>;
 
 const mainImageSchema = z.object({
   link: z.string()
@@ -38,11 +37,12 @@ const videoSchema = z
   .nullish();
 
 const reviewSchema = z.object({
+  id: z.string(),
   title: z.string(),
   body: z.string(),
-  asin: z.string().nullish(),
+  asin: z.string(),
   body_html: z.string(),
-  link: z.string().nullish(),
+  link: z.string(),
   rating: z.number(),
   date: z.object({
     raw: z.string(),
@@ -57,7 +57,6 @@ const reviewSchema = z.object({
     .nullish(),
   vine_program: z.boolean(),
   verified_purchase: z.boolean(),
-  images: z.array(mainImageSchema).nullish(),
   review_country: z.string(),
   is_global_review: z.boolean()
 });
@@ -82,7 +81,7 @@ const productSchema = z.object({
     one_star: ratingDetailSchema
   }),
   main_image: mainImageSchema,
-  images: z.array(imageSchema),
+  images: z.array(productImageSchema),
   images_count: z.number(),
   videos: z.array(videoSchema).nullish(),
   videos_count: z.number().nullish(),
@@ -97,7 +96,7 @@ export type Product = z.infer<typeof productSchema>;
 const path = './data/products.json';
 
 async function main() {
-  const data = JSON.parse(readFileSync(path, 'utf8'));
+  const data = JSON.parse(readFileSync(path, 'utf8')) as Product[];
 
   for (const product of data) {
     try {
@@ -131,8 +130,8 @@ async function main() {
             ratingBreakdown: product.rating_breakdown
           }
         }),
-        ...product.images.map((image: Image) =>
-          prisma.image.create({
+        ...product.images.map(image =>
+          prisma.productImages.create({
             data: {
               link: image.link,
               variant: image.variant,
@@ -140,9 +139,10 @@ async function main() {
             }
           })
         ),
-        ...product.top_reviews.map((review: Review) =>
+        ...product.top_reviews.map(review =>
           prisma.review.create({
             data: {
+              id: review.id,
               title: review.title,
               body: review.body,
               asin: review.asin,
@@ -151,8 +151,7 @@ async function main() {
               rating: review.rating,
               date: review.date,
               profile: review.profile ?? undefined,
-              reviewCountry: review.review_country,
-              productId: product.id
+              reviewCountry: review.review_country
             }
           })
         )
