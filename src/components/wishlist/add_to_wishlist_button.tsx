@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 import { Heart, Info } from 'lucide-react';
 
 import { Button } from '../ui/button';

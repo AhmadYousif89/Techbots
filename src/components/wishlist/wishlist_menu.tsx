@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart, HeartCrack } from 'lucide-react';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 
 import {
   Drawer,
