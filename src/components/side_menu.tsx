@@ -23,7 +23,7 @@ import {
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { AuthButtons } from './auth_buttons';
-import { categories } from '@/app/products/_actions/actions';
+import { categories } from '@/app/products/_lib/types';
 
 export function SideMenu() {
   const { isOpen, setIsOpen } = useSideMenuState();
