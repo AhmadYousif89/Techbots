@@ -1,7 +1,9 @@
-import { Suspense } from 'react';
+import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
-import { SearchParams } from '@/lib/types';
+
+import { TProduct } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
+import { SearchParams } from '@/app/products/_lib/types';
 import { RatingStars } from '../_components/reviews/rating_stars';
 import {
   Card,
@@ -16,16 +18,12 @@ import { Separator } from '@/components/ui/separator';
 import { ProductCarousel } from '../_components/product_carousel';
 import { AddToCartButton } from '@/app/cart/_components/add_to_cart_button';
 import { AddToWishlistButton } from '@/components/wishlist/add_to_wishlist_button';
-import { ItemCarouselSkeleton } from '../_components/skeletons/item_carousel_skeleton';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
-import prisma from '@/lib/db';
-import { TProduct } from '../_actions/actions';
-import { Image } from '@prisma/client';
 
 function parseProductDetails(data: string | null) {
   const obj: { [key: string]: string } = {};
@@ -71,9 +69,7 @@ export async function SingleProductView({ asin, searchParams }: SingleProductVie
 
   return (
     <Card className='grid items-center pb-10 lg:pb-10 rounded-none lg:grid-cols-2 lg:gap-10'>
-      <Suspense fallback={<ItemCarouselSkeleton />}>
-        <ProductCarousel {...product} />
-      </Suspense>
+      <ProductCarousel {...product} />
 
       <div>
         <CardHeader className='gap-4 max-w-prose'>
@@ -81,7 +77,7 @@ export async function SingleProductView({ asin, searchParams }: SingleProductVie
             {capitalizeString(product.category)}
           </Badge>
           <div className='space-y-6'>
-            <CardTitle className='text-sm md:text-[16px] lg:text-lg font-medium text-balance'>
+            <CardTitle className='text-sm lg:text-lg font-medium text-balance'>
               {product.title}
             </CardTitle>
             <RatingStars

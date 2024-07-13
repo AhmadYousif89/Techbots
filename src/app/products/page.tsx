@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { SearchParams } from '@/lib/types';
+import { SearchParams } from '@/app/products/_lib/types';
 
 import { Card } from '@/components/ui/card';
 import { ProductsView } from './products_view';

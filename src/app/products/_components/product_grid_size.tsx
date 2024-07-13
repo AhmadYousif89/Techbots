@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Grid2x2 } from '@/icons/grid2x2';
 import { Grid3x3 } from '@/icons/grid3x3';
 import { Grid4x4 } from '@/icons/grid4x4';
-import { extractSearchParams } from '@/lib/utils';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 
 export function ProductGridSize() {
   const router = useRouter();

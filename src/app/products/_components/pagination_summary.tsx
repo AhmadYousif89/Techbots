@@ -1,6 +1,7 @@
 import prisma from '@/lib/db';
-import { SearchParams } from '@/lib/types';
-import { cn, extractSearchParams } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { SearchParams } from '../_lib/types';
+import { extractSearchParams } from '../_lib/utils';
 
 type PaginationSummaryProps = {
   searchParams: SearchParams;

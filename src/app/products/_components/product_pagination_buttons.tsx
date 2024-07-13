@@ -1,6 +1,6 @@
 import prisma from '@/lib/db';
-import { SearchParams } from '@/lib/types';
-import { extractSearchParams } from '@/lib/utils';
+import { SearchParams } from '@/app/products/_lib/types';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PaginationButton } from '@/app/products/_components/pagination_button';
 

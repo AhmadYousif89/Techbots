@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
-import { TProduct } from '../_actions/actions';
+import { TProduct } from '../_lib/types';
 import { capitalizeString } from '@/lib/utils';
 
 type ProductThumbnailProps = {

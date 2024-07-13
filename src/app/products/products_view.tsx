@@ -1,5 +1,6 @@
-import { SearchParams } from '@/lib/types';
-import { capitalizeString, extractSearchParams } from '@/lib/utils';
+import { SearchParams } from '@/app/products/_lib/types';
+import { extractSearchParams } from './_lib/utils';
+import { capitalizeString } from '@/lib/utils';
 
 import {
   Breadcrumb,
@@ -23,7 +24,7 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
 
   return (
     <>
-      <div className='px-2 md:px-4 lg:px-10 flex items-center justify-between h-14 bg-muted'>
+      <div className='px-4 md:px-10 flex items-center justify-between h-14 bg-muted'>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className='text-xs'>

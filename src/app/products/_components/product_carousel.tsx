@@ -18,7 +18,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from '@/components/ui/resizable';
-import { TProduct } from '../_actions/actions';
+import { TProduct } from '../_lib/types';
 
 export function ProductCarousel(product: any) {
   const [imageIndex, setImageIndex] = useState(0);

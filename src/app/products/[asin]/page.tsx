@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { SearchParams } from '@/lib/types';
+import { SearchParams } from '@/app/products/_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
 
 import {
@@ -21,7 +21,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { SingleProductView } from './product_view';
-import { Category } from '../_actions/actions';
+import { Category } from '../_lib/types';
 import { ProductReviews } from '../_components/reviews/product_reviews';
 
 type PageProps = {

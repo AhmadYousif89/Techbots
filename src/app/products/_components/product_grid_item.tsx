@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { SearchParams } from '@/lib/types';
-import { TProduct } from '../_actions/actions';
-import { extractSearchParams } from '@/lib/utils';
+import { SearchParams } from '@/app/products/_lib/types';
+import { TProduct } from '../_lib/types';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 import { RatingStars } from './reviews/rating_stars';
 
 import { Separator } from '@/components/ui/separator';

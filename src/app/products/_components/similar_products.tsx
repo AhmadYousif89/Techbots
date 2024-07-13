@@ -11,7 +11,7 @@ import {
   CarouselPrevious
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
-import { Category } from '../_actions/actions';
+import { Category } from '../_lib/types';
 
 type SimilarProductsProps = {
   asin: string;
