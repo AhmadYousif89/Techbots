@@ -5,7 +5,7 @@ import { Computer, Copyright } from 'lucide-react';
 import { Logo } from '../components/logo';
 import { Button } from '../components/ui/button';
 import { Separator } from '../components/ui/separator';
-import { categories } from '@/app/products/_actions/actions';
+import { categories } from '@/app/products/_lib/types';
 
 export function Footer() {
   return (

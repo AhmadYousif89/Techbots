@@ -11,7 +11,7 @@ import {
 import { Card, CardContent } from '../components/ui/card';
 import { RatingStars } from './products/_components/reviews/rating_stars';
 import { Button } from '../components/ui/button';
-import { Category } from './products/_actions/actions';
+import { Category } from './products/_lib/types';
 import prisma from '@/lib/db';
 
 export async function TechDealsSlide() {
@@ -36,13 +36,11 @@ export async function TechDealsSlide() {
         className='mx-auto max-w-[min(320px,80vw)] sm:max-w-xl md:max-w-2xl lg:max-w-screen-md xl:max-w-screen-lg'
         opts={{ dragFree: true, skipSnaps: true, align: 'start' }}>
         <CarouselContent>
-          {products.map((product, index) => (
-            <CarouselItem
-              key={product.asin + index}
-              className='basis-48 lg:basis-56 grid pb-4'>
+          {products.map(product => (
+            <CarouselItem key={product.id} className='basis-48 lg:basis-56 grid pb-4'>
               <Card className='p-2 grid auto-rows-[1fr_auto] gap-4'>
                 <Link
-                  href={`/products/${product.asin}`}
+                  href={`/products/${product.asin}?category=${product.category}`}
                   className='grid place-content-center'>
                   <Image
                     src={product.mainImage}
