@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from './ui/button';
+import { CategoryNavMenu } from './category_nav_menu';
 
 export function MainNav() {
   return (
@@ -15,21 +16,17 @@ export function MainNav() {
         <li>
           <Link href='/products'>
             <Button variant={'link'} className='text-secondary'>
-              Products
+              Shop
             </Button>
           </Link>
+        </li>
+        <li>
+          <CategoryNavMenu />
         </li>
         <li>
           <Link href='/#blogs'>
             <Button variant={'link'} className='text-secondary'>
               Blogs
-            </Button>
-          </Link>
-        </li>
-        <li>
-          <Link href='/#footer'>
-            <Button variant={'link'} className='text-secondary'>
-              About
             </Button>
           </Link>
         </li>
