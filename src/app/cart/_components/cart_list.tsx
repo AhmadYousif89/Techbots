@@ -23,7 +23,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
 
 export function CartListView({ setNextTab }: { setNextTab: (value: string) => void }) {

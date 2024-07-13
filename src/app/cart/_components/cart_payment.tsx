@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import { Order } from './cart_shipping';
 import { useShippingFormStore } from '../_store/shipping_form';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 import { useEffect } from 'react';
 
 export function CartPaymentView() {

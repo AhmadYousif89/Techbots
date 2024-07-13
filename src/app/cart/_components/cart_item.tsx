@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 import { Info, Minus, Plus, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';

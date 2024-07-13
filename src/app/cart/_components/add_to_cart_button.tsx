@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import type { ButtonProps } from '@/components/ui/button';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 
 type AddToCartButtonProps = {
   product: TProduct;

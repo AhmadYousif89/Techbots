@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TProduct } from '@/app/products/_actions/actions';
+import { TProduct } from '@/app/products/_lib/types';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
 import { useMediaQuery } from '@/components/hooks/use_media_query';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
