@@ -22,22 +22,22 @@ model User {
 }
 
 model Cart {
-  id        String    @id @default(cuid())
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String    @unique
-  products  Product[]
-  count     Int
-  total     Float
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
+  clerkUserId String    @unique @map("clerk_user_id")
+  products    Product[]
+  count       Int
+  total       Float
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   @@map("carts")
 }
 
 model Order {
   id           String      @id @default(cuid())
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
+  user         User        @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
+  clerkUserId  String      @unique @map("clerk_user_id")
   shippingInfo Json        @map("shipping_info")
   pricePaid    Float       @map("price_paid")
   createdAt    DateTime    @default(now()) @map("created_at")
@@ -48,19 +48,19 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String
-  count     Int
+  id          String  @id @default(cuid())
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  product     Product @relation(fields: [productAsin], references: [asin], onDelete: Cascade)
+  productAsin String  @map("product_asin")
+  count       Int
 
   @@map("order_items")
 }
 
 model Product {
-  id                 String      @id @default(cuid())
-  asin               String      @unique
+  id                 String          @id @default(cuid())
+  asin               String          @unique
   title              String
   brand              String
   color              String?
@@ -68,51 +68,47 @@ model Product {
   category           String
   description        String?
   rating             Float
-  ratingsTotal       Int         @map("ratings_total")
-  ratingBreakdown    Json        @map("rating_breakdown")
-  mainImage          String      @map("main_image")
-  images             Image[]
-  imagesCount        Int         @map("images_count")
-  top_reviews        Review[]
-  specificationsFlat String?     @map("specifications_flat")
-  featureBulletsFlat String?     @map("feature_bullets_flat")
-  stockQuantity      Int         @map("stock_quantity")
-  Cart               Cart?       @relation(fields: [cartId], references: [id], onDelete: SetNull)
-  cartId             String?     @map("cart_id")
+  ratingsTotal       Int             @map("ratings_total")
+  ratingBreakdown    Json            @map("rating_breakdown")
+  mainImage          String          @map("main_image")
+  imagesCount        Int             @map("images_count")
+  specificationsFlat String?         @map("specifications_flat")
+  featureBulletsFlat String?         @map("feature_bullets_flat")
+  stockQuantity      Int             @map("stock_quantity")
+  Cart               Cart?           @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  cartId             String?         @map("cart_id")
+  images             ProductImages[]
+  topReviews         Review[]
   orderItems         OrderItem[]
-  createdAt          DateTime    @default(now()) @map("created_at")
-  updatedAt          DateTime    @updatedAt @map("updated_at")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
 
   @@map("products")
 }
 
-model Image {
+model ProductImages {
   id          String   @id @default(cuid())
   link        String
-  variant     String?
-  product     Product? @relation(fields: [productAsin], references: [asin], onDelete: SetNull)
-  productAsin String?
-  Review      Review?  @relation(fields: [reviewId], references: [id], onDelete: SetNull)
-  reviewId    String?
+  variant     String
+  product     Product? @relation(fields: [productAsin], references: [asin], onDelete: Restrict)
+  productAsin String?  @map("product_asin")
   createdAt   DateTime @default(now()) @map("created_at")
 
-  @@map("images")
+  @@map("product_images")
 }
 
 model Review {
-  id            String   @id @default(cuid())
+  id            String   @id
   title         String
-  asin          String?
+  product       Product  @relation(fields: [asin], references: [asin], onDelete: Restrict)
+  asin          String
   body          String
   bodyHtml      String   @map("body_html")
-  link          String?
+  link          String
   rating        Float
   date          Json
   profile       Json?
-  images        Image[]
   reviewCountry String   @map("review_country")
-  product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  productId     String?  @map("product_id")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
