@@ -13,16 +13,33 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { RatingStars } from './products/_components/reviews/rating_stars';
 import { Category } from './products/_lib/types';
+import { cache } from '@/lib/cache';
+
+const day = 60 * 60 * 24;
+
+const getPopularItems = cache(
+  async () => {
+    const categories: Category[] = [
+      'laptops',
+      'mobiles',
+      'headphones',
+      'watches',
+      'accessories'
+    ];
+    const allProducts = await prisma.product.findMany({
+      where: { category: { in: categories } }
+    });
+
+    return categories.flatMap(category => {
+      return allProducts.filter(product => product.category === category).slice(0, 2);
+    });
+  },
+  ['/', 'getPopularItems'],
+  { revalidate: day }
+);
 
 export async function PopularItemsSlide() {
-  const categories: Category[] = ['laptops', 'mobiles', 'headphones', 'watches'];
-  const allProducts = await prisma.product.findMany({
-    where: { category: { in: categories } }
-  });
-
-  const products = categories.flatMap(category => {
-    return allProducts.filter(product => product.category === category).slice(0, 2);
-  });
+  const products = await getPopularItems();
 
   return (
     <section className='bg-secondary py-10 px-6'>
@@ -33,12 +50,12 @@ export async function PopularItemsSlide() {
         </Button>
       </div>
       <Carousel
-        className='mx-auto max-w-[min(320px,80vw)] sm:max-w-xl md:max-w-2xl lg:max-w-screen-md xl:max-w-screen-lg'
-        opts={{ dragFree: true, skipSnaps: true, align: 'start' }}>
+        className='ml-4 max-w-80vw xl:max-w-screen-lg xl:mx-auto'
+        opts={{ dragFree: true, align: 'start' }}>
         <CarouselContent>
           {products.map(product => (
-            <CarouselItem key={product.id} className='basis-48 lg:basis-56 grid pb-4'>
-              <Card className='p-2 grid auto-rows-[1fr_auto] gap-4'>
+            <CarouselItem key={product.id} className='basis-48 grid pb-4'>
+              <Card className='p-4 grid auto-rows-[1fr_auto] gap-4'>
                 <Link
                   href={`/products/${product.asin}?cat=${product.category}`}
                   className='grid place-content-center'>
@@ -47,7 +64,6 @@ export async function PopularItemsSlide() {
                     alt={product.title}
                     width={150}
                     height={150}
-                    className='group-hover:scale-105 transition-transform duration-200'
                   />
                 </Link>
                 <CardContent className='mt-auto py-0 px-0'>
@@ -55,7 +71,9 @@ export async function PopularItemsSlide() {
                     {product.title.split(' ').slice(0, 3).join(' ')}
                   </p>
                   <div className='flex items-center justify-between'>
-                    <p className='text-xs text-muted-foreground'>{product.price}</p>
+                    <p className='text-xs text-muted-foreground'>
+                      ${product.price.toFixed(2)}
+                    </p>
                     <RatingStars
                       productRating={product.rating}
                       showTotalReviews={false}
