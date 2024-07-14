@@ -27,7 +27,11 @@ export function extractSearchParams(
   type Result = typeof result;
 
   for (const key in params) {
-    if (Object.prototype.hasOwnProperty.call(params, key)) {
+    if (key === 'cat') {
+      result['category'] = params[key];
+    } else if (key === 'sr') {
+      result['selectedRating'] = params[key];
+    } else {
       result[key as keyof Result] = params[key];
     }
   }
