@@ -22,7 +22,7 @@ export async function PaginationSummary({
   return (
     <p className={cn('text-xs font-medium text-muted-foreground', className)}>
       Showing <span className='font-semibold'>{start + 1}</span> -{' '}
-      <span className='font-semibold'>{end}</span> of{' '}
+      <span className='font-semibold'>{end > totalCount ? totalCount : end}</span> of{' '}
       <span className='font-semibold'>{totalCount}</span> results
     </p>
   );
