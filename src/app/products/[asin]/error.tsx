@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 export default function ErrorPage() {
   const category = location.search
     .split('&')
-    .filter(x => x.includes('category'))[0]
+    .filter(x => x.includes('cat'))[0]
     .split('=')[1];
 
   return (
