@@ -9,6 +9,7 @@ import { ProductGridItem } from './product_grid_item';
 import { PaginationSummary } from './pagination_summary';
 import { GridItemsSkeleton } from './skeletons/grid_item_skeleton';
 import { ProductPaginationButtons } from './product_pagination_buttons';
+import { cache } from '@/lib/cache';
 
 type ProductGridProps = {
   searchParams: SearchParams;
@@ -43,7 +44,7 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
 }
 
 async function DisplayProductsGrid(searchParams: SearchParams) {
-  const products = await getFilteredProducts(searchParams);
+  const products = await getProductsGrid(searchParams);
 
   return (
     <>
@@ -58,24 +59,30 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
   );
 }
 
-export async function getFilteredProducts(searchParams: SearchParams) {
-  const { page, limit, category, sort } = extractSearchParams(searchParams);
-  const start = (+page - 1) * +limit;
-  const end = start + +limit;
+const day = 60 * 60 * 24;
 
-  const sortOptions: Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>> = {
-    popular: { rating: 'desc' },
-    newest: { createdAt: 'desc' },
-    'lowest-price': { price: 'asc' },
-    'highest-price': { price: 'desc' }
-  };
+const getProductsGrid = cache(
+  async (searchParams: SearchParams) => {
+    const { page, limit, category, sort } = extractSearchParams(searchParams);
+    const start = (+page - 1) * +limit;
+    const end = start + +limit;
 
-  const products = await prisma.product.findMany({
-    where: category ? { category } : undefined,
-    orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-    take: +limit,
-    skip: start
-  });
+    const sortOptions: Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>> = {
+      popular: { rating: 'desc' },
+      newest: { createdAt: 'desc' },
+      'lowest-price': { price: 'asc' },
+      'highest-price': { price: 'desc' }
+    };
 
-  return products as TProduct[];
-}
+    const products = await prisma.product.findMany({
+      where: category ? { category } : undefined,
+      orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
+      take: +limit,
+      skip: start
+    });
+
+    return products as TProduct[];
+  },
+  ['/products', 'getProductsGrid'],
+  { revalidate: day }
+);
