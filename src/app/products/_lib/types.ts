@@ -1,4 +1,4 @@
-import { Product } from '@prisma/client';
+import { OrderItem, Product, ProductImages, Review } from '@prisma/client';
 
 export const categories = [
   'gaming-laptops',
@@ -18,7 +18,13 @@ export const categories = [
 export type Category = (typeof categories)[number] | '';
 export type SearchParams = { [key: string]: string | Category | undefined };
 export type SortValue = 'popular' | 'newest' | 'lowest-price' | 'highest-price' | '';
-export type TProduct = Product & { cartQuantity?: number; category: Category };
+export type TProduct = Product & {
+  category: Category;
+  images: ProductImages[];
+  topReviews: Review[];
+  orderItems: OrderItem[];
+  cartQuantity?: number;
+};
 export type RatingDetails = {
   percentage: number;
   count: number;
