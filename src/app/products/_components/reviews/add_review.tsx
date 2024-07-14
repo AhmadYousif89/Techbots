@@ -1,4 +1,8 @@
 'use client';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Ban, CheckSquare, Star } from 'lucide-react';
 
 import {
   Dialog,
@@ -9,17 +13,10 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { Ban, CheckSquare, Star } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
-import { TProduct } from '@/app/products/_lib/types';
 
-export function AddReview({ product }: { product: Partial<TProduct> }) {
+export function AddReview() {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
@@ -27,13 +24,15 @@ export function AddReview({ product }: { product: Partial<TProduct> }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Write a review</Button>
+        <Button size={'sm'} className='text-xs'>
+          Write a review
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Customer Review</DialogTitle>
-          <DialogDescription>
-            Review for {product?.title?.split(' ').slice(0, 3).join(' ')}
+          <DialogTitle className='text-sm'>Customer Review</DialogTitle>
+          <DialogDescription className='text-xs'>
+            Review this product and share your thoughts with other customers
           </DialogDescription>
         </DialogHeader>
         <div className='grid mb-4'>

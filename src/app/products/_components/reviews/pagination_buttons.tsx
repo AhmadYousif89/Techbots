@@ -53,6 +53,7 @@ export function ReviewsPaginationButtons({
 
         <div className='flex items-center gap-4'>
           <PaginationButton
+            className='size-7 p-1'
             elementId='reviews'
             disabled={!hasPrevPage}
             href={`/products/${asin}?page=${
@@ -60,10 +61,11 @@ export function ReviewsPaginationButtons({
             }&limit=${limit}&cat=${category}&sr=${selectedRating}#reviews`}>
             <ChevronLeft />
           </PaginationButton>
-          <span className='text-foreground text-sm'>
+          <span className='text-muted-foreground font-medium text-sm'>
             {page} / {totalPages}
           </span>
           <PaginationButton
+            className='size-7 p-1'
             elementId='reviews'
             disabled={!hasNextPage}
             href={`/products/${asin}?page=${

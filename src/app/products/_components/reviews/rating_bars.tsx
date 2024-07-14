@@ -15,8 +15,8 @@ import { extractSearchParams } from '@/app/products/_lib/utils';
 
 type ReviewsRatingBarsProps = {
   asin: string;
-  ratingBreakdown: RatingBreakdown;
   ratingsTotal: number;
+  ratingBreakdown: RatingBreakdown;
 };
 
 export function ReviewsRatingBars({
