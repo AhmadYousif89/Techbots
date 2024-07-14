@@ -45,7 +45,7 @@ export function ReviewsPaginationButtons({
           disabled={!selectedRating}
           onClick={() => {
             router.push(
-              `/products/${asin}?page=1&limit=${limit}&category=${category}&selectedRating=#reviews`
+              `/products/${asin}?page=1&limit=${limit}&cat=${category}&sr=#reviews`
             );
           }}>
           View All
@@ -57,7 +57,7 @@ export function ReviewsPaginationButtons({
             disabled={!hasPrevPage}
             href={`/products/${asin}?page=${
               +page - 1
-            }&limit=${limit}&category=${category}&selectedRating=${selectedRating}#reviews`}>
+            }&limit=${limit}&cat=${category}&sr=${selectedRating}#reviews`}>
             <ChevronLeft />
           </PaginationButton>
           <span className='text-foreground text-sm'>
@@ -68,7 +68,7 @@ export function ReviewsPaginationButtons({
             disabled={!hasNextPage}
             href={`/products/${asin}?page=${
               +page + 1
-            }&limit=${limit}&category=${category}&selectedRating=${selectedRating}#reviews`}>
+            }&limit=${limit}&cat=${category}&sr=${selectedRating}#reviews`}>
             <ChevronRight />
           </PaginationButton>
         </div>

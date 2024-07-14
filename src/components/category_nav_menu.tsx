@@ -36,7 +36,7 @@ export function CategoryNavMenu() {
                   asChild
                   variant={'link'}
                   className='px-0 text-secondary justify-normal underline-offset-8 text-xs'>
-                  <Link href={`/products?category=${category}`}>
+                  <Link href={`/products?cat=${category}`}>
                     {capitalizeString(category)}
                   </Link>
                 </Button>
@@ -53,7 +53,7 @@ export function CategoryNavMenu() {
                           asChild
                           variant={'link'}
                           className='px-0 text-secondary justify-normal underline-offset-8 text-xs'>
-                          <Link href={`/products?category=${category}`}>
+                          <Link href={`/products?cat=${category}`}>
                             {capitalizeString(category)}
                           </Link>
                         </Button>

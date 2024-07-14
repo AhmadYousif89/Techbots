@@ -170,7 +170,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
             const category = params.get('category') || '';
             const page = params.get('page') || '1';
             const limit = params.get('limit') || '8';
-            router.push(`/products?page=${page}&limit=${limit}&category=${category}`);
+            router.push(`/products?page=${page}&limit=${limit}&cat=${category}`);
           }}>
           Cancle
         </Button>

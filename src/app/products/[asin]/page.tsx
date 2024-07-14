@@ -48,7 +48,7 @@ export default async function SingleProductPage({ params, searchParams }: PagePr
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem className='text-xs text-muted-foreground'>
-                <BreadcrumbLink href={`/products?category=${category}`}>
+                <BreadcrumbLink href={`/products?cat=${category}`}>
                   {capitalizeString(category)}
                 </BreadcrumbLink>
               </BreadcrumbItem>

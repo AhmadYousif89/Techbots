@@ -40,7 +40,7 @@ export async function PopularItemsSlide() {
             <CarouselItem key={product.id} className='basis-48 lg:basis-56 grid pb-4'>
               <Card className='p-2 grid auto-rows-[1fr_auto] gap-4'>
                 <Link
-                  href={`/products/${product.asin}?category=${product.category}`}
+                  href={`/products/${product.asin}?cat=${product.category}`}
                   className='grid place-content-center'>
                   <Image
                     src={product.mainImage}

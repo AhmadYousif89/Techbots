@@ -29,7 +29,7 @@ export async function TechDealsSlide() {
       <div className='flex items-center gap-4 mb-12'>
         <h2 className='text-xl lg:text-2xl font-bold'>Tech Deals</h2>
         <Button variant={'link'} className='hover:text-muted-foreground'>
-          <Link href='/products?category=laptops'>View All</Link>
+          <Link href='/products?cat=laptops'>View All</Link>
         </Button>
       </div>
       <Carousel
@@ -40,7 +40,7 @@ export async function TechDealsSlide() {
             <CarouselItem key={product.id} className='basis-48 lg:basis-56 grid pb-4'>
               <Card className='p-2 grid auto-rows-[1fr_auto] gap-4'>
                 <Link
-                  href={`/products/${product.asin}?category=${product.category}`}
+                  href={`/products/${product.asin}?cat=${product.category}`}
                   className='grid place-content-center'>
                   <Image
                     src={product.mainImage}

@@ -18,8 +18,8 @@ type Props = {
 export async function ProductGridItem({ product, searchParams }: Props) {
   const { page, limit, sort, grid } = extractSearchParams(searchParams);
   const { asin, rating, mainImage, title, price, category } = product;
-  const prodUrl = `/products/${asin}?category=${category}`;
-  const forceRedirectUrl = `/cart?page=${page}&limit=${limit}&category=${category}&sort=${sort}&grid=${grid}`;
+  const prodUrl = `/products/${asin}?cat=${category}`;
+  const forceRedirectUrl = `/cart?page=${page}&limit=${limit}&cat=${category}&sort=${sort}&grid=${grid}`;
 
   return (
     <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] max-w-xs justify-self-center p-2 shadow-none border-0'>

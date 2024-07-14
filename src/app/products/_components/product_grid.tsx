@@ -1,13 +1,12 @@
 import { Suspense } from 'react';
 import prisma from '@/lib/db';
 import { cn } from '@/lib/utils';
-import { SearchParams } from '@/app/products/_lib/types';
 import { extractSearchParams } from '../_lib/utils';
+import { SearchParams, SortValue, TProduct } from '../_lib/types';
 
 import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
 import { PaginationSummary } from './pagination_summary';
-import { SortValue, TProduct } from '../_lib/types';
 import { GridItemsSkeleton } from './skeletons/grid_item_skeleton';
 import { ProductPaginationButtons } from './product_pagination_buttons';
 

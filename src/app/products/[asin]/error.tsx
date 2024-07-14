@@ -34,7 +34,7 @@ export default function ErrorPage() {
           </Button>
           <Button
             className='text-xs w-20'
-            onClick={() => location.replace(location.pathname + `?category=${category}`)}>
+            onClick={() => location.replace(location.pathname + `?cat=${category}`)}>
             Back
           </Button>
         </CardFooter>

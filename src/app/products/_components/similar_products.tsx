@@ -34,7 +34,7 @@ export async function SimilarProducts({ asin, category }: SimilarProductsProps) 
           <CarouselItem key={product.asin + index} className='basis-48 grid pb-4'>
             <Card className='p-2 flex justify-center'>
               <Link
-                href={`/products/${product.asin}?category=${product.category}`}
+                href={`/products/${product.asin}?cat=${product.category}`}
                 className='flex flex-col justify-between'>
                 <Image
                   src={product.mainImage}

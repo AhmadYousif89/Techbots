@@ -79,7 +79,7 @@ export async function SearchProducts() {
                   {itemsByCategory[category].map((item, i) => (
                     <CommandItem key={i} className='!p-0 my-2 cursor-pointer'>
                       <Link
-                        href={`/products/${item.asin}?category=${item.category}`}
+                        href={`/products/${item.asin}?cat=${item.category}`}
                         className='flex items-center gap-4'>
                         <Image
                           src={item.mainImage}

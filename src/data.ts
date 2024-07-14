@@ -6,7 +6,7 @@ export const featuredProducts = [
     price: '$429.00',
     buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/G951N5B/highlights-One.webp',
-    url: '/products/B0CCZ1L489?category=headphones'
+    url: '/products/B0CCZ1L489?cat=headphones'
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const featuredProducts = [
     price: '$330.00',
     buttonTitle: 'Shop Mobiles',
     image: 'https://i.ibb.co/bLRNKGq/highlights-Two.webp',
-    url: '/products?category=mobiles'
+    url: '/products?cat=mobiles'
   },
   {
     id: 3,
@@ -24,7 +24,7 @@ export const featuredProducts = [
     price: '$90.00',
     buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/svWYstT/highlights-Three.webp',
-    url: '/products?category=powerbanks'
+    url: '/products?cat=powerbanks'
   }
 ];
 

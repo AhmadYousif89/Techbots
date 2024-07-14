@@ -88,7 +88,7 @@ export function SideMenu() {
                       <li key={category}>
                         <Link
                           onClick={() => setIsOpen(false)}
-                          href={`/products?category=${category}`}
+                          href={`/products?cat=${category}`}
                           className='p-1 text-xs inline-block border-b-[1px] border-transparent hover:text-foreground/70 hover:border-b-foreground/15'>
                           {capitalizeString(category)}
                         </Link>

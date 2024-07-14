@@ -17,7 +17,7 @@ export function FilterContentPrice() {
 
   const { page, limit, category, sort, grid } = extractSearchParams(data.entries());
   const url = (min: string = '', max: string = '') =>
-    `/products?page=${page}&limit=${limit}&category=${category}&sort=${sort}&grid=${grid}&min=${min}&max=${max}&cf=true`;
+    `/products?page=${page}&limit=${limit}&cat=${category}&sort=${sort}&grid=${grid}&min=${min}&max=${max}&cf=true`;
 
   const handleMinChange: ChangeEventHandler<HTMLInputElement> = e => {
     setMin(e.target.value);

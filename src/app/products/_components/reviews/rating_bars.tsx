@@ -53,7 +53,7 @@ export function ReviewsRatingBars({
                   variant={+selectedRating == starIndex ? 'outline' : 'ghost'}
                   onClick={() => {
                     router.push(
-                      `/products/${asin}?page=1&limit=5&category=${category}&selectedRating=${starIndex}#reviews`
+                      `/products/${asin}?page=1&limit=5&cat=${category}&sr=${starIndex}#reviews`
                     );
                   }}
                   className='w-full grid grid-cols-[auto,1fr,auto] items-center gap-2 h-8 py-0'>

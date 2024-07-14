@@ -75,7 +75,7 @@ export function Footer() {
               <ul className='grid sm:grid-cols-2 max-w-xs lg:gap-x-8 border-l'>
                 {categories.map(category => (
                   <li key={category}>
-                    <Link href={`/products?category=${category}`}>
+                    <Link href={`/products?cat=${category}`}>
                       <Button
                         variant={'link'}
                         className='text-xs sm:text-sm hover:text-muted-foreground'>
