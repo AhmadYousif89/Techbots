@@ -11,14 +11,9 @@ import { extractSearchParams } from '@/app/products/_lib/utils';
 export function ProductGridSize() {
   const router = useRouter();
   const params = useSearchParams();
-  // const page = params.get('page') ?? '1';
-  // const limit = params.get('limit') ?? '8';
-  // const category = params.get('category') ?? '';
-  // const sort = params.get('sort') ?? '';
-  // const min = params.get('min') ?? '';
-  // const max = params.get('max') ?? '';
+
   const { page, limit, category, sort, min, max } = extractSearchParams(params.entries());
-  const newQueryParams = new URLSearchParams({
+  const newParams = new URLSearchParams({
     page,
     limit,
     category,
@@ -26,7 +21,7 @@ export function ProductGridSize() {
     min,
     max
   });
-  const url = (grid: string) => `/products/?${newQueryParams.toString()}&grid=${grid}`;
+  const url = (grid: string) => `/products/?${newParams.toString()}&grid=${grid}`;
 
   return (
     <div role='group' className='hidden lg:flex items-center gap-1 col-span-full'>
