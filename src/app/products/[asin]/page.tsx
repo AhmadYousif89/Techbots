@@ -1,17 +1,9 @@
 import { Suspense } from 'react';
-import { SearchParams } from '@/app/products/_lib/types';
+import { SearchParams } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
+import { extractSearchParams } from '../_lib/utils';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { SimilarProducts } from '@/app/products/_components/similar_products';
-import { SimilarItemSkeleton } from '@/app/products/_components/skeletons/similar_item_skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,9 +12,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
-import { SingleProductView } from './product_view';
-import { Category } from '../_lib/types';
+import { ProductView } from './product_view';
+import { SimilarProducts } from '../_components/similar_products';
 import { ProductReviews } from '../_components/reviews/product_reviews';
+import { SimilarItemSkeleton } from '../_components/skeletons/similar_item_skeleton';
 
 type PageProps = {
   params: { asin: string };
@@ -31,7 +24,7 @@ type PageProps = {
 
 export default async function SingleProductPage({ params, searchParams }: PageProps) {
   const { asin } = params;
-  const category = (searchParams?.category as Category) || '';
+  const { category } = extractSearchParams(searchParams);
 
   return (
     <main className='grid min-h-screen max-w-screen-xl mx-auto'>
@@ -61,32 +54,20 @@ export default async function SingleProductPage({ params, searchParams }: PagePr
         </BreadcrumbList>
       </Breadcrumb>
 
-      <SingleProductView asin={asin} searchParams={searchParams} />
+      <ProductView asin={asin} searchParams={searchParams} />
 
-      <Card className='rounded-none pt-8 pb-16 space-y-8'>
-        <CardHeader>
-          <CardTitle className='text-2xl font-medium'>Customers also viewed</CardTitle>
-        </CardHeader>
-        <CardContent className='px-6 pb-10 m-0'>
-          <Suspense fallback={<SimilarItemSkeleton />}>
-            <SimilarProducts asin={asin} category={category} />
-          </Suspense>
-        </CardContent>
-      </Card>
+      <Suspense fallback={<SimilarItemSkeleton />}>
+        <SimilarProducts asin={asin} category={category} />
+      </Suspense>
 
-      <Card id='reviews' className='rounded-none py-10 sm:px-4 xl:px-8'>
-        <CardHeader>
-          <h2 className='text-2xl font-medium'>Customer Reviews</h2>
-        </CardHeader>
-        <CardContent>
-          <Suspense
-            fallback={
-              <CardTitle className='text-xl font-medium'>No reviews yet</CardTitle>
-            }>
-            <ProductReviews asin={asin} searchParams={searchParams} />
-          </Suspense>
-        </CardContent>
-      </Card>
+      <Suspense fallback={<h1>Loading reviews...</h1>}>
+        <Card id='reviews' className='rounded-none py-10 sm:px-4 xl:px-8'>
+          <CardHeader>
+            <CardTitle className='text-2xl font-medium'>Customer’s Review</CardTitle>
+          </CardHeader>
+          <ProductReviews asin={asin} searchParams={searchParams} />
+        </Card>
+      </Suspense>
     </main>
   );
 }

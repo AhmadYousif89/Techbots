@@ -1,7 +1,7 @@
 import prisma from '@/lib/db';
 import { notFound } from 'next/navigation';
 
-import { TProduct } from '../_lib/types';
+import { Category, TProduct } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
 import { SearchParams } from '@/app/products/_lib/types';
 import { RatingStars } from '../_components/reviews/rating_stars';
@@ -24,41 +24,42 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
+import { cache } from '@/lib/cache';
+import { extractSearchParams } from '../_lib/utils';
 
-function parseProductDetails(data: string | null) {
-  const obj: { [key: string]: string } = {};
-  if (!data) return obj;
-  const parts = data.split('. ');
-
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i].trim();
-    // Check if this part contains a colon and is not the last part
-    if (part.includes(':') && i < parts.length - 1) {
-      const item = part.split(':').map(item => item.trim());
-      let key = item[0];
-      const value = item[1];
-      // Remove brackets from keys if present
-      if (key.startsWith('[') && key.endsWith(']')) {
-        key = key.slice(1, -1);
+export const getProductDetails = cache(
+  async (asin: string, searchParams: SearchParams) => {
+    const { page, limit, selectedRating } = extractSearchParams(searchParams, '5');
+    const start = (+page - 1) * +limit;
+    const product = (await prisma.product.findUnique({
+      where: { asin },
+      include: {
+        images: true,
+        topReviews: {
+          where: { asin, rating: selectedRating ? +selectedRating : undefined },
+          orderBy: { date: 'desc' },
+          skip: start,
+          take: +limit
+        }
       }
+    })) as TProduct;
 
-      obj[key] = value;
-    }
-  }
+    const reviewsCount = await prisma.review.count({
+      where: { asin, rating: selectedRating ? +selectedRating : undefined }
+    });
 
-  return obj;
-}
+    return { product, reviewsCount };
+  },
+  ['getProductDetails']
+);
 
 type SingleProductViewProps = {
   asin: string;
   searchParams: SearchParams;
 };
 
-export async function SingleProductView({ asin, searchParams }: SingleProductViewProps) {
-  const product = (await prisma.product.findUnique({
-    where: { asin },
-    include: { images: true }
-  })) as TProduct; // TODO: Fix this type casting
+export async function ProductView({ asin, searchParams }: SingleProductViewProps) {
+  const { product } = await getProductDetails(asin, searchParams);
 
   if (!product) {
     return notFound();
@@ -180,3 +181,27 @@ const ProductDetailsTable = ({ data, type }: ProductDetailsTableProps) => {
     </Accordion>
   );
 };
+
+function parseProductDetails(data: string | null) {
+  const obj: { [key: string]: string } = {};
+  if (!data) return obj;
+  const parts = data.split('. ');
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i].trim();
+    // Check if this part contains a colon and is not the last part
+    if (part.includes(':') && i < parts.length - 1) {
+      const item = part.split(':').map(item => item.trim());
+      let key = item[0];
+      const value = item[1];
+      // Remove brackets from keys if present
+      if (key.startsWith('[') && key.endsWith(']')) {
+        key = key.slice(1, -1);
+      }
+
+      obj[key] = value;
+    }
+  }
+
+  return obj;
+}
