@@ -1,13 +1,13 @@
 import prisma from '@/lib/db';
 import { SearchParams } from '@/app/products/_lib/types';
 import { extractSearchParams } from '@/app/products/_lib/utils';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { PaginationButton } from '@/app/products/_components/pagination_button';
 
 export async function ProductPaginationButtons(searchParams: SearchParams) {
   const { page, limit, category, sort, min, max, grid } =
     extractSearchParams(searchParams);
-  const params = new URLSearchParams({ limit, category, sort, min, max, grid });
+  const params = new URLSearchParams({ limit, cat: category, sort, min, max, grid });
 
   const totalCount = await prisma.product.count({
     where: category ? { category } : undefined
@@ -19,23 +19,39 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
   const hasPrevPage = start > 0;
 
   return (
-    <div className='flex items-center justify-center gap-4 ml-auto'>
+    <div className='flex items-center justify-center gap-2 ml-auto'>
       <PaginationButton
-        className='size-7'
+        className='size-6 p-1'
+        elementId='reviews'
+        disabled={!hasPrevPage}
+        href={`/products/?page=${
+          +page - totalPages > 0 ? +page - totalPages : 1
+        }&${params.toString()}`}>
+        <ChevronsLeft />
+      </PaginationButton>
+      <PaginationButton
+        className='size-6 p-1'
         elementId='reviews'
         disabled={!hasPrevPage}
         href={`/products/?page=${+page - 1}&${params.toString()}`}>
-        <ChevronLeft className='size-4' />
+        <ChevronLeft />
       </PaginationButton>
       <span className='text-xs text-muted-foreground font-semibold'>
         {page} / {totalPages}
       </span>
       <PaginationButton
-        className='size-7'
+        className='size-6 p-1'
         elementId='reviews'
         disabled={!hasNextPage}
         href={`/products/?page=${+page + 1}&${params.toString()}`}>
-        <ChevronRight className='size-4' />
+        <ChevronRight />
+      </PaginationButton>
+      <PaginationButton
+        className='size-6 p-1'
+        elementId='reviews'
+        disabled={!hasNextPage}
+        href={`/products/?page=${totalPages}&${params.toString()}`}>
+        <ChevronsRight />
       </PaginationButton>
     </div>
   );
