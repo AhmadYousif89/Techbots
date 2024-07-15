@@ -1,7 +1,9 @@
 'use client';
 
-import { Heart, HeartCrack } from 'lucide-react';
+import { useWishlistMenuState } from '@/lib/store';
+import { Heart, HeartCrack, Info, Trash2 } from 'lucide-react';
 import { TProduct } from '@/app/products/_lib/types';
+import { ProductThumbnail } from '@/app/products/_components/product_thumpnail';
 
 import {
   Drawer,
@@ -27,9 +29,8 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useMediaQuery } from '../hooks/use_media_query';
 import { useLocalStorage } from '../hooks/use_local_storage';
-import { useWishlistMenuState } from '@/lib/store';
 import { useIsMounted } from '../hooks/use_isMounted';
-import { ProductThumbnail } from '@/app/products/_components/product_thumpnail';
+import { DeleteAllButton } from '../delete_all_button';
 
 export function WishListMenu() {
   const isNotMobile = useMediaQuery('(min-width: 639px');
@@ -61,28 +62,26 @@ export function WishListMenu() {
     </>
   );
 
-  const deleteAllButton = (
-    <Button
-      variant={'link'}
-      onClick={() => removeWishlist()}
-      className=' py-1 pb-2 px-3 my-2 h-auto rounded self-center text-destructive hover:bg-destructive/20'>
-      Delete all
-    </Button>
-  );
-
   if (isNotMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{WishListButton}</SheetTrigger>
         <SheetContent className='grid grid-rows-[auto,1fr,auto] min-w-[450px]'>
-          <SheetHeader className='my-8'>
+          <SheetHeader className='mt-8'>
             <SheetTitle className='flex items-center justify-center gap-2 text-xl mb-2'>
               Wishlist <Heart className='size-6 text-destructive' />
             </SheetTitle>
             <SheetDescription className='text-center'>
               {wishlistDescription}
             </SheetDescription>
-            {wishlistCount > 0 && deleteAllButton}
+            {wishlistCount > 0 && (
+              <DeleteAllButton
+                title='Delete List'
+                toastMessage='Your wishlist is now empty'
+                message='All your wishlist items will be deleted?'
+                deleteAction={removeWishlist}
+              />
+            )}
           </SheetHeader>
           {wishlistCount === 0 ? (
             <section className='grid justify-center items-center'>
@@ -111,8 +110,15 @@ export function WishListMenu() {
           <DrawerTitle className='flex items-center justify-center gap-2 text-xl mb-2'>
             Wishlist <Heart className='size-5 text-destructive' />
           </DrawerTitle>
-          <DrawerDescription>{wishlistDescription}</DrawerDescription>
-          {wishlistCount > 0 && deleteAllButton}
+          <DrawerDescription className='mb-2'>{wishlistDescription}</DrawerDescription>
+          {wishlistCount > 0 && (
+            <DeleteAllButton
+              title='Delete List'
+              toastMessage='Your wishlist is now empty'
+              message='All your wishlist items will be deleted?'
+              deleteAction={removeWishlist}
+            />
+          )}
         </DrawerHeader>
         {wishlistCount === 0 ? (
           <section className='grid justify-center'>

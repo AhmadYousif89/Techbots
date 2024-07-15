@@ -30,6 +30,7 @@ import { useIsMounted } from '@/components/hooks/use_isMounted';
 import { useMediaQuery } from '@/components/hooks/use_media_query';
 import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import { ProductThumbnail } from '../../products/_components/product_thumpnail';
+import { DeleteAllButton } from '@/components/delete_all_button';
 
 export function CartMenu() {
   const router = useRouter();
@@ -73,15 +74,6 @@ export function CartMenu() {
     </>
   );
 
-  const deleteAllButton = (
-    <Button
-      variant={'link'}
-      onClick={() => removeCart()}
-      className='w-full py-1 pb-2 px-3 mb-2 h-auto rounded self-center text-destructive hover:bg-destructive/20'>
-      Delete all
-    </Button>
-  );
-
   if (isNotMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -92,7 +84,14 @@ export function CartMenu() {
               Cart Items <ShoppingBag />
             </SheetTitle>
             <SheetDescription className='text-center'>{cartDescription}</SheetDescription>
-            {cartCount > 0 && deleteAllButton}
+            {cartCount > 0 && (
+              <DeleteAllButton
+                title='Delete Cart'
+                toastMessage='Your cart is now empty'
+                message='All your cart items will be deleted?'
+                deleteAction={removeCart}
+              />
+            )}
           </SheetHeader>
           {cartCount === 0 ? (
             <section className='grid justify-center items-center'>
@@ -118,14 +117,21 @@ export function CartMenu() {
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{cartButton}</DrawerTrigger>
-      <DrawerContent className='max-w-[450px] mx-auto px-4'>
+      <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle className='flex items-center justify-center gap-4 text-xl mb-2'>
+          <DrawerTitle className='flex items-center justify-center gap-2 text-xl mb-2'>
             Cart Items <ShoppingBag className='size-5' />
           </DrawerTitle>
-          <DrawerDescription>{cartDescription}</DrawerDescription>
+          <DrawerDescription className='mb-2'>{cartDescription}</DrawerDescription>
+          {cartCount > 0 && (
+            <DeleteAllButton
+              title='Delete Cart'
+              toastMessage='Your cart is now empty'
+              message='All your cart items will be deleted?'
+              deleteAction={removeCart}
+            />
+          )}
         </DrawerHeader>
-        {cartCount > 0 && deleteAllButton}
         {cartCount === 0 ? (
           <section className='grid justify-center'>
             <Slash strokeWidth={1} className='w-32 h-32'>
