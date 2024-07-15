@@ -1,8 +1,9 @@
+import Link from 'next/link';
 import Image from 'next/image';
 import { Suspense } from 'react';
-import Link from 'next/link';
 
 import prisma from '@/lib/db';
+import { cache } from '@/lib/cache';
 import { Search } from 'lucide-react';
 import { capitalizeString } from '@/lib/utils';
 
@@ -26,18 +27,28 @@ type Data = {
   category: Category;
 };
 
-export async function SearchProducts() {
-  let categories: Category[] = [];
-  let itemsByCategory: Record<string, Data[]> = {};
-  try {
-    const data = (await prisma.product.findMany({
+const day = 60 * 60 * 24;
+
+const getSearchedProducts = cache(
+  async () => {
+    return prisma.product.findMany({
       select: {
         asin: true,
         title: true,
         category: true,
         mainImage: true
       }
-    })) as Data[];
+    }) as Promise<Data[]>;
+  },
+  ['/products', 'getSearchedProducts'],
+  { revalidate: day }
+);
+
+export async function SearchProducts() {
+  let categories: Category[] = [];
+  let itemsByCategory: Record<string, Data[]> = {};
+  try {
+    const data = await getSearchedProducts();
 
     categories = [...new Set(data.map(i => i.category))];
     itemsByCategory = data.reduce((list: Record<string, Data[]>, p) => {
