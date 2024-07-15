@@ -43,8 +43,8 @@ export async function SimilarProducts({ asin, category }: SimilarProductsProps) 
           className='max-w-[80vw] mx-auto xl:max-w-screen-lg'
           opts={{ dragFree: true, skipSnaps: true, align: 'start' }}>
           <CarouselContent>
-            {products.map((product, index) => (
-              <CarouselItem key={product.asin + index} className='basis-48 grid pb-4'>
+            {products.map(product => (
+              <CarouselItem key={product.id} className='basis-48 grid pb-4'>
                 <Card className='p-2 flex justify-center'>
                   <Link
                     href={`/products/${product.asin}?cat=${product.category}`}
