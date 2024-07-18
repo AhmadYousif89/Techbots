@@ -1,3 +1,4 @@
+// Run: node --loader ts-node/esm .\clean_json.mts
 import { PathLike } from 'fs';
 import { FileHandle, readFile, writeFile } from 'fs/promises';
 
