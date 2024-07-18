@@ -44,7 +44,17 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
 }
 
 async function DisplayProductsGrid(searchParams: SearchParams) {
-  const products = await getProductsGrid(searchParams);
+  let filters = {};
+  try {
+    // const baseUrl = 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+    const res = await fetch(`${baseUrl}/api/products/filter`);
+    // filters = await res.json();;
+    // console.log('filters:', await res.json());
+  } catch (error) {
+    console.error('Error fetching filters:', error);
+  }
+  const products = await getProducts(searchParams, filters);
 
   return (
     <>
@@ -61,28 +71,24 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
 
 const day = 60 * 60 * 24;
 
-const getProductsGrid = cache(
-  async (searchParams: SearchParams) => {
-    const { page, limit, category, sort } = extractSearchParams(searchParams);
-    const start = (+page - 1) * +limit;
-    const end = start + +limit;
+const getProducts = async (searchParams: SearchParams, filters: any) => {
+  const { page, limit, category, sort, fc } = extractSearchParams(searchParams);
+  const start = (+page - 1) * +limit;
+  const end = start + +limit;
 
-    const sortOptions: Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>> = {
-      popular: { rating: 'desc' },
-      newest: { createdAt: 'desc' },
-      'lowest-price': { price: 'asc' },
-      'highest-price': { price: 'desc' }
-    };
+  const sortOptions: Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>> = {
+    popular: { rating: 'desc' },
+    newest: { createdAt: 'desc' },
+    'lowest-price': { price: 'asc' },
+    'highest-price': { price: 'desc' }
+  };
 
-    const products = await prisma.product.findMany({
-      where: category ? { category } : undefined,
-      orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-      take: +limit,
-      skip: start
-    });
+  const products = (await prisma.product.findMany({
+    where: category ? { category } : undefined,
+    orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
+    take: +limit,
+    skip: start
+  })) as TProduct[];
 
-    return products as TProduct[];
-  },
-  ['/products', 'getProductsGrid'],
-  { revalidate: day }
-);
+  return products;
+};

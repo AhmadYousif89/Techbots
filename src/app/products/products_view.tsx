@@ -14,6 +14,8 @@ import { Separator } from '@/components/ui/separator';
 import { PaginationSummary } from './_components/pagination_summary';
 import { ProductGrid } from '@/app/products/_components/product_grid';
 import { FilterProducts } from './_components/filters/filter_products';
+import { SearchProducts } from './_components/filters/search_products';
+import { SortProducts } from './_components/filters/sort_products';
 
 type ProductsViewProps = {
   searchParams: SearchParams;
@@ -52,7 +54,15 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
 
       <Separator />
 
-      <FilterProducts searchParams={searchParams} />
+      <div className='relative'>
+        <FilterProducts searchParams={searchParams} />
+        <div className='absolute right-0 top-[14px] pr-2'>
+          <div className='flex items-center gap-4'>
+            <SearchProducts />
+            <SortProducts />
+          </div>
+        </div>
+      </div>
 
       <ProductGrid searchParams={searchParams} />
     </>
