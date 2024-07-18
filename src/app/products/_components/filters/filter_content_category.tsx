@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useFilter } from '../../_lib/store';
+import { useSearchParams } from 'next/navigation';
 
 export function FilterContentCategory({ data }: { data: Promise<string[]> }) {
   const categories = use(data);
+  const params = useSearchParams();
   const { selectedCategory, setCategory, clearSelectedCategory } = useFilter(
     s => s.category
   );

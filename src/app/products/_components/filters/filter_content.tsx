@@ -3,7 +3,6 @@ import prisma from '@/lib/db';
 import { cache } from '@/lib/cache';
 import { Separator } from '@/components/ui/separator';
 import { SearchParams } from '@/app/products/_lib/types';
-import { ApplyFiltersButton } from './apply_filters_button';
 import { FilterContentPrice } from './filter_content_price';
 import { FilterContentBrands } from './filter_content_brand';
 import { FilterContentCategory } from './filter_content_category';
@@ -30,28 +29,25 @@ export const getCategoryList = cache(
   { revalidate: day }
 );
 
-export const getBrandList = cache(
-  async () => {
-    const brands = await prisma.product.findMany({
-      select: { brand: true },
-      orderBy: { brand: 'asc' }
-    });
-    const list: string[] = [];
-    for (const item of brands) {
-      if (!list.includes(item.brand.toLowerCase())) {
-        if (item.brand.startsWith('Philips')) {
-          list.push('philips');
-          continue;
-        }
-        list.push(item.brand.toLowerCase());
-      }
-    }
+export const getBrandList = async () => {
+  const brands = await prisma.product.findMany({
+    select: { brand: true },
+    orderBy: { brand: 'asc' }
+  });
 
-    return list;
-  },
-  ['/products', 'getBrandList'],
-  { revalidate: day }
-);
+  const list: string[] = [];
+  for (const item of brands) {
+    if (!list.includes(item.brand)) {
+      if (item.brand.startsWith('Philips')) {
+        list.push('philips');
+        continue;
+      }
+      list.push(item.brand);
+    }
+  }
+
+  return list;
+};
 
 type FilterContentProps = {
   searchParams: SearchParams;
@@ -62,32 +58,30 @@ export async function FilterContent({ searchParams }: FilterContentProps) {
   const brands = getBrandList();
 
   return (
-    <div className='grid gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1fr_1.5fr_1fr]'>
-      <section className='space-y-8'>
+    <div className='grid gap-y-8 sm:grid-cols-2 xl:grid-cols-1 xl:max-w-xs'>
+      {/* <section className='space-y-8'>
         <Suspense fallback={<FilterItemsSkeleton />}>
           <FilterContentCategory data={categories} />
         </Suspense>
         <Separator className='sm:w-px sm:h-auto' />
-      </section>
+      </section> */}
 
-      <section className='sm:flex flex-row-reverse gap-8 space-y-8'>
+      <section className='space-y-8'>
         <Suspense fallback={<FilterItemsSkeleton />}>
-          <div className='flex-1 flex flex-col gap-4'>
+          <div className='flex flex-col gap-4'>
             <FilterContentBrands data={brands} />
           </div>
         </Suspense>
-        <Separator className='sm:w-px sm:h-auto' />
+        <Separator className='sm:hidden' />
       </section>
 
-      <Separator className='hidden sm:block col-span-full' />
-      <section className='space-y-8 sm:col-span-full lg:flex lg:flex-row-reverse lg:gap-x-8 lg:col-[3] lg:row-[1]'>
-        <div className='max-w-xl'>
+      <section className='sm:flex sm:flex-row-reverse sm:gap-8 xl:flex-col-reverse'>
+        <div>
           <FilterContentPrice />
+          {/* <ApplyFiltersButton /> */}
         </div>
-        <Separator className='lg:w-px lg:h-auto' />
+        <Separator className='hidden sm:block sm:w-px sm:h-auto xl:w-full xl:h-px ' />
       </section>
-
-      <ApplyFiltersButton />
     </div>
   );
 }

@@ -17,7 +17,9 @@ type FilterProductsProps = {
 export function FilterProducts({ searchParams }: FilterProductsProps) {
   return (
     <Accordion type='single' collapsible className='flex-grow'>
-      <AccordionItem value='filter' className='data-[state="closed"]:border-b-0'>
+      <AccordionItem
+        value='filter'
+        className='data-[state="closed"]:border-b-0 xl:border-b-0'>
         <AccordionTrigger className='group [&>svg]:hidden flex-grow-0 py-6 pl-4 md:pl-10'>
           <div className='flex items-center text-xs gap-2 hover:border-transparent'>
             <Filter className='size-4 group-hover:fill-muted-foreground group-data-[state="open"]:fill-muted-foreground' />

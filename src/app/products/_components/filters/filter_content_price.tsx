@@ -28,7 +28,7 @@ export function FilterContentPrice() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center gap-4'>
         <h3 className='font-medium text-muted-foreground'>Price</h3>
         {(min || max) && (
           <Button
@@ -42,11 +42,12 @@ export function FilterContentPrice() {
           </Button>
         )}
       </div>
-      <div className='grid grid-cols-2 gap-4'>
+      <div className='flex items-center gap-4'>
         <Input
           id='min'
           type='number'
           placeholder='Min'
+          className='xl:w-28'
           value={min}
           onChange={handleMinChange}
         />
@@ -54,10 +55,18 @@ export function FilterContentPrice() {
           id='max'
           type='number'
           placeholder='Max'
+          className='xl:w-28'
           value={max}
           onChange={handleMaxChange}
         />
       </div>
+      <Button
+        size={'sm'}
+        disabled={!min && !max}
+        onClick={() => router.push(url(min, max))}
+        className='text-xs self-start'>
+        Apply
+      </Button>
     </div>
   );
 }

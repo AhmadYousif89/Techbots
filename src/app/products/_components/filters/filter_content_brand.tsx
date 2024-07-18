@@ -1,8 +1,10 @@
 'use client';
-import { use, useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { capitalizeString } from '@/lib/utils';
+import { use, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { extractSearchParams } from '../../_lib/utils';
 import { useFilter } from '../../_lib/store';
+import { capitalizeString } from '@/lib/utils';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,21 +18,50 @@ import {
 
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
+  const router = useRouter();
+  const params = useSearchParams();
   const [showMore, setShowMore] = useState(false);
+  const { brand } = extractSearchParams(params.entries());
   const { selectedBrands, setBrands, clearSelectedBrands } = useFilter(s => s.brands);
 
+  // useEffect(() => {
+  //   if (brand) {
+  //     const brands = brand.includes(',') ? brand.split(',') : [brand];
+  //     setBrands(brands);
+  //   }
+  // }, [brand]);
+
+  console.log('selectedBrands', selectedBrands);
+
   const hasFilterBrand = selectedBrands.length > 0;
-  const end = 20;
+  const end = 24;
   const list = brands.length > end ? brands.slice(0, end) : brands;
+
+  const onBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    setBrands([name]);
+    const brands = [...selectedBrands];
+    if (!brands.includes(name)) {
+      brands.push(name);
+      const newBrandQuery = brands.join(',');
+      router.push(`/products?brand=${newBrandQuery}`);
+    } else {
+      const newBrandQuery = brands.filter(brand => brand !== name).join(',');
+      router.push(`/products?brand=${newBrandQuery}`);
+    }
+  };
 
   return (
     <>
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center gap-4'>
         <h3 className='font-medium text-muted-foreground'>Brands</h3>
         {hasFilterBrand && (
           <Button
             variant={'link'}
-            onClick={() => clearSelectedBrands()}
+            onClick={() => {
+              clearSelectedBrands();
+              router.push('/products');
+            }}
             className='gap-1 text-xs py-0 h-auto font-medium text-muted-foreground hover:text-destructive'>
             <ChevronLeft className='size-3' /> Clear
           </Button>
@@ -47,7 +78,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
                 type='checkbox'
                 className='w-4 h-4 cursor-pointer'
                 checked={selectedBrands.includes(brand)}
-                onChange={e => setBrands(e.target.name)}
+                onChange={onBrandChange}
               />
               <Label
                 htmlFor={key}
@@ -72,7 +103,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
                           type='checkbox'
                           className='w-4 h-4 cursor-pointer'
                           checked={selectedBrands.includes(brand)}
-                          onChange={e => setBrands(e.target.name)}
+                          onChange={onBrandChange}
                         />
                         <Label
                           htmlFor={key}
