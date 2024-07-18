@@ -29,13 +29,3 @@ export const useWishlistMenuState = create<WishlistMenuState>(set => ({
   isOpen: false,
   setIsOpen: isOpen => set({ isOpen })
 }));
-
-type FilterContentState = {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-};
-
-export const useFilterContentState = create<FilterContentState>(set => ({
-  isOpen: false,
-  setIsOpen: isOpen => set({ isOpen })
-}));
