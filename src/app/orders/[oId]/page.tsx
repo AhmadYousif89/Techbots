@@ -50,7 +50,7 @@ export default function OrderPage({ params: { oId } }: OrderProps) {
   );
 
   return (
-    <main className='min-h-screen max-w-screen-xl mx-auto bg-secondary'>
+    <main className='min-h-screen max-view mx-auto bg-secondary'>
       <Card className='px-4 py-8 flex flex-col rounded-none xl:p-8'>
         <CardHeader className='px-0'>
           <CardTitle className='flex items-center'>

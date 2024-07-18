@@ -49,7 +49,7 @@ export default async function Page({ searchParams }: PageProps) {
   }
 
   return (
-    <main className='bg-background min-h-screen max-w-screen-xl mx-auto'>
+    <main className='bg-background min-h-screen max-view mx-auto'>
       <Checkout
         searchParams={searchParams}
         products={products}

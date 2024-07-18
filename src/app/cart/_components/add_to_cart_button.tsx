@@ -44,7 +44,7 @@ export function AddToCartButton({
     <Button
       variant={variant ? variant : isMounted() && cartItem ? 'ghost' : 'default'}
       className={cn(
-        'text-xs lg:text-sm',
+        'text-xs',
         className,
         isMounted() && cartItem ? 'aspect-square rounded-full' : ''
       )}

@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 
 export function HotProducts() {
   return (
-    <section className='px-6 py-20 bg-secondary max-w-screen-xl lg:mx-auto'>
+    <section className='px-6 py-20 bg-secondary max-view lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Featured Collections</h2>
       <Carousel opts={{ align: 'end' }}>
         <CarouselContent>

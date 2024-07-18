@@ -121,7 +121,7 @@ export function CartShippingView() {
 
   return (
     <Card className='rounded-none py-8 min-h-screen'>
-      <CardContent className='grid gap-8 max-w-screen-md lg:grid-cols-2 lg:divide-x lg:justify-between lg:max-w-screen-xl'>
+      <CardContent className='grid gap-8 max-w-screen-md lg:grid-cols-2 lg:divide-x lg:justify-between lg:max-view'>
         <CardHeader className='px-0'>
           <CardTitle className='text-muted-foreground pb-8'>
             Shipping Information

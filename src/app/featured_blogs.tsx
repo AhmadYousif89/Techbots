@@ -15,9 +15,7 @@ import { ExternalLink } from 'lucide-react';
 
 export function LatestBlogs() {
   return (
-    <section
-      id='blogs'
-      className='px-6 py-10 pb-20 bg-secondary max-w-screen-xl lg:mx-auto'>
+    <section id='blogs' className='px-6 py-10 pb-20 bg-secondary max-view lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Latest Tech Blogs</h2>
       <Carousel>
         <CarouselContent>

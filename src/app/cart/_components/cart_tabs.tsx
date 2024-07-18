@@ -28,7 +28,7 @@ export function CartTabs() {
       orientation='vertical'
       onValueChange={onTabChange}
       className='bg-muted pt-10 pb-1'>
-      <TabsList className='grid grid-cols-3 rounded-none h-20 pb-0 sm:px-0 sm:gap-8 md:max-w-screen-lg md:mx-auto md:gap-16 lg:max-w-screen-xl'>
+      <TabsList className='grid grid-cols-3 rounded-none h-20 pb-0 sm:px-0 sm:gap-8 md:max-w-screen-lg md:mx-auto md:gap-16 lg:max-view'>
         <TabsTrigger
           id='cart-list'
           value='cart'
@@ -53,15 +53,15 @@ export function CartTabs() {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value='cart' className='mt-0 mb-1 max-w-screen-xl mx-auto'>
+      <TabsContent value='cart' className='mt-0 mb-1 max-view mx-auto'>
         <CartListView setNextTab={setTabValue} />
       </TabsContent>
 
-      <TabsContent value='details' className='mt-0 mb-1 max-w-screen-xl mx-auto'>
+      <TabsContent value='details' className='mt-0 mb-1 max-view mx-auto'>
         <CartShippingView />
       </TabsContent>
 
-      <TabsContent value='payment' className='mt-0 mb-1 max-w-screen-xl mx-auto'>
+      <TabsContent value='payment' className='mt-0 mb-1 max-view mx-auto'>
         <CartPaymentView />
       </TabsContent>
     </Tabs>

@@ -10,7 +10,7 @@ import { categories } from '@/app/products/_lib/types';
 export function Footer() {
   return (
     <footer id='footer' className='mt-8 px-6 py-20 lg:p-20 bg-background'>
-      <div className='grid gap-8 text-primary lg:gap-y-0 lg:grid-cols-2 max-w-screen-md mx-auto lg:max-w-screen-xl'>
+      <div className='grid gap-8 text-primary lg:gap-y-0 lg:grid-cols-2 max-w-screen-md mx-auto lg:max-view'>
         <div className='lg:max-w-[50ch]'>
           <Logo className='text-2xl text-primary place-self-start mb-2' />
           <Separator />

@@ -40,7 +40,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   const isSuccessful = paymentIntent.status === 'succeeded';
 
   return (
-    <main className='min-h-screen max-w-screen-xl mx-auto bg-background'>
+    <main className='min-h-screen max-view mx-auto bg-background'>
       <Card className='p-6 max-w-screen-sm rounded-none border-0 shadow-none'>
         <CardHeader className='px-0'>
           <CardTitle className='font-semibold'>

@@ -8,7 +8,7 @@ import { MainPageSlideSkeleton } from '@/components/skeletons/main_page_slide_sk
 
 export default function Home() {
   return (
-    <main className='min-h-svh max-w-screen-xl mx-auto'>
+    <main className='min-h-svh max-view mx-auto'>
       <HomeSlider />
       <HotProducts />
       <Suspense fallback={<MainPageSlideSkeleton />}>
