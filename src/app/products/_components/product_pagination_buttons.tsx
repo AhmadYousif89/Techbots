@@ -3,14 +3,24 @@ import { SearchParams } from '@/app/products/_lib/types';
 import { extractSearchParams } from '@/app/products/_lib/utils';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { PaginationButton } from '@/app/products/_components/pagination_button';
+import { getFilters } from './product_grid';
 
 export async function ProductPaginationButtons(searchParams: SearchParams) {
-  const { page, limit, category, sort, min, max, grid } =
+  const { page, limit, category, brand, sort, min, max, grid } =
     extractSearchParams(searchParams);
-  const params = new URLSearchParams({ limit, cat: category, sort, min, max, grid });
+  const params = new URLSearchParams({
+    limit,
+    cat: category,
+    brand,
+    sort,
+    min,
+    max,
+    grid
+  });
 
+  const filters = getFilters(searchParams);
   const totalCount = await prisma.product.count({
-    where: category ? { category } : undefined
+    where: filters
   });
   const totalPages = Math.ceil(totalCount / +limit);
   const start = (+page - 1) * +limit;
