@@ -2,20 +2,19 @@
 
 import { ChangeEventHandler, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { extractSearchParams } from '@/app/products/_lib/utils';
-import { useFilterContentState } from '@/lib/store';
+import { extractSearchParams } from '../../_lib/utils';
+import { useFilter } from '../../_lib/store';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
 
 export function FilterContentPrice() {
   const router = useRouter();
-  const [min, setMin] = useState('');
-  const [max, setMax] = useState('');
-  const { setIsOpen } = useFilterContentState();
-  const data = useSearchParams();
+  const params = useSearchParams();
+  const { min, max, setMax, setMin, clearPrice } = useFilter(s => s.price);
 
-  const { page, limit, category, sort, grid } = extractSearchParams(data.entries());
+  const { page, limit, category, sort, grid } = extractSearchParams(params.entries());
   const url = (min: string = '', max: string = '') =>
     `/products?page=${page}&limit=${limit}&cat=${category}&sort=${sort}&grid=${grid}&min=${min}&max=${max}&cf=true`;
 
@@ -29,7 +28,20 @@ export function FilterContentPrice() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <h3 className='font-medium text-muted-foreground'>Price</h3>
+      <div className='flex items-center justify-between'>
+        <h3 className='font-medium text-muted-foreground'>Price</h3>
+        {(min || max) && (
+          <Button
+            variant={'link'}
+            onClick={() => {
+              clearPrice();
+              router.push(url());
+            }}
+            className='gap-1 text-xs py-0 h-auto font-medium text-muted-foreground hover:text-destructive'>
+            <ChevronLeft className='size-3' /> Clear
+          </Button>
+        )}
+      </div>
       <div className='grid grid-cols-2 gap-4'>
         <Input
           id='min'
@@ -46,16 +58,6 @@ export function FilterContentPrice() {
           onChange={handleMaxChange}
         />
       </div>
-      <Button
-        variant={'outline'}
-        size={'sm'}
-        className='w-fit text-xs font-semibold'
-        onClick={() => {
-          setIsOpen(false);
-          router.push(url(min, max));
-        }}>
-        Apply
-      </Button>
     </div>
   );
 }
