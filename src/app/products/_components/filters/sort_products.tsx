@@ -4,10 +4,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectValue,
   SelectTrigger,
-  SelectValue
+  SelectContent
 } from '@/components/ui/select';
 import { SortValue } from '@/app/products/_lib/types';
 import { extractSearchParams } from '@/app/products/_lib/utils';
@@ -15,14 +15,14 @@ import { extractSearchParams } from '@/app/products/_lib/utils';
 export function SortProducts() {
   const router = useRouter();
   const params = useSearchParams();
-  const [value, setValue] = useState<SortValue | ''>('');
+  const [value, setValue] = useState<SortValue>('');
   const { page, limit, category, grid, sort, min, max } = extractSearchParams(
     params.entries()
   );
 
   const handleSelectChange = (value: SortValue) => {
     setValue(value);
-    const newQueryParams = new URLSearchParams({
+    const params = new URLSearchParams({
       page,
       limit,
       category,
@@ -31,12 +31,12 @@ export function SortProducts() {
       max,
       grid
     });
-    router.push(`/products?${newQueryParams.toString()}`);
+    router.push(`/products?${params.toString()}`);
   };
 
   return (
     <Select value={value ? value : sort} onValueChange={handleSelectChange}>
-      <SelectTrigger className='gap-2 text-xs font-medium border-0 rounded-none py-0'>
+      <SelectTrigger className='gap-1 text-xs font-medium px-1 pl-2 border-0 rounded hover:bg-muted hover:ring-1 hover:ring-input'>
         <SelectValue placeholder='Sort' />
       </SelectTrigger>
       <SelectContent className='justify-center'>
