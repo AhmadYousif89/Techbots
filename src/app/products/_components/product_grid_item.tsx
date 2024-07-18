@@ -22,7 +22,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
   const forceRedirectUrl = `/cart?page=${page}&limit=${limit}&cat=${category}&sort=${sort}&grid=${grid}`;
 
   return (
-    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] max-w-xs justify-self-center p-2 shadow-none border-0'>
+    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] justify-self-center p-2 shadow-none border-0'>
       <Link
         href={prodUrl}
         className='place-self-center rounded active:border active:border-blue-500'>
@@ -49,6 +49,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
       <Separator />
       <CardFooter className='p-0 pt-2 gap-4 justify-between'>
         <AddToCartButton
+          size={'sm'}
           action='BuyNow'
           product={product}
           forceRedirect={forceRedirectUrl}

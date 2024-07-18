@@ -16,7 +16,7 @@ export function ProductGridSize() {
   const newParams = new URLSearchParams({
     page,
     limit,
-    category,
+    cat: category,
     sort,
     min,
     max
