@@ -76,25 +76,10 @@
   body {
     @apply bg-background text-foreground;
   }
+}
 
-  .embla {
-    --slide-size: 100%;
-    --slide-height: 90%;
-    --slide-spacing: 2rem;
-  }
-
-  .embla__viewport {
-    overflow: hidden;
-  }
-
-  .embla__container {
-    display: flex;
-    touch-action: pan-y pinch-zoom;
-    margin-left: calc(var(--slide-spacing) * -1);
-  }
-
-  .embla__slide {
-    flex: 0 0 var(--slide-size);
-    padding-left: var(--slide-spacing);
+@layer utilities {
+  .max-view {
+    max-width: 1400px;
   }
 }
