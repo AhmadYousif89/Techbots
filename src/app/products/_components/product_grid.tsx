@@ -49,8 +49,8 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
     // const baseUrl = 'http://localhost:3000';
     const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
     const res = await fetch(`${baseUrl}/api/products/filter`);
-    // filters = await res.json();;
-    // console.log('filters:', await res.json());
+    filters = await res.json();
+    console.log('filters:', await res.json());
   } catch (error) {
     console.error('Error fetching filters:', error);
   }
