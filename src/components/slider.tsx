@@ -58,7 +58,7 @@ export function HomeSlider() {
               loading='eager'
               src={slide.img}
               alt={'product image'}
-              className='w-full h-full bg-background max-w-screen-xl object-cover md:object-contain md:row-span-full md:col-[2]'
+              className='w-full h-full bg-background max-view object-cover md:object-contain md:row-span-full md:col-[2]'
             />
             <div className='grid place-content-center md:row-span-full gap-4 sm:gap-8 lg:gap-12 text-center bg-gradient-to-b from-primary/50 to-primary/90 xl py-8 px-4 lg:px-16 backdrop-blur-sm'>
               <p className='text-secondary p-4 rounded text-lg lg:text-xl xl:text-2xl'>

@@ -25,9 +25,9 @@ export function CategoryNavMenu() {
           className={cn(
             'absolute left-1/2 -translate-x-1/2 top-[100%]',
             'bg-primary/85 backdrop-blur-sm w-full',
-            'border-0 rounded-none group-data-[state="open"]:border-t max-w-screen-xl'
+            'border-0 rounded-none group-data-[state="open"]:border-t max-view'
           )}>
-          <AccordionContent className='grid p-2 max-w-screen-xl mx-auto'>
+          <AccordionContent className='grid p-2 max-view mx-auto'>
             <div className='flex items-center justify-evenly'>
               {cats.map(category => (
                 <Button
