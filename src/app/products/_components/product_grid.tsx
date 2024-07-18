@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import prisma from '@/lib/db';
-import { cn } from '@/lib/utils';
+import { capitalizeString, cn } from '@/lib/utils';
 import { extractSearchParams } from '../_lib/utils';
-import { SearchParams, SortValue, TProduct } from '../_lib/types';
+import { Category, SearchParams, SortValue, TProduct } from '../_lib/types';
 
 import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
@@ -21,18 +21,17 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
   return (
     <section
       className={cn(
-        'py-8 px-4 max-w-screen-lg mx-auto',
-        'grid gap-8 justify-center',
-        'grid-cols-2',
-        'sm:grid-cols-3',
-        'lg:grid-cols-4',
+        'xl:absolute xl:top-[65px] xl:right-2',
+        'py-8 px-4 max-w-screen-lg ml-auto',
+        'grid gap-8 grid-cols-2',
+        'sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]',
         grid === '2' && 'lg:grid-cols-2',
         grid === '3' && 'lg:grid-cols-3',
         grid === '4' && 'lg:grid-cols-4'
       )}>
       <div className='flex items-center col-span-full'>
         <ProductGridSize />
-        <PaginationSummary className='sm:hidden' searchParams={searchParams} />
+        {/* <PaginationSummary className='sm:hidden' searchParams={searchParams} /> */}
         <ProductPaginationButtons {...searchParams} />
       </div>
 
@@ -44,17 +43,15 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
 }
 
 async function DisplayProductsGrid(searchParams: SearchParams) {
-  let filters = {};
-  try {
-    // const baseUrl = 'http://localhost:3000';
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    const res = await fetch(`${baseUrl}/api/products/filter`);
-    filters = await res.json();
-    console.log('filters:', await res.json());
-  } catch (error) {
-    console.error('Error fetching filters:', error);
+  const products = await getProducts(searchParams);
+
+  if (!products.length) {
+    return (
+      <p className='col-span-full text-xl text-center text-muted-foreground'>
+        No products found
+      </p>
+    );
   }
-  const products = await getProducts(searchParams, filters);
 
   return (
     <>
@@ -71,24 +68,54 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
 
 const day = 60 * 60 * 24;
 
-const getProducts = async (searchParams: SearchParams, filters: any) => {
-  const { page, limit, category, sort, fc } = extractSearchParams(searchParams);
-  const start = (+page - 1) * +limit;
-  const end = start + +limit;
+export function getFilters(searchParams: SearchParams) {
+  const { category, brand, min, max } = extractSearchParams(searchParams);
 
-  const sortOptions: Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>> = {
+  type Filter = { [k: string]: any };
+  let filter: Filter = category ? { category } : {};
+  if (brand && brand.includes(',')) {
+    const list = brand.split(',').map(item => item);
+    filter = { ...filter, brand: { in: list } };
+  } else if (brand) {
+    filter = { ...filter, brand };
+  }
+  if (min || max) {
+    filter = { ...filter, AND: [{ price: { gte: +min } }, { price: { lte: +max } }] };
+  }
+
+  return filter;
+}
+
+const getProducts = async (searchParams: SearchParams) => {
+  const { page, limit, sort } = extractSearchParams(searchParams);
+  const filter = getFilters(searchParams);
+  const start = (+page - 1) * +limit;
+
+  type SortOptions = Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>>;
+  const sortOptions: SortOptions = {
     popular: { rating: 'desc' },
     newest: { createdAt: 'desc' },
     'lowest-price': { price: 'asc' },
     'highest-price': { price: 'desc' }
   };
+  console.log('filter', filter);
+  let args = {};
+  if (Object.values(filter) && Object.values(filter).length > 0) {
+    args = {
+      where: filter,
+      orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
+      take: +limit,
+      skip: start
+    };
+  } else {
+    args = {
+      orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
+      take: +limit,
+      skip: start
+    };
+  }
 
-  const products = (await prisma.product.findMany({
-    where: category ? { category } : undefined,
-    orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-    take: +limit,
-    skip: start
-  })) as TProduct[];
+  const products = await prisma.product.findMany(args);
 
-  return products;
+  return products as TProduct[];
 };
