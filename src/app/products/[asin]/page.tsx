@@ -27,7 +27,7 @@ export default async function SingleProductPage({ params, searchParams }: PagePr
   const { category } = extractSearchParams(searchParams);
 
   return (
-    <main className='grid min-h-screen max-w-screen-xl mx-auto'>
+    <main className='grid min-h-screen max-view mx-auto'>
       <Breadcrumb className='flex items-center col-span-full px-10 bg-muted h-14'>
         <BreadcrumbList>
           <BreadcrumbItem className='text-xs text-muted-foreground'>

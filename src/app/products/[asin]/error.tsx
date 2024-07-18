@@ -16,7 +16,7 @@ export default function ErrorPage() {
     .split('=')[1];
 
   return (
-    <main className='min-h-screen max-w-screen-xl mx-auto bg-background grid place-content-center'>
+    <main className='min-h-screen max-view mx-auto bg-background grid place-content-center'>
       <Card className='p-4 rounded-none max-w-screen-lg mx-auto'>
         <CardHeader className='space-y-4'>
           <CardTitle>Error!</CardTitle>
