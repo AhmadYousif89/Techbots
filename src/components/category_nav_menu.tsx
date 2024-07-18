@@ -12,9 +12,8 @@ import { Button } from './ui/button';
 import { categories } from '@/app/products/_lib/types';
 
 export function CategoryNavMenu() {
-  const start = 0;
   const end = 12;
-  const cats = categories.length > end ? categories.slice(start, end) : categories;
+  const cats = categories.length > end ? categories.slice(0, end) : categories;
 
   return (
     <Accordion type='single' collapsible>
@@ -26,7 +25,7 @@ export function CategoryNavMenu() {
           className={cn(
             'absolute left-1/2 -translate-x-1/2 top-[100%]',
             'bg-primary/85 backdrop-blur-sm w-full',
-            'border-0 rounded-none'
+            'border-0 rounded-none group-data-[state="open"]:border-t max-w-screen-xl'
           )}>
           <AccordionContent className='grid p-2 max-w-screen-xl mx-auto'>
             <div className='flex items-center justify-evenly'>
