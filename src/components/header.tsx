@@ -1,11 +1,12 @@
+import { auth } from '@clerk/nextjs/server';
 import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import { User } from 'lucide-react';
 
 import { Logo } from './logo';
-import { SideMenu } from './side_menu';
-import { CartMenu } from '../app/cart/_components/cart_menu';
 import { MainNav } from './main_nav';
+import { SideMenu } from './side_menu';
 import { WishListMenu } from './wishlist/wishlist_menu';
+import { CartMenu } from '../app/cart/_components/cart_menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,14 +17,13 @@ import {
   DropdownMenuTrigger
 } from './ui/dropdown-menu';
 import { Separator } from './ui/separator';
-import { auth } from '@clerk/nextjs/server';
 
 export function Header() {
   const { userId } = auth();
 
   return (
     <header className='sticky top-0 z-20 h-20 px-8 bg-foreground/85 backdrop-blur-sm'>
-      <div className='flex items-center justify-between max-w-screen-xl h-full mx-auto lg:border-b'>
+      <div className='flex items-center justify-between max-w-screen-xl h-full mx-auto'>
         <SideMenu />
         <Logo />
         <MainNav />
