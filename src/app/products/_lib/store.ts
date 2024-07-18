@@ -12,7 +12,7 @@ export const useFilterContentState = create<FilterContentState>(set => ({
 
 type FilterBrands = {
   selectedBrands: string[];
-  setBrands: (value: string) => void;
+  setBrands: (value: string[]) => void;
   clearSelectedBrands: () => void;
 };
 
@@ -41,18 +41,19 @@ type Filter = {
 export const useFilter = create<Filter>((set, get) => ({
   brands: {
     selectedBrands: [],
-    setBrands: value =>
+    setBrands: values =>
       set(({ brands }) => {
-        if (brands.selectedBrands.includes(value)) {
-          return {
-            brands: {
-              ...brands,
-              selectedBrands: brands.selectedBrands.filter(v => v !== value)
-            }
-          };
-        }
+        const newSelectedBrands = [...brands.selectedBrands];
+        values.forEach(value => {
+          const index = newSelectedBrands.indexOf(value);
+          if (index > -1) {
+            newSelectedBrands.splice(index, 1);
+          } else {
+            newSelectedBrands.push(value);
+          }
+        });
         return {
-          brands: { ...brands, selectedBrands: [...brands.selectedBrands, value] }
+          brands: { ...brands, selectedBrands: newSelectedBrands }
         };
       }),
     clearSelectedBrands: () =>
