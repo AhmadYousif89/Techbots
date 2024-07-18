@@ -36,7 +36,7 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
             <BreadcrumbItem className='text-xs'>
               <BreadcrumbLink href='/products'>Shop</BreadcrumbLink>
             </BreadcrumbItem>
-            {category && (
+            {category && !category.includes(',') && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -49,7 +49,7 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <PaginationSummary className='hidden sm:block' searchParams={searchParams} />
+        <PaginationSummary searchParams={searchParams} />
       </div>
 
       <Separator />
@@ -62,9 +62,8 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
             <SortProducts />
           </div>
         </div>
+        <ProductGrid searchParams={searchParams} />
       </div>
-
-      <ProductGrid searchParams={searchParams} />
     </>
   );
 }
