@@ -22,16 +22,58 @@ model User {
 }
 
 model Cart {
-  id          String    @id @default(cuid())
-  user        User      @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
-  clerkUserId String    @unique @map("clerk_user_id")
-  products    Product[]
-  count       Int
-  total       Float
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id          String     @id @default(cuid())
+  clerkUserId String     @unique @map("clerk_user_id")
+  user        User       @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
+  count       Int        @default(0)
+  totalValue  Float      @default(0) @map("total_value")
+  cartItems   CartItem[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
   @@map("carts")
+}
+
+model CartItem {
+  cartId      String   @map("cart_id")
+  productAsin String   @map("product_asin")
+  quantity    Int      @default(0)
+  Cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  Product     Product  @relation(fields: [productAsin], references: [asin], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@id(fields: [cartId, productAsin], name: "cartItemId", map: "id")
+  @@index(fields: [cartId, productAsin])
+  @@map("cart_items")
+}
+
+model Product {
+  id                 String          @id @default(cuid())
+  asin               String          @unique
+  title              String
+  brand              String
+  color              String?
+  price              Float           @default(0)
+  category           String
+  description        String?
+  rating             Float
+  ratingsTotal       Int             @map("ratings_total")
+  ratingBreakdown    Json            @map("rating_breakdown")
+  mainImage          String          @map("main_image")
+  imagesCount        Int             @default(0) @map("images_count")
+  specificationsFlat String?         @map("specifications_flat")
+  featureBulletsFlat String?         @map("feature_bullets_flat")
+  stockQuantity      Int             @default(0) @map("stock_quantity")
+  cartId             String?         @map("cart_id")
+  images             ProductImages[]
+  topReviews         Review[]
+  orderItems         OrderItem[]
+  cartItems          CartItem[]
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+
+  @@map("products")
 }
 
 model Order {
@@ -39,7 +81,7 @@ model Order {
   user         User        @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
   clerkUserId  String      @unique @map("clerk_user_id")
   shippingInfo Json        @map("shipping_info")
-  pricePaid    Float       @map("price_paid")
+  pricePaid    Float       @default(0) @map("price_paid")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
   orderItems   OrderItem[]
@@ -53,37 +95,9 @@ model OrderItem {
   orderId     String
   product     Product @relation(fields: [productAsin], references: [asin], onDelete: Cascade)
   productAsin String  @map("product_asin")
-  count       Int
+  count       Int     @default(0)
 
   @@map("order_items")
-}
-
-model Product {
-  id                 String          @id @default(cuid())
-  asin               String          @unique
-  title              String
-  brand              String
-  color              String?
-  price              Int
-  category           String
-  description        String?
-  rating             Float
-  ratingsTotal       Int             @map("ratings_total")
-  ratingBreakdown    Json            @map("rating_breakdown")
-  mainImage          String          @map("main_image")
-  imagesCount        Int             @map("images_count")
-  specificationsFlat String?         @map("specifications_flat")
-  featureBulletsFlat String?         @map("feature_bullets_flat")
-  stockQuantity      Int             @map("stock_quantity")
-  Cart               Cart?           @relation(fields: [cartId], references: [id], onDelete: SetNull)
-  cartId             String?         @map("cart_id")
-  images             ProductImages[]
-  topReviews         Review[]
-  orderItems         OrderItem[]
-  createdAt          DateTime        @default(now()) @map("created_at")
-  updatedAt          DateTime        @updatedAt @map("updated_at")
-
-  @@map("products")
 }
 
 model ProductImages {
