@@ -17,13 +17,13 @@ export function extractSearchParams(
   const result = {
     page: '1',
     limit: customLimit,
+    brand: '',
     category: '' as Category,
     sort: '' as SortValue,
     grid: '4',
     selectedRating: '',
     min: '',
-    max: '',
-    fc: ''
+    max: ''
   };
   type Result = typeof result;
 
