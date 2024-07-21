@@ -18,11 +18,13 @@ export function HotProducts() {
   return (
     <section className='px-6 py-20 bg-secondary max-view lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Featured Collections</h2>
-      <Carousel opts={{ align: 'end' }}>
+      <Carousel opts={{ align: 'end' }} className='max-w-screen-xl mx-auto'>
         <CarouselContent>
           {featuredProducts.map(item => (
-            <CarouselItem key={item.id} className='basis-11/12 sm:basis-1/2 lg:basis-1/3'>
-              <Card className='grid max-w-lg h-full'>
+            <CarouselItem
+              key={item.id}
+              className='grid basis-11/12 sm:basis-1/2 lg:basis-1/3'>
+              <Card className='grid'>
                 <CardHeader>
                   <h3 className='text-lg font-semibold'>{item.name}</h3>
                   <p className='mt-2 text-sm text-gray-500'>{item.description}</p>
