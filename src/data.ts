@@ -1,30 +1,30 @@
 export const featuredProducts = [
   {
     id: 1,
+    name: 'VEGER Portable Charger Powerbank',
+    description: 'Shop high quality type C powerbanks',
+    price: '$54.00',
+    buttonTitle: 'Shop Now',
+    image: 'https://i.ibb.co/svWYstT/highlights-Three.webp',
+    url: '/products/B097TQZ38L?cat=powerbanks'
+  },
+  {
+    id: 2,
+    name: 'OnePlus Nord N30 5G',
+    description: 'Shop the latest OnePlus flagship mobiles',
+    price: '$299.00',
+    buttonTitle: 'Shop Now',
+    image: 'https://i.ibb.co/bLRNKGq/highlights-Two.webp',
+    url: '/products/B0C22BRGLG?cat=mobiles'
+  },
+  {
+    id: 3,
     name: 'Bose QuietComfort Ultra',
     description: 'Discover the latest HQ headphones',
     price: '$429.00',
     buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/G951N5B/highlights-One.webp',
     url: '/products/B0CCZ1L489?cat=headphones'
-  },
-  {
-    id: 2,
-    name: 'Colorful Redmi Note 6 Pro',
-    description: 'Shop the latest mobiles flagship',
-    price: '$330.00',
-    buttonTitle: 'Shop Mobiles',
-    image: 'https://i.ibb.co/bLRNKGq/highlights-Two.webp',
-    url: '/products?cat=mobiles'
-  },
-  {
-    id: 3,
-    name: '10000 mAh Power Bank',
-    description: 'High quality power banks',
-    price: '$90.00',
-    buttonTitle: 'Shop Now',
-    image: 'https://i.ibb.co/svWYstT/highlights-Three.webp',
-    url: '/products?cat=powerbanks'
   }
 ];
 
