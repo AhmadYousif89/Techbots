@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { blogsData } from '@/data';
+import { ExternalLink } from 'lucide-react';
 
 import {
   Carousel,
@@ -11,13 +12,12 @@ import {
 } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { ExternalLink } from 'lucide-react';
 
 export function LatestBlogs() {
   return (
     <section id='blogs' className='px-6 py-10 pb-20 bg-secondary max-view lg:mx-auto'>
       <h2 className='text-2xl font-bold mb-12'>Latest Tech Blogs</h2>
-      <Carousel>
+      <Carousel className='max-w-screen-xl mx-auto'>
         <CarouselContent>
           {blogsData.map(item => (
             <CarouselItem key={item.id} className='basis-10/12 sm:basis-1/2 lg:basis-1/3'>
@@ -38,7 +38,7 @@ export function LatestBlogs() {
                 <CardFooter className='mt-auto'>
                   <Button size='sm' variant='outline' className='group'>
                     <Link href={item.url} className='flex items-center gap-2'>
-                      Read{' '}
+                      Read
                       <ExternalLink className='size-4 text-muted-foreground group-hover:text-blue-500' />
                     </Link>
                   </Button>
