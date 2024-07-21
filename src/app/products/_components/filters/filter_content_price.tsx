@@ -14,59 +14,105 @@ export function FilterContentPrice() {
   const params = useSearchParams();
   const { min, max, setMax, setMin, clearPrice } = useFilter(s => s.price);
 
-  const { page, limit, category, sort, grid } = extractSearchParams(params.entries());
-  const url = (min: string = '', max: string = '') =>
-    `/products?page=${page}&limit=${limit}&cat=${category}&sort=${sort}&grid=${grid}&min=${min}&max=${max}&cf=true`;
+  const {
+    page,
+    limit,
+    category,
+    brand,
+    sort,
+    grid,
+    min: paramMin,
+    max: paramMax
+  } = extractSearchParams(params.entries());
+  const newParams = new URLSearchParams({
+    ...(page && { page }),
+    ...(limit && { limit }),
+    ...(limit && { limit }),
+    ...(category && { cat: category }),
+    ...(brand && { brand }),
+    ...(sort && { sort }),
+    ...(grid && { grid })
+  });
+  const url = () => `/products?${newParams.toString()}`;
 
   const handleMinChange: ChangeEventHandler<HTMLInputElement> = e => {
-    setMin(e.target.value);
+    setMin(parseInt(e.target.value) + '');
   };
 
   const handleMaxChange: ChangeEventHandler<HTMLInputElement> = e => {
-    setMax(e.target.value);
+    setMax(parseInt(e.target.value) + '');
   };
 
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='flex items-center gap-4'>
+    <form
+      className='grid gap-4 self-start'
+      onSubmit={e => {
+        e.preventDefault();
+        router.push(
+          url() + `&min=${min ? min : paramMin}` + `&max=${max ? max : paramMax}`
+        );
+      }}>
+      <div className='flex items-center justify-between gap-4'>
         <h3 className='font-medium text-muted-foreground'>Price</h3>
-        {(min || max) && (
+        {(paramMin || paramMax) && (
           <Button
+            type='button'
             variant={'link'}
             onClick={() => {
               clearPrice();
               router.push(url());
             }}
             className='gap-1 text-xs py-0 h-auto font-medium text-muted-foreground hover:text-destructive'>
-            <ChevronLeft className='size-3' /> Clear
+            <ChevronLeft className='size-3' /> Reset
           </Button>
         )}
       </div>
       <div className='flex items-center gap-4'>
         <Input
           id='min'
+          min={1}
+          max={5000}
           type='number'
           placeholder='Min'
           className='xl:w-28'
-          value={min}
+          value={min ? min : paramMin}
           onChange={handleMinChange}
         />
         <Input
           id='max'
+          min={1}
+          max={5000}
           type='number'
           placeholder='Max'
           className='xl:w-28'
-          value={max}
+          value={max ? max : paramMax}
           onChange={handleMaxChange}
         />
       </div>
+      <small className='text-muted-foreground font-medium'>
+        {paramMin && paramMax ? (
+          <>
+            Showing prices between{' '}
+            <strong>
+              {paramMin} & {paramMax}
+            </strong>
+          </>
+        ) : paramMin ? (
+          <>
+            Showing prices with minimum value of <strong>{paramMin}</strong>
+          </>
+        ) : paramMax ? (
+          <>
+            Showing prices with maximum value of <strong>{paramMax}</strong>
+          </>
+        ) : null}
+      </small>
       <Button
         size={'sm'}
-        disabled={!min && !max}
-        onClick={() => router.push(url(min, max))}
-        className='text-xs self-start'>
+        disabled={+min < 1 && +max < 1}
+        className='text-xs justify-self-start min-w-20 active:translate-y-1 duration-200 transition-transform'>
         Apply
       </Button>
-    </div>
+    </form>
   );
 }
