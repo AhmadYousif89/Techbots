@@ -13,6 +13,7 @@ export const useFilterContentState = create<FilterContentState>(set => ({
 type FilterBrands = {
   selectedBrands: string[];
   setBrands: (value: string[]) => void;
+  toggleBrands: (value: string[]) => void;
   clearSelectedBrands: () => void;
 };
 
@@ -41,7 +42,13 @@ type Filter = {
 export const useFilter = create<Filter>((set, get) => ({
   brands: {
     selectedBrands: [],
-    setBrands: values =>
+    setBrands: (values: string[]) => {
+      set(({ brands }) => ({
+        brands: { ...brands, selectedBrands: values }
+      }));
+    },
+    toggleBrands: values => {
+      console.log('setBrands called with:', values);
       set(({ brands }) => {
         const newSelectedBrands = [...brands.selectedBrands];
         values.forEach(value => {
@@ -52,10 +59,12 @@ export const useFilter = create<Filter>((set, get) => ({
             newSelectedBrands.push(value);
           }
         });
+        console.log('Updated selectedBrands:', newSelectedBrands);
         return {
           brands: { ...brands, selectedBrands: newSelectedBrands }
         };
-      }),
+      });
+    },
     clearSelectedBrands: () =>
       set(({ brands }) => ({ brands: { ...brands, selectedBrands: [] } }))
   },

@@ -20,7 +20,7 @@ export function extractSearchParams(
     brand: '',
     category: '' as Category,
     sort: '' as SortValue,
-    grid: '4',
+    grid: '',
     selectedRating: '',
     min: '',
     max: ''
