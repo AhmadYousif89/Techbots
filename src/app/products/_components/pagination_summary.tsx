@@ -15,9 +15,7 @@ export async function PaginationSummary({
 }: PaginationSummaryProps) {
   const { page, limit } = extractSearchParams(searchParams);
   const filters = getFilters(searchParams);
-  const totalCount = await prisma.product.count({
-    where: filters
-  });
+  const totalCount = await prisma.product.count({ where: filters });
   const start = (+page - 1) * +limit;
   const end = start + +limit;
 
