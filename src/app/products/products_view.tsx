@@ -54,10 +54,17 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
 
       <Separator />
 
-      <div className='relative'>
+      <div className='relative xl:hidden'>
         <FilterProducts searchParams={searchParams} />
-        <div className='absolute right-0 top-[14px] pr-2'>
-          <div className='flex items-center gap-4'>
+        <div className='absolute right-0 top-[14px] pr-2 md:pr-8 flex items-center gap-4'>
+          <SearchProducts />
+          <SortProducts />
+        </div>
+      </div>
+      <div className='xl:grid xl:gap-4 xl:grid-cols-[minmax(20%,auto),1fr]'>
+        <div className='relative hidden xl:flex self-start justify-between pt-6'>
+          <FilterProducts searchParams={searchParams} open='filter' />
+          <div className='absolute right-0 top-9 flex items-center gap-4'>
             <SearchProducts />
             <SortProducts />
           </div>
