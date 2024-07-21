@@ -16,22 +16,23 @@ export function SortProducts() {
   const router = useRouter();
   const params = useSearchParams();
   const [value, setValue] = useState<SortValue>('');
-  const { page, limit, category, grid, sort, min, max } = extractSearchParams(
+  const { page, limit, category, brand, grid, sort, min, max } = extractSearchParams(
     params.entries()
   );
 
   const handleSelectChange = (value: SortValue) => {
     setValue(value);
-    const params = new URLSearchParams({
-      page,
-      limit,
-      category,
+    const newParams = new URLSearchParams({
+      ...(page && { page }),
+      ...(limit && { limit }),
+      ...(category && { category }),
+      ...(brand && { brand }),
       sort: value,
-      min,
-      max,
-      grid
+      ...(min && { min }),
+      ...(max && { max }),
+      ...(grid && { grid })
     });
-    router.push(`/products?${params.toString()}`);
+    router.push(`/products?${newParams.toString()}`);
   };
 
   return (
