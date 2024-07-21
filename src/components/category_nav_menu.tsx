@@ -32,7 +32,7 @@ export function CategoryNavMenu({ data }: { data: Promise<string[]> }) {
   });
   const end = 14;
   const cats = categories.length > end ? categories.slice(0, end) : categories;
-  const url = (cat: String) => `/products/?cat=${cat}&${newParams.toString()}`;
+  const url = (cat: string) => `/products/?cat=${cat}&${newParams.toString()}`;
 
   return (
     <Accordion type='single' collapsible>
