@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { CategoryNavMenu } from './category_nav_menu';
+import { getCategoryList } from '@/lib/products';
 
-export function MainNav() {
+export async function MainNav() {
+  const categories = getCategoryList();
+
   return (
     <nav className='hidden lg:flex items-center'>
       <ul className='flex items-center space-x-6'>
@@ -21,7 +24,7 @@ export function MainNav() {
           </Link>
         </li>
         <li>
-          <CategoryNavMenu />
+          <CategoryNavMenu data={categories} />
         </li>
         <li>
           <Link href='/#blogs'>

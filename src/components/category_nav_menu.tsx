@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { cn, capitalizeString } from '@/lib/utils';
 
@@ -9,11 +10,29 @@ import {
 } from './ui/accordion';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { categories } from '@/app/products/_lib/types';
+import { use } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 
-export function CategoryNavMenu() {
-  const end = 12;
+export function CategoryNavMenu({ data }: { data: Promise<string[]> }) {
+  let categories = use(data);
+  categories = categories.filter(cat => !cat.startsWith('smart'));
+  const params = useSearchParams();
+  const { page, limit, sort, brand, min, max, grid } = extractSearchParams(
+    params.entries()
+  );
+  const newParams = new URLSearchParams({
+    ...(page && { page }),
+    ...(limit && { limit }),
+    ...(brand && { brand }),
+    ...(sort && { sort }),
+    ...(min && { min }),
+    ...(max && { max }),
+    ...(grid && { grid })
+  });
+  const end = 14;
   const cats = categories.length > end ? categories.slice(0, end) : categories;
+  const url = (cat: String) => `/products/?cat=${cat}&${newParams.toString()}`;
 
   return (
     <Accordion type='single' collapsible>
@@ -31,13 +50,16 @@ export function CategoryNavMenu() {
             <div className='flex items-center justify-evenly'>
               {cats.map(category => (
                 <Button
-                  key={category}
                   asChild
+                  key={category}
                   variant={'link'}
-                  className='px-0 text-secondary justify-normal underline-offset-8 text-xs'>
-                  <Link href={`/products?cat=${category}`}>
-                    {capitalizeString(category)}
-                  </Link>
+                  aria-selected={category === params.get('cat')}
+                  onClick={() => {
+                    console.log('newParams: ', newParams.toString());
+                    console.log('url: ', url(category));
+                  }}
+                  className='px-0 text-secondary text-xs aria-selected:text-blue-400 aria-selected:underline'>
+                  <Link href={url(category)}>{capitalizeString(category)}</Link>
                 </Button>
               ))}
             </div>
@@ -48,13 +70,11 @@ export function CategoryNavMenu() {
                     <div className='flex flex-wrap gap-x-12 items-center justify-center'>
                       {categories.slice(end).map(category => (
                         <Button
-                          key={category}
                           asChild
+                          key={category}
                           variant={'link'}
-                          className='px-0 text-secondary justify-normal underline-offset-8 text-xs'>
-                          <Link href={`/products?cat=${category}`}>
-                            {capitalizeString(category)}
-                          </Link>
+                          className='px-0 text-secondary text-xs'>
+                          <Link href={url(category)}>{capitalizeString(category)}</Link>
                         </Button>
                       ))}
                     </div>
