@@ -9,19 +9,17 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
   const { page, limit, category, brand, sort, min, max, grid } =
     extractSearchParams(searchParams);
   const params = new URLSearchParams({
-    limit,
-    cat: category,
-    brand,
-    sort,
-    min,
-    max,
-    grid
+    ...(limit && { limit }),
+    ...(category && { category }),
+    ...(brand && { brand }),
+    ...(sort && { sort }),
+    ...(min && { min }),
+    ...(max && { max }),
+    ...(grid && { grid })
   });
 
   const filters = getFilters(searchParams);
-  const totalCount = await prisma.product.count({
-    where: filters
-  });
+  const totalCount = await prisma.product.count({ where: filters });
   const totalPages = Math.ceil(totalCount / +limit);
   const start = (+page - 1) * +limit;
   const end = start + +limit;
@@ -30,17 +28,19 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
 
   return (
     <div className='flex items-center justify-center gap-2 ml-auto'>
+      {totalPages > 2 && (
+        <PaginationButton
+          className='size-6 p-1 disabled:opacity-25'
+          elementId='reviews'
+          disabled={!hasPrevPage}
+          href={`/products/?page=${
+            +page - totalPages > 0 ? +page - totalPages : 1
+          }&${params.toString()}`}>
+          <ChevronsLeft />
+        </PaginationButton>
+      )}
       <PaginationButton
-        className='size-6 p-1'
-        elementId='reviews'
-        disabled={!hasPrevPage}
-        href={`/products/?page=${
-          +page - totalPages > 0 ? +page - totalPages : 1
-        }&${params.toString()}`}>
-        <ChevronsLeft />
-      </PaginationButton>
-      <PaginationButton
-        className='size-6 p-1'
+        className='size-6 p-1 disabled:opacity-25'
         elementId='reviews'
         disabled={!hasPrevPage}
         href={`/products/?page=${+page - 1}&${params.toString()}`}>
@@ -50,19 +50,23 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
         {page} / {totalPages}
       </span>
       <PaginationButton
-        className='size-6 p-1'
+        className='size-6 p-1 disabled:opacity-25'
         elementId='reviews'
         disabled={!hasNextPage}
         href={`/products/?page=${+page + 1}&${params.toString()}`}>
         <ChevronRight />
       </PaginationButton>
-      <PaginationButton
-        className='size-6 p-1'
-        elementId='reviews'
-        disabled={!hasNextPage}
-        href={`/products/?page=${totalPages}&${params.toString()}`}>
-        <ChevronsRight />
-      </PaginationButton>
+      {totalPages > 2 && (
+        <PaginationButton
+          className='size-6 p-1 disabled:opacity-25'
+          elementId='reviews'
+          disabled={!hasNextPage}
+          href={`/products/?page=${
+            +page + totalPages < totalPages ? +page + totalPages : totalPages
+          }&${params.toString()}`}>
+          <ChevronsRight />
+        </PaginationButton>
+      )}
     </div>
   );
 }
