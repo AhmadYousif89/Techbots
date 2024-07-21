@@ -11,7 +11,7 @@ type PageProps = {
 
 export default function ProductsPage({ searchParams }: PageProps) {
   return (
-    <main className='min-h-screen xl:h-[1400px] max-view mx-auto bg-background'>
+    <main className='min-h-screen max-view mx-auto bg-background'>
       <Card className='pb-8 rounded-none border-0 shadow-none'>
         <Suspense fallback={<ProductsViewSkeleton />}>
           <ProductsView searchParams={searchParams} />
