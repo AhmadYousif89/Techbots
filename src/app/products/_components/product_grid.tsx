@@ -119,9 +119,14 @@ const getProducts = cache(
       };
     }
 
-    const products = await prisma.product.findMany(args);
+    let products: TProduct[] = [];
+    try {
+      products = (await prisma.product.findMany(args)) as TProduct[];
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
 
-    return products as TProduct[];
+    return products;
   },
   ['/products', 'getProducts'],
   { revalidate: day }
