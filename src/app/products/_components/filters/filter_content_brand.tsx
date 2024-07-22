@@ -13,7 +13,7 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from '@/components/ui/accordion';
 
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
@@ -43,7 +43,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
     ...(sort && { sort }),
     ...(min && { min }),
     ...(max && { max }),
-    ...(grid && { grid })
+    ...(grid && { grid }),
   });
 
   const url = () => `/products/?${newParams.toString()}`;
@@ -72,11 +72,8 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
         <h3 className='flex items-center gap-2 font-medium text-muted-foreground'>
           Brands
           {selectedBrands.length > 0 && (
-            <small>
-              <strong className='text-blue-500 ring-1 rounded-full aspect-square size-5 inline-grid place-content-center mr-1'>
-                {selectedBrands.length}
-              </strong>
-              total selected
+            <small className='text-primary ring-1 ring-input shadow rounded-full aspect-square size-5 inline-grid place-content-center font-semibold'>
+              {selectedBrands.length}
             </small>
           )}
         </h3>
