@@ -1,7 +1,7 @@
 'use server';
 
-import { cache } from '@/lib/cache';
 import prisma from '@/lib/db';
+import { cache } from '@/lib/cache';
 import { CartItem } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 
@@ -10,7 +10,7 @@ export const syncCart = cache(
   (clerkUserId: string, cart: CartItem[]) => {
     const localCartItems = cart.map(item => ({
       productAsin: item.asin,
-      quantity: item.quantity
+      quantity: item.quantity,
     }));
 
     const cartTotalValue = cart.reduce(
@@ -23,9 +23,9 @@ export const syncCart = cache(
         where: { clerkUserId },
         include: {
           cartItems: {
-            where: { Cart: { clerkUserId } }
-          }
-        }
+            where: { Cart: { clerkUserId } },
+          },
+        },
       });
 
       if (!serverCart) {
@@ -35,9 +35,9 @@ export const syncCart = cache(
             count: cart.length,
             totalValue: cartTotalValue,
             cartItems: {
-              create: localCartItems
-            }
-          }
+              create: localCartItems,
+            },
+          },
         });
         return;
       }
@@ -52,7 +52,7 @@ export const syncCart = cache(
         return {
           cartId: serverCart.id,
           productAsin: item.productAsin,
-          quantity: serverQuantity + item.quantity
+          quantity: serverQuantity + item.quantity,
         };
       }); // this should return an array of cart items with the updated quantities
 
@@ -66,18 +66,18 @@ export const syncCart = cache(
       await prisma.cartItem.deleteMany({
         where: {
           cartId: serverCart.id,
-          productAsin: { in: deletedCartItems }
-        }
+          productAsin: { in: deletedCartItems },
+        },
       });
 
       await prisma.cartItem.createMany({
         data: updatedCartItems,
-        skipDuplicates: true
+        skipDuplicates: true,
       });
 
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue: cartTotalValue, count: cart.length }
+        data: { totalValue: cartTotalValue, count: cart.length },
       });
     });
     revalidatePath('/cart');
@@ -93,9 +93,9 @@ export const addRemoveCartItem = cache(
         where: { clerkUserId },
         include: {
           cartItems: {
-            where: { Cart: { clerkUserId } }
-          }
-        }
+            where: { Cart: { clerkUserId } },
+          },
+        },
       });
 
       if (!cart) {
@@ -105,9 +105,9 @@ export const addRemoveCartItem = cache(
             count: 1,
             totalValue: itemPrice,
             cartItems: {
-              create: { productAsin: asin, quantity: 1 }
-            }
-          }
+              create: { productAsin: asin, quantity: 1 },
+            },
+          },
         });
         return;
       }
@@ -116,18 +116,18 @@ export const addRemoveCartItem = cache(
       let totalValue = cart.totalValue;
 
       const cartItem = await prisma.cartItem.findUnique({
-        where: { cartItemId: { cartId: cart.id, productAsin: asin } }
+        where: { cartItemId: { cartId: cart.id, productAsin: asin } },
       });
 
       if (cartItem) {
         await prisma.cartItem.delete({
-          where: { cartItemId: { cartId: cart.id, productAsin: asin } }
+          where: { cartItemId: { cartId: cart.id, productAsin: asin } },
         });
         totalValue -= itemPrice;
         cartCount -= 1;
       } else {
         await prisma.cartItem.create({
-          data: { cartId: cart.id, productAsin: asin, quantity: 1 }
+          data: { cartId: cart.id, productAsin: asin, quantity: 1 },
         });
         totalValue += itemPrice;
         cartCount += 1;
@@ -135,7 +135,7 @@ export const addRemoveCartItem = cache(
 
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue, count: cartCount }
+        data: { totalValue, count: cartCount },
       });
     });
     revalidatePath('/cart');
@@ -150,9 +150,9 @@ export const updateCartItem = cache(
         where: { clerkUserId },
         include: {
           cartItems: {
-            where: { Cart: { clerkUserId } }
-          }
-        }
+            where: { Cart: { clerkUserId } },
+          },
+        },
       });
 
       if (!cart) {
@@ -160,7 +160,7 @@ export const updateCartItem = cache(
       }
 
       const cartItem = await prisma.cartItem.findUnique({
-        where: { cartItemId: { cartId: cart.id, productAsin: asin } }
+        where: { cartItemId: { cartId: cart.id, productAsin: asin } },
       });
 
       if (!cartItem) {
@@ -172,21 +172,21 @@ export const updateCartItem = cache(
 
       if (cartItem.quantity === 1) {
         await prisma.cartItem.delete({
-          where: { cartItemId: { cartId: cart.id, productAsin: asin } }
+          where: { cartItemId: { cartId: cart.id, productAsin: asin } },
         });
         totalValue -= itemPrice;
         cartCount -= 1;
       } else {
         const cartItem = await prisma.cartItem.update({
           where: { cartItemId: { cartId: cart.id, productAsin: asin } },
-          data: { quantity: { increment: 1 } }
+          data: { quantity: { increment: 1 } },
         });
         totalValue += itemPrice * cartItem.quantity;
       }
 
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue, count: cartCount }
+        data: { totalValue, count: cartCount },
       });
     });
     revalidatePath('/cart');
@@ -201,9 +201,9 @@ export const removeCartItem = cache(
         where: { clerkUserId },
         include: {
           cartItems: {
-            where: { Cart: { clerkUserId } }
-          }
-        }
+            where: { Cart: { clerkUserId } },
+          },
+        },
       });
 
       if (!cart) {
@@ -211,7 +211,7 @@ export const removeCartItem = cache(
       }
 
       const cartItem = await prisma.cartItem.findUnique({
-        where: { cartItemId: { cartId: cart.id, productAsin: asin } }
+        where: { cartItemId: { cartId: cart.id, productAsin: asin } },
       });
 
       if (!cartItem) {
@@ -219,7 +219,7 @@ export const removeCartItem = cache(
       }
 
       await prisma.cartItem.delete({
-        where: { cartItemId: { cartId: cart.id, productAsin: asin } }
+        where: { cartItemId: { cartId: cart.id, productAsin: asin } },
       });
 
       const totalValue = cart.totalValue - itemPrice * cartItem.quantity;
@@ -227,7 +227,7 @@ export const removeCartItem = cache(
 
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue, count: cartCount }
+        data: { totalValue, count: cartCount },
       });
     });
     revalidatePath('/cart');
@@ -242,9 +242,9 @@ export const clearCart = cache(
         where: { clerkUserId },
         include: {
           cartItems: {
-            where: { Cart: { clerkUserId } }
-          }
-        }
+            where: { Cart: { clerkUserId } },
+          },
+        },
       });
 
       if (!cart) {
@@ -252,12 +252,12 @@ export const clearCart = cache(
       }
 
       await prisma.cartItem.deleteMany({
-        where: { cartId: cart.id }
+        where: { cartId: cart.id },
       });
 
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue: 0, count: 0 }
+        data: { totalValue: 0, count: 0 },
       });
     });
     revalidatePath('/cart');
