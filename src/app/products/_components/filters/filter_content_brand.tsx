@@ -29,7 +29,6 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
     ...(sp.page && { page: sp.page }),
     ...(sp.limit && { limit: sp.limit }),
     ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
     ...(sp.sort && { sort: sp.sort }),
     ...(sp.min && { min: sp.min }),
     ...(sp.max && { max: sp.max }),
