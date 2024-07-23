@@ -60,13 +60,19 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
         <ChevronLeft />
       </PaginationButton>
       <span className='text-xs text-muted-foreground font-semibold'>
-        <SelectPaginations
-          page={page}
-          newParams={newParams.toString()}
-          startingPage={startingPage}
-          endingPage={endingPage}
-          totalPages={totalPages}
-        />
+        {totalPages <= 2 ? (
+          <>
+            {startingPage} / {endingPage}
+          </>
+        ) : (
+          <SelectPaginations
+            page={page}
+            newParams={newParams.toString()}
+            startingPage={startingPage}
+            endingPage={endingPage}
+            totalPages={totalPages}
+          />
+        )}
       </span>
       <PaginationButton
         className='size-6 p-1 disabled:opacity-25'
