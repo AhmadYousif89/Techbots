@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import { AddReview } from './add_review';
 import { ReviewItem } from './review_item';
@@ -63,6 +63,7 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
       <div className='space-y-8'>
         <ReviewsPaginationButtons
           asin={asin}
+          searchParams={searchParams}
           hasPrevPage={hasPrevPage}
           hasNextPage={hasNextPage}
           totalPages={totalPages}
@@ -77,7 +78,7 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
   return (
     <CardContent>
       <section className='flex flex-col lg:flex-row lg:justify-between gap-8'>
-        <RatingOverview product={product} />
+        <RatingOverview searchParams={searchParams} product={product} />
         <Card className='p-6 flex-1 lg:basis-full flex flex-col justify-between'>
           <>{content}</>
           <CardFooter className='p-6 px-0'>
@@ -91,9 +92,10 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
 
 type RatingOverviewProps = {
   product: Pick<TProduct, 'asin' | 'rating' | 'ratingsTotal' | 'ratingBreakdown'>;
+  searchParams: SearchParams;
 };
 
-function RatingOverview({ product }: RatingOverviewProps) {
+function RatingOverview({ product, searchParams }: RatingOverviewProps) {
   const { asin, rating, ratingsTotal } = product;
   const ratingBreakdown = product.ratingBreakdown as RatingBreakdown;
 
@@ -115,6 +117,7 @@ function RatingOverview({ product }: RatingOverviewProps) {
       </Card>
       <ReviewsRatingBars
         asin={asin}
+        searchParams={searchParams}
         ratingsTotal={ratingsTotal}
         ratingBreakdown={ratingBreakdown}
       />
