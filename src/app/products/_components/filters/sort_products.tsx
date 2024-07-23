@@ -40,7 +40,10 @@ export function SortProducts() {
   };
 
   return (
-    <Select value={value ? value : sp.sort} onValueChange={handleSelectChange}>
+    <Select
+      name='sort'
+      value={value ? value : sp.sort}
+      onValueChange={handleSelectChange}>
       <SelectTrigger className='gap-1 text-xs font-medium px-1 pl-2 border-0 rounded hover:bg-muted hover:ring-1 hover:ring-input'>
         <SelectValue placeholder='Sort' />
       </SelectTrigger>

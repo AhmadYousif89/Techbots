@@ -23,7 +23,7 @@ export function extractSearchParams(
     grid: '',
     selectedRating: '',
     min: '',
-    max: ''
+    max: '',
   };
   type Result = typeof result;
 
