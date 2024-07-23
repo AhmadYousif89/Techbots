@@ -11,13 +11,23 @@ type PaginationSummaryProps = {
 
 export async function PaginationSummary({
   searchParams,
-  className
+  className,
 }: PaginationSummaryProps) {
   const { page, limit } = extractSearchParams(searchParams);
   const filters = getFilters(searchParams);
   const totalCount = await prisma.product.count({ where: filters });
   const start = (+page - 1) * +limit;
   const end = start + +limit;
+  const totalPages = Math.ceil(totalCount / +limit);
+  if (+page > totalPages) {
+    return (
+      <p className={cn('text-xs font-medium text-muted-foreground', className)}>
+        <span className='font-semibold'>0</span> -{' '}
+        <span className='font-semibold'>0</span> of{' '}
+        <span className='font-semibold'>0</span> results
+      </p>
+    );
+  }
 
   return (
     <p className={cn('text-xs font-medium text-muted-foreground', className)}>
