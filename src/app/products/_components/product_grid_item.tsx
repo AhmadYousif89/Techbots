@@ -17,25 +17,16 @@ type Props = {
 };
 
 export async function ProductGridItem({ product, searchParams }: Props) {
-  const {
-    page,
-    limit,
-    category: cat,
-    brand,
-    min,
-    max,
-    sort,
-    grid
-  } = extractSearchParams(searchParams);
-  const params = new URLSearchParams({
-    ...(page && { page }),
-    ...(limit && { limit }),
-    ...(cat ? { cat } : {}),
-    ...(brand ? { brand } : {}),
-    ...(sort ? { sort } : {}),
-    ...(min ? { min } : {}),
-    ...(max ? { max } : {}),
-    ...(grid ? { grid } : {})
+  const sp = extractSearchParams(searchParams);
+  const newParams = new URLSearchParams({
+    ...(sp.page && { page: sp.page }),
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
+    ...(sp.grid && { grid: sp.grid }),
   });
   const { asin, rating, mainImage, title, price, category } = product;
   const prodUrl = `/products/${asin}?cat=${category}`;
@@ -50,8 +41,8 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           height={150}
           className={cn(
             'size-28 object-contain',
-            grid === '3' && 'lg:size-36 p-0',
-            grid === '2' && 'lg:size-44 p-2'
+            sp.grid === '3' && 'lg:size-36 p-0',
+            sp.grid === '2' && 'lg:size-44 p-2'
           )}
         />
       </Link>
@@ -61,7 +52,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           <CardTitle
             className={cn(
               'text-xs font-medium hover:underline hover:text-blue-700',
-              grid === '2' && 'text-sm'
+              sp.grid === '2' && 'text-sm'
             )}>
             {title}
           </CardTitle>
@@ -77,7 +68,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           size={'sm'}
           action='BuyNow'
           product={product}
-          forceRedirect={`/cart?${params.toString()}`}
+          forceRedirect={`/cart?${newParams.toString()}`}
         />
         <AddToWishlistButton logoSize={18} product={product} />
       </CardFooter>
