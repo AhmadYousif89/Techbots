@@ -1,8 +1,7 @@
 import { Suspense } from 'react';
-import { SearchParams } from '@/app/products/_lib/types';
 
-import { Card } from '@/components/ui/card';
 import { ProductsView } from './products_view';
+import { SearchParams } from '@/app/products/_lib/types';
 import { ProductsViewSkeleton } from './_components/skeletons/products_view_skeleton';
 
 type PageProps = {
@@ -12,11 +11,9 @@ type PageProps = {
 export default function ProductsPage({ searchParams }: PageProps) {
   return (
     <main className='min-h-screen max-view mx-auto bg-background'>
-      <Card className='pb-8 rounded-none border-0 shadow-none'>
-        <Suspense fallback={<ProductsViewSkeleton />}>
-          <ProductsView searchParams={searchParams} />
-        </Suspense>
-      </Card>
+      <Suspense fallback={<ProductsViewSkeleton />}>
+        <ProductsView searchParams={searchParams} />
+      </Suspense>
     </main>
   );
 }
