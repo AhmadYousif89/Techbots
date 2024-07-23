@@ -12,12 +12,18 @@ export const categories = [
   'powerbanks',
   'mobiles',
   'routers',
-  'watches'
+  'watches',
 ] as const;
 
 export type Category = (typeof categories)[number] | '';
 export type SearchParams = { [key: string]: string | Category | undefined };
-export type SortValue = 'popular' | 'newest' | 'lowest-price' | 'highest-price' | '';
+export type SortValue =
+  | 'popular'
+  | 'newest'
+  | 'lowest-price'
+  | 'highest-price'
+  | 'reset'
+  | '';
 export type TProduct = Product & {
   category: Category;
   images: ProductImages[];
