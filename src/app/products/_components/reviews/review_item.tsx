@@ -21,9 +21,9 @@ export function ReviewItem(review: Review) {
       <div className='flex flex-col'>
         <CardHeader className='flex-row p-0 gap-4'>
           <CircleUserRound strokeWidth={1} size={40} className='my-auto' />
-          <div className=''>
-            <h4 className='text-sm font-medium col-[2] row-[1]'>{reviewer}</h4>
-            <p className='text-xs text-muted-foreground font-medium mt-1 row-[1] col-[2]'>
+          <div>
+            <h4 className='text-sm font-medium'>{reviewer}</h4>
+            <p className='text-xs text-muted-foreground font-medium mt-1'>
               {new Date(time).toLocaleString()}
             </p>
             <RatingStars
