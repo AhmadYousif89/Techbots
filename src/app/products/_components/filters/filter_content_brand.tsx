@@ -24,27 +24,23 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const { selectedBrands, setBrands, toggleBrands, clearSelectedBrands } = useFilter(
     s => s.brands
   );
-  const { page, limit, category, brand, sort, min, max, grid } = extractSearchParams(
-    params.entries()
-  );
+  const sp = extractSearchParams(params.entries());
+  const newParams = new URLSearchParams({
+    ...(sp.page && { page: sp.page }),
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
+    ...(sp.grid && { grid: sp.grid }),
+  });
 
   useEffect(() => {
-    if (brand) {
-      console.log('brand: ', brand);
-      setBrands(brand.split(','));
+    if (sp.brand) {
+      setBrands(sp.brand.split(','));
     }
-  }, [brand, setBrands]);
-
-  const newParams = new URLSearchParams({
-    ...(page && { page }),
-    ...(limit && { limit }),
-    ...(limit && { limit }),
-    ...(category && { cat: category }),
-    ...(sort && { sort }),
-    ...(min && { min }),
-    ...(max && { max }),
-    ...(grid && { grid }),
-  });
+  }, [sp.brand, setBrands]);
 
   const url = () => `/products/?${newParams.toString()}`;
 

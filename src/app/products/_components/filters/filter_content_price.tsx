@@ -5,35 +5,26 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { extractSearchParams } from '../../_lib/utils';
 import { useFilter } from '../../_lib/store';
 
+import { ChevronLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 export function FilterContentPrice() {
   const router = useRouter();
   const params = useSearchParams();
   const { min, max, setMax, setMin, clearPrice } = useFilter(s => s.price);
 
-  const {
-    page,
-    limit,
-    category,
-    brand,
-    sort,
-    grid,
-    min: paramMin,
-    max: paramMax
-  } = extractSearchParams(params.entries());
+  const sp = extractSearchParams(params.entries());
   const newParams = new URLSearchParams({
-    ...(page && { page }),
-    ...(limit && { limit }),
-    ...(limit && { limit }),
-    ...(category && { cat: category }),
-    ...(brand && { brand }),
-    ...(sort && { sort }),
-    ...(grid && { grid })
+    ...(sp.page && { page: sp.page }),
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.grid && { grid: sp.grid }),
   });
   const url = () => `/products?${newParams.toString()}`;
+  const { min: paramMin, max: paramMax } = sp;
 
   const handleMinChange: ChangeEventHandler<HTMLInputElement> = e => {
     setMin(parseInt(e.target.value) + '');

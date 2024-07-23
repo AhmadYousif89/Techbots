@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectValue,
   SelectTrigger,
-  SelectContent
+  SelectContent,
 } from '@/components/ui/select';
 import { SortValue } from '@/app/products/_lib/types';
 import { extractSearchParams } from '@/app/products/_lib/utils';
@@ -16,27 +16,31 @@ export function SortProducts() {
   const router = useRouter();
   const params = useSearchParams();
   const [value, setValue] = useState<SortValue>('');
-  const { page, limit, category, brand, grid, sort, min, max } = extractSearchParams(
-    params.entries()
-  );
+  const sp = extractSearchParams(params.entries());
 
+  const paramObj: Record<string, string> = {
+    ...(sp.page && { page: sp.page }),
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
+    ...(sp.grid && { grid: sp.grid }),
+  };
   const handleSelectChange = (value: SortValue) => {
     setValue(value);
-    const newParams = new URLSearchParams({
-      ...(page && { page }),
-      ...(limit && { limit }),
-      ...(category && { category }),
-      ...(brand && { brand }),
-      sort: value,
-      ...(min && { min }),
-      ...(max && { max }),
-      ...(grid && { grid })
-    });
+    if (value === 'reset') {
+      const newParams = new URLSearchParams(paramObj);
+      router.push(`/products?${newParams.toString()}`);
+      return;
+    }
+    paramObj['sort'] = value;
+    const newParams = new URLSearchParams(paramObj);
     router.push(`/products?${newParams.toString()}`);
   };
 
   return (
-    <Select value={value ? value : sort} onValueChange={handleSelectChange}>
+    <Select value={value ? value : sp.sort} onValueChange={handleSelectChange}>
       <SelectTrigger className='gap-1 text-xs font-medium px-1 pl-2 border-0 rounded hover:bg-muted hover:ring-1 hover:ring-input'>
         <SelectValue placeholder='Sort' />
       </SelectTrigger>
@@ -53,6 +57,11 @@ export function SortProducts() {
         <SelectItem className='p-2 text-xs' value='highest-price'>
           Highest Price
         </SelectItem>
+        {sp.sort && (
+          <SelectItem className='p-2 text-xs' value='reset'>
+            Reset
+          </SelectItem>
+        )}
       </SelectContent>
     </Select>
   );
