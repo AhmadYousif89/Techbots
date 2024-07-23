@@ -108,7 +108,7 @@ const getProducts = cache(
       'highest-price': { price: 'desc' },
     };
 
-    let args: {
+    const args: {
       orderBy: Record<string, 'asc' | 'desc'>;
       take: number;
       skip: number;
