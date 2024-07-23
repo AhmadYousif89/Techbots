@@ -12,18 +12,15 @@ export function ProductGridSize() {
   const router = useRouter();
   const params = useSearchParams();
 
-  const { page, limit, category, brand, sort, min, max } = extractSearchParams(
-    params.entries()
-  );
+  const sp = extractSearchParams(params.entries());
   const newParams = new URLSearchParams({
-    ...(page && { page }),
-    ...(limit && { limit }),
-    ...(limit && { limit }),
-    ...(category && { cat: category }),
-    ...(brand && { brand }),
-    ...(sort && { sort }),
-    ...(min && { min }),
-    ...(max && { max })
+    ...(sp.page && { page: sp.page }),
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
   });
   const url = () => `/products/?${newParams.toString()}`;
 
@@ -31,10 +28,10 @@ export function ProductGridSize() {
     <div role='group' className='hidden lg:flex items-center gap-1 col-span-full'>
       <Button
         variant='ghost'
-        data-active={params.get('grid') === '2'}
+        data-active={sp.grid === '2'}
         className='p-2 rounded-none ring-1 ring-transparent hover:bg-transparent data-[active="true"]:ring-input data-[active="true"]:shadow'
         onClick={() => {
-          if (params.get('grid') === '2') {
+          if (sp.grid === '2') {
             router.push(url());
             return;
           }
@@ -44,10 +41,10 @@ export function ProductGridSize() {
       </Button>
       <Button
         variant='ghost'
-        data-active={params.get('grid') === '3'}
+        data-active={sp.grid === '3'}
         className='p-2 rounded-none ring-1 ring-transparent hover:bg-transparent data-[active="true"]:ring-input data-[active="true"]:shadow'
         onClick={() => {
-          if (params.get('grid') === '3') {
+          if (sp.grid === '3') {
             router.push(url());
             return;
           }
@@ -57,10 +54,10 @@ export function ProductGridSize() {
       </Button>
       <Button
         variant='ghost'
-        data-active={params.get('grid') === '4'}
+        data-active={sp.grid === '4'}
         className='p-2 rounded-none ring-1 ring-transparent hover:bg-transparent data-[active="true"]:ring-input data-[active="true"]:shadow'
         onClick={() => {
-          if (params.get('grid') === '4') {
+          if (sp.grid === '4') {
             router.push(url());
             return;
           }
