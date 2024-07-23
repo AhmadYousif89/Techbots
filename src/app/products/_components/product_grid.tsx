@@ -97,7 +97,8 @@ const getProducts = cache(
   async (searchParams: SearchParams) => {
     const { page, limit, sort } = extractSearchParams(searchParams);
     const filter = getFilters(searchParams);
-    const start = (+page <= 0 ? 0 : +page - 1) * +limit;
+    const limitPerPage = +limit <= 0 ? 8 : +limit;
+    const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
 
     type SortOptions = Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>>;
     const sortOptions: Omit<SortOptions, 'reset'> = {
@@ -114,7 +115,7 @@ const getProducts = cache(
       skip: number;
     } = {
       orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-      take: +limit,
+      take: limitPerPage,
       skip: start,
     };
 
@@ -130,15 +131,15 @@ const getProducts = cache(
     }
 
     const totalCount = await prisma.product.count({ where: filter });
-    const totalPages = Math.ceil(totalCount / +limit);
+    const totalPages = Math.ceil(totalCount / limitPerPage);
     // Redirect to first page if is products and page is out of bounds
-    if (totalCount > 0 && (+page > totalPages || +page <= 0)) {
-      const newParams = new URLSearchParams({ ...searchParams, page: '1' });
+    if (totalCount > 0 && (+page > totalPages || +page <= 0 || +limit <= 0)) {
+      const newParams = new URLSearchParams({ ...searchParams, page: '1', limit: '8' });
       redirect(`/products/?${newParams.toString()}`);
     }
 
     return products;
   },
-  ['/products', 'getProducts'],
+  ['/products', 'getProductsData'],
   { revalidate: day }
 );

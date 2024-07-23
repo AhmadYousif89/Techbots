@@ -13,9 +13,10 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
   const totalCount = await prisma.product.count({ where: filters });
 
   const { page, limit } = sp;
-  const totalPages = Math.ceil(totalCount / +limit);
-  const start = (+page <= 0 ? 0 : +page - 1) * +limit;
-  const end = start + +limit;
+  const limitPerPage = +limit <= 0 ? 8 : +limit;
+  const totalPages = Math.ceil(totalCount / limitPerPage);
+  const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
+  const end = start + limitPerPage;
   const hasNextPage = end < totalCount;
   const hasPrevPage = start > 0;
 
