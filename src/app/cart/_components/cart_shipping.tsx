@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TProduct } from '@/app/products/_lib/types';
 import { getCartCount, getCartTotal } from '@/lib/utils';
+import { useAuth } from '@clerk/nextjs';
 import { z } from 'zod';
 
 import { Input } from '@/components/ui/input';
@@ -16,10 +17,9 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import { useShippingFormStore } from '../_store/shipping_form';
-import { useAuth } from '@clerk/nextjs';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
 
 type ShippingType = 'free' | 'next';
@@ -36,7 +36,7 @@ const shippingSchema = z.object({
   phone: z
     .number({ coerce: true, message: 'Invalid phone number' })
     .min(1, { message: 'Field is required' }),
-  shipping: z.union([z.literal('free'), z.literal('next')])
+  shipping: z.union([z.literal('free'), z.literal('next')]),
 });
 
 export type ShippingForm = z.infer<typeof shippingSchema>;
@@ -48,7 +48,7 @@ const initTouchState = {
   optionalAddress: false,
   city: false,
   phone: false,
-  shipping: false
+  shipping: false,
 };
 
 export type Order = {
@@ -106,15 +106,7 @@ export function CartShippingView() {
   };
 
   const formResult = shippingSchema.safeParse(data);
-  let errors: {
-    firstname?: string[] | undefined;
-    lastname?: string[] | undefined;
-    mainAddress?: string[] | undefined;
-    optionalAddress?: string[] | undefined;
-    city?: string[] | undefined;
-    phone?: string[] | undefined;
-    shipping?: string[] | undefined;
-  } = {};
+  let errors;
   if (formResult.success == false) {
     errors = formResult.error.formErrors.fieldErrors;
   }
@@ -137,7 +129,7 @@ export function CartShippingView() {
                     onFirstNameChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
-                {errors.firstname && touchState.firstname && (
+                {errors && errors.firstname && touchState.firstname && (
                   <span className='absolute left-2 -bottom-5 text-destructive text-xs w-full'>
                     {errors.firstname}
                   </span>
@@ -152,7 +144,7 @@ export function CartShippingView() {
                     onLastNameChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
-                {errors.lastname && touchState.lastname && (
+                {errors && errors.lastname && touchState.lastname && (
                   <span className='absolute left-2 -bottom-5 text-destructive text-xs'>
                     {errors.lastname}
                   </span>
@@ -169,7 +161,7 @@ export function CartShippingView() {
                     onMainAddressChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
-                {errors.mainAddress && touchState.mainAddress && (
+                {errors && errors.mainAddress && touchState.mainAddress && (
                   <span className='absolute left-2 -bottom-5 text-destructive text-xs'>
                     {errors.mainAddress}
                   </span>
@@ -199,7 +191,7 @@ export function CartShippingView() {
                     onCityChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
-                {errors.city && touchState.city && (
+                {errors && errors.city && touchState.city && (
                   <span className='absolute left-2 -bottom-5 text-destructive text-xs'>
                     {errors.city}
                   </span>
@@ -218,7 +210,7 @@ export function CartShippingView() {
                     )
                   }
                 />
-                {errors.phone && touchState.phone && (
+                {errors && errors.phone && touchState.phone && (
                   <span className='absolute left-2 -bottom-5 text-destructive text-xs'>
                     {errors.phone}
                   </span>

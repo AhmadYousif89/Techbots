@@ -12,7 +12,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -20,11 +20,12 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { TProduct } from '@/app/products/_lib/types';
 import { useIsMounted } from '@/components/hooks/use_isMounted';
+import { extractSearchParams } from '@/app/products/_lib/utils';
 
 export function CartListView({ setNextTab }: { setNextTab: (value: string) => void }) {
   const router = useRouter();
@@ -34,6 +35,19 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
   const [cart] = useLocalStorage<TProduct[]>('cart', []);
   const total = getCartTotal(cart);
   const isMounted = useIsMounted();
+
+  const sp = extractSearchParams(params.entries());
+
+  const newParams = new URLSearchParams({
+    ...(sp.page && { page: sp.page }),
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
+    ...(sp.grid && { grid: sp.grid }),
+  });
 
   let VAT = 0;
   let cartCount = 0;
@@ -167,10 +181,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
           variant={'outline'}
           className='w-28'
           onClick={() => {
-            const category = params.get('category') || '';
-            const page = params.get('page') || '1';
-            const limit = params.get('limit') || '8';
-            router.push(`/products?page=${page}&limit=${limit}&cat=${category}`);
+            router.push(`/products?${newParams.toString()}`);
           }}>
           Cancle
         </Button>
