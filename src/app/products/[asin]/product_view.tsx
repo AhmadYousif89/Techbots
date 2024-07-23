@@ -30,7 +30,7 @@ import { extractSearchParams } from '../_lib/utils';
 export const getProductDetails = cache(
   async (asin: string, searchParams: SearchParams) => {
     const { page, limit, selectedRating } = extractSearchParams(searchParams, '5');
-    const start = (+page - 1) * +limit;
+    const start = (+page <= 0 ? 0 : +page - 1) * +limit;
     const product = (await prisma.product.findUnique({
       where: { asin },
       include: {
