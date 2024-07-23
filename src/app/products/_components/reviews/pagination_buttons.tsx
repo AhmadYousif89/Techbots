@@ -1,30 +1,35 @@
-'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { SearchParams } from '../../_lib/types';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { extractSearchParams } from '@/app/products/_lib/utils';
-import { PaginationButton } from '@/app/products/_components/pagination_button';
+import { extractSearchParams } from '../../_lib/utils';
+import { PaginationButton } from '../../_components/pagination_button';
 
 type PaginationSectionProps = {
   asin: string;
   hasPrevPage: boolean;
   hasNextPage: boolean;
   totalPages: number;
+  searchParams: SearchParams;
 };
 
 export function ReviewsPaginationButtons({
   asin,
   hasPrevPage,
   hasNextPage,
-  totalPages
+  totalPages,
+  searchParams,
 }: PaginationSectionProps) {
-  const router = useRouter();
-  const params = useSearchParams();
   const { page, limit, selectedRating, category } = extractSearchParams(
-    params.entries(),
+    searchParams,
     '5'
   );
+  const params = new URLSearchParams({
+    ...(limit && { limit }),
+    ...(category && { cat: category }),
+    ...(selectedRating && { sr: selectedRating }),
+  });
 
   let reviewsTitle = 'Top Reviews';
   for (let i = 0; i < 5; i++) {
@@ -34,6 +39,10 @@ export function ReviewsPaginationButtons({
     }
   }
 
+  const resetUrl = `/products/${asin}?page=1&limit=5&cat=${category}#reviews`;
+  const nextPageUrl = `/products/${asin}?page=${+page + 1}&${params.toString()}#reviews`;
+  const prevPageUrl = `/products/${asin}?page=${+page - 1}&${params.toString()}#reviews`;
+
   return (
     <div className='flex justify-between items-center'>
       <h3 className='font-medium text-xl mb-auto'>{reviewsTitle}</h3>
@@ -42,13 +51,8 @@ export function ReviewsPaginationButtons({
           size='sm'
           variant='outline'
           className='place-self-center'
-          disabled={!selectedRating}
-          onClick={() => {
-            router.push(
-              `/products/${asin}?page=1&limit=${limit}&cat=${category}&sr=#reviews`
-            );
-          }}>
-          View All
+          disabled={!selectedRating}>
+          <Link href={resetUrl}>View All</Link>
         </Button>
 
         <div className='flex items-center gap-4'>
@@ -56,9 +60,7 @@ export function ReviewsPaginationButtons({
             className='size-7 p-1'
             elementId='reviews'
             disabled={!hasPrevPage}
-            href={`/products/${asin}?page=${
-              +page - 1
-            }&limit=${limit}&cat=${category}&sr=${selectedRating}#reviews`}>
+            href={prevPageUrl}>
             <ChevronLeft />
           </PaginationButton>
           <span className='text-muted-foreground font-medium text-sm'>
@@ -68,9 +70,7 @@ export function ReviewsPaginationButtons({
             className='size-7 p-1'
             elementId='reviews'
             disabled={!hasNextPage}
-            href={`/products/${asin}?page=${
-              +page + 1
-            }&limit=${limit}&cat=${category}&sr=${selectedRating}#reviews`}>
+            href={nextPageUrl}>
             <ChevronRight />
           </PaginationButton>
         </div>
