@@ -1,5 +1,6 @@
-import { Suspense } from 'react';
 import prisma from '@/lib/db';
+import { Suspense } from 'react';
+import { cache } from '@/lib/cache';
 import { capitalizeString, cn } from '@/lib/utils';
 import { extractSearchParams } from '../_lib/utils';
 import { Category, SearchParams, SortValue, TProduct } from '../_lib/types';
@@ -8,7 +9,7 @@ import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
 import { GridItemsSkeleton } from './skeletons/grid_item_skeleton';
 import { ProductPaginationButtons } from './product_pagination_buttons';
-import { cache } from '@/lib/cache';
+import { Ban } from 'lucide-react';
 
 type ProductGridProps = {
   searchParams: SearchParams;
@@ -20,6 +21,7 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
   return (
     <section
       className={cn(
+        'h-full',
         'grid gap-8 grid-cols-2 lg:grid-cols-4 xl:col-[2] w-full xl:self-start',
         'py-8 px-4 xl:pr-8 xl:pl-0 max-w-screen-lg mx-auto xl:ml-auto xl:mr-0',
         'sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]',
@@ -45,9 +47,12 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
 
   if (!products.length) {
     return (
-      <p className='col-span-full text-xl text-center text-muted-foreground mt-8 font-medium'>
-        Your filter didn't match any products.
-      </p>
+      <div className='relative text-center col-span-full place-self-center grid'>
+        <p className='z-[1] text-xl lg:text-2xl text-center text-muted-foreground tracking-wider mt-8 font-semibold'>
+          No Products Found!
+        </p>
+        <Ban className='absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 mx-auto mt-4 size-36 lg:size-72 stroke-[1] text-input' />
+      </div>
     );
   }
 
@@ -81,8 +86,8 @@ export function getFilters(searchParams: SearchParams) {
       ...filter,
       AND: [
         ...(min ? [{ price: { gte: +min } }] : []),
-        ...(max ? [{ price: { lte: +max } }] : [])
-      ]
+        ...(max ? [{ price: { lte: +max } }] : []),
+      ],
     };
   }
 
@@ -96,27 +101,26 @@ const getProducts = cache(
     const start = (+page - 1) * +limit;
 
     type SortOptions = Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>>;
-    const sortOptions: SortOptions = {
+    const sortOptions: Omit<SortOptions, 'reset'> = {
       popular: { rating: 'desc' },
       newest: { createdAt: 'desc' },
       'lowest-price': { price: 'asc' },
-      'highest-price': { price: 'desc' }
+      'highest-price': { price: 'desc' },
     };
 
-    let args = {};
-    if (Object.values(filter) && Object.values(filter).length > 0) {
-      args = {
-        where: filter,
-        orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-        take: +limit,
-        skip: start
-      };
-    } else {
-      args = {
-        orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-        take: +limit,
-        skip: start
-      };
+    let args: {
+      orderBy: Record<string, 'asc' | 'desc'>;
+      take: number;
+      skip: number;
+      where?: any;
+    } = {
+      orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
+      take: +limit,
+      skip: start,
+    };
+
+    if (Object.values(filter).length > 0) {
+      args.where = filter;
     }
 
     let products: TProduct[] = [];
