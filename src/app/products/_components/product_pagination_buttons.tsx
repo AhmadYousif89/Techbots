@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 
 import { SearchParams } from '../_lib/types';
 import { extractSearchParams } from '../_lib/utils';
+import { SelectPaginations } from './select_pagination';
 import { PaginationButton } from '../_components/pagination_button';
 
 export async function ProductPaginationButtons(searchParams: SearchParams) {
@@ -13,12 +14,12 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
 
   const { page, limit } = sp;
   const totalPages = Math.ceil(totalCount / +limit);
-  const start = (+page - 1) * +limit;
+  const start = (+page <= 0 ? 0 : +page - 1) * +limit;
   const end = start + +limit;
   const hasNextPage = end < totalCount;
   const hasPrevPage = start > 0;
 
-  if (+page > totalPages) {
+  if (+page > totalPages || +page <= 0) {
     return null;
   }
 
@@ -36,6 +37,9 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
   const nextPageUrl = `/products/?page=${+page + 1}&${newParams.toString()}`;
   const prevPageUrl = `/products/?page=${+page - 1}&${newParams.toString()}`;
   const lastPageUrl = `/products/?page=${totalPages}&${newParams.toString()}`;
+
+  const startingPage = +page <= 0 ? 1 : +page <= totalPages ? +page : 0;
+  const endingPage = totalPages >= 1 ? totalPages : 0;
 
   return (
     <div className='flex items-center justify-center gap-2 ml-auto'>
@@ -56,7 +60,13 @@ export async function ProductPaginationButtons(searchParams: SearchParams) {
         <ChevronLeft />
       </PaginationButton>
       <span className='text-xs text-muted-foreground font-semibold'>
-        {+page <= totalPages ? page : 0} / {totalPages >= 1 ? totalPages : 0}
+        <SelectPaginations
+          page={page}
+          newParams={newParams.toString()}
+          startingPage={startingPage}
+          endingPage={endingPage}
+          totalPages={totalPages}
+        />
       </span>
       <PaginationButton
         className='size-6 p-1 disabled:opacity-25'
