@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -22,7 +22,7 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from '@/components/ui/accordion';
 import { cache } from '@/lib/cache';
 import { extractSearchParams } from '../_lib/utils';
@@ -39,13 +39,13 @@ export const getProductDetails = cache(
           where: { asin, rating: selectedRating ? +selectedRating : undefined },
           orderBy: { date: 'desc' },
           skip: start,
-          take: +limit
-        }
-      }
+          take: +limit,
+        },
+      },
     })) as TProduct;
 
     const reviewsCount = await prisma.review.count({
-      where: { asin, rating: selectedRating ? +selectedRating : undefined }
+      where: { asin, rating: selectedRating ? +selectedRating : undefined },
     });
 
     return { product, reviewsCount };
