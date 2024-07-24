@@ -1,8 +1,10 @@
 import prisma from '@/lib/db';
+import { cache } from '@/lib/cache';
 import { notFound } from 'next/navigation';
+import { capitalizeString, cn } from '@/lib/utils';
 
 import { Category, TProduct } from '../_lib/types';
-import { capitalizeString, cn } from '@/lib/utils';
+import { extractSearchParams } from '../_lib/utils';
 import { SearchParams } from '@/app/products/_lib/types';
 import { RatingStars } from '../_components/reviews/rating_stars';
 import {
@@ -24,25 +26,37 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { cache } from '@/lib/cache';
-import { extractSearchParams } from '../_lib/utils';
+
+const day = 60 * 60 * 24;
 
 export const getProductDetails = cache(
   async (asin: string, searchParams: SearchParams) => {
-    const { page, limit, selectedRating } = extractSearchParams(searchParams, '5');
-    const start = (+page <= 0 ? 0 : +page - 1) * +limit;
-    const product = (await prisma.product.findUnique({
-      where: { asin },
-      include: {
-        images: true,
-        topReviews: {
-          where: { asin, rating: selectedRating ? +selectedRating : undefined },
-          orderBy: { date: 'desc' },
-          skip: start,
-          take: +limit,
+    const defaultLimit = '5';
+    const { page, limit, selectedRating } = extractSearchParams(
+      searchParams,
+      defaultLimit
+    );
+    const limitPerPage = +limit <= 0 ? +defaultLimit : +limit;
+    const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
+    let product = {} as TProduct;
+
+    try {
+      product = (await prisma.product.findUnique({
+        where: { asin },
+        include: {
+          images: true,
+          topReviews: {
+            where: { asin, rating: selectedRating ? +selectedRating : undefined },
+            orderBy: { date: 'desc' },
+            take: limitPerPage,
+            skip: start,
+          },
         },
-      },
-    })) as TProduct;
+      })) as TProduct;
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+      throw error;
+    }
 
     const reviewsCount = await prisma.review.count({
       where: { asin, rating: selectedRating ? +selectedRating : undefined },
@@ -50,7 +64,8 @@ export const getProductDetails = cache(
 
     return { product, reviewsCount };
   },
-  ['getProductDetails']
+  ['getProductDetails'],
+  { revalidate: day }
 );
 
 type SingleProductViewProps = {
