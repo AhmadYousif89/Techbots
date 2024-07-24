@@ -1,19 +1,18 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { SearchParams } from '@/app/products/_lib/types';
-import { TProduct } from '../_lib/types';
-import { extractSearchParams } from '@/app/products/_lib/utils';
-import { RatingStars } from './reviews/rating_stars';
+import { cn } from '@/lib/utils';
+import { extractSearchParams } from '../_lib/utils';
+import { TProduct, SearchParams } from '../_lib/types';
 
-import { Separator } from '@/components/ui/separator';
+import { RatingStars } from './reviews/rating_stars';
 import { AddToCartButton } from '../../cart/_components/add_to_cart_button';
 import { AddToWishlistButton } from '@/components/wishlist/add_to_wishlist_button';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 type Props = {
-  searchParams: SearchParams;
   product: TProduct;
+  searchParams: SearchParams;
 };
 
 export async function ProductGridItem({ product, searchParams }: Props) {
@@ -32,7 +31,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
   const prodUrl = `/products/${asin}?cat=${category}`;
 
   return (
-    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] justify-self-center p-2 rounded shadow-none border-0 max-w-xs ring-offset-4 active:ring-1 active:ring-muted'>
+    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] justify-self-center py-2 px-4 rounded shadow-none border-0 max-w-xs ring-offset-4 hover:ring-1 hover:ring-muted'>
       <Link href={prodUrl} className='place-self-center rounded'>
         <Image
           src={mainImage}
@@ -57,9 +56,9 @@ export async function ProductGridItem({ product, searchParams }: Props) {
             {title}
           </CardTitle>
         </Link>
-        <div className='text-xs text-muted-foreground md:text-sm font-medium pt-4 mt-auto self-end flex-1 grid grid-cols-2 justify-between w-full items-end'>
+        <div className='text-muted-foreground md:text-sm font-medium pt-4 mt-auto self-end flex-1 grid grid-cols-2 justify-between w-full items-end'>
           <RatingStars productRating={rating} showTotalReviews={false} size='xs' />
-          <span className='place-self-end font-semibold'>${price.toFixed(2)}</span>
+          <span className='text-xs place-self-end'>${price.toFixed(2)}</span>
         </div>
       </CardHeader>
       <Separator />
