@@ -16,6 +16,7 @@ import { ProductGrid } from '@/app/products/_components/product_grid';
 import { FilterProducts } from './_components/filters/filter_products';
 import { SearchProducts } from './_components/filters/search_products';
 import { SortProducts } from './_components/filters/sort_products';
+import Link from 'next/link';
 
 type ProductsViewProps = {
   searchParams: SearchParams;
@@ -30,11 +31,15 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className='text-xs'>
-              <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+              <BreadcrumbLink asChild>
+                <Link href='/'>Home</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem className='text-xs'>
-              <BreadcrumbLink href='/products'>Shop</BreadcrumbLink>
+              <BreadcrumbLink asChild>
+                <Link href='/products'>Shop</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             {category && !category.includes(',') && (
               <>
@@ -61,7 +66,7 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
           <SortProducts />
         </div>
       </div>
-      <div className='xl:grid xl:gap-4 xl:grid-cols-[minmax(20%,auto),1fr]'>
+      <div className='xl:grid xl:gap-4 xl:grid-cols-[minmax(20%,auto),1fr] pb-8'>
         <div className='relative hidden xl:flex self-start justify-between pt-6'>
           <FilterProducts searchParams={searchParams} open='filter' />
           <div className='absolute right-0 top-9 flex items-center gap-4'>
