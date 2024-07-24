@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import prisma from '@/lib/db';
 import { cache } from '@/lib/cache';
-import { Category } from '../_lib/types';
 import { RatingStars } from './reviews/rating_stars';
 
 import {
@@ -10,16 +9,16 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 const getSimilarProducts = cache(
-  async (asin: string, category: Category) => {
+  async (asin: string, category: string) => {
     return await prisma.product.findMany({
       where: { asin: { not: asin }, category },
       orderBy: { rating: 'desc' },
-      take: 8
+      take: 8,
     });
   },
   ['getSimilarProducts']
@@ -27,7 +26,7 @@ const getSimilarProducts = cache(
 
 type SimilarProductsProps = {
   asin: string;
-  category: Category;
+  category: string;
 };
 
 export async function SimilarProducts({ asin, category }: SimilarProductsProps) {
