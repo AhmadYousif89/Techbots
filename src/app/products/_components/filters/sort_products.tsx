@@ -27,14 +27,15 @@ export function SortProducts() {
     ...(sp.max && { max: sp.max }),
     ...(sp.grid && { grid: sp.grid }),
   };
-  const handleSelectChange = (value: SortValue) => {
-    setValue(value);
-    if (value === 'reset') {
+  const handleSelectChange = (v: SortValue) => {
+    if (v === 'reset') {
+      setValue('');
       const newParams = new URLSearchParams(paramObj);
       router.push(`/products?${newParams.toString()}`);
       return;
     }
-    paramObj['sort'] = value;
+    setValue(v);
+    paramObj['sort'] = v;
     const newParams = new URLSearchParams(paramObj);
     router.push(`/products?${newParams.toString()}`);
   };
@@ -45,7 +46,7 @@ export function SortProducts() {
       value={value ? value : sp.sort}
       onValueChange={handleSelectChange}>
       <SelectTrigger className='gap-1 text-xs font-medium px-1 pl-2 border-0 rounded hover:bg-muted hover:ring-1 hover:ring-input'>
-        <SelectValue placeholder='Sort' />
+        <SelectValue placeholder='Sort' defaultValue='Sort' />
       </SelectTrigger>
       <SelectContent className='justify-center'>
         <SelectItem className='p-2 text-xs' value='popular'>
@@ -61,7 +62,7 @@ export function SortProducts() {
           Highest Price
         </SelectItem>
         {sp.sort && (
-          <SelectItem className='p-2 text-xs' value='reset'>
+          <SelectItem disabled={!sp.sort} className='p-2 text-xs' value='reset'>
             Reset
           </SelectItem>
         )}
