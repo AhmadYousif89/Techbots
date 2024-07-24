@@ -7,7 +7,7 @@ export const getCategoryList = cache(
   async () => {
     const categories = await prisma.product.findMany({
       select: { category: true },
-      orderBy: { category: 'asc' }
+      orderBy: { category: 'asc' },
     });
     const list: string[] = [];
     for (const item of categories) {
@@ -27,7 +27,7 @@ export const getBrandList = cache(
     const brands = await prisma.product.findMany({
       ...(category && { where: { category } }),
       select: { brand: true },
-      orderBy: { brand: 'asc' }
+      orderBy: { brand: 'asc' },
     });
 
     const list: string[] = [];

@@ -6,7 +6,7 @@ export const featuredProducts = [
     price: '$54.00',
     buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/svWYstT/highlights-Three.webp',
-    url: '/products/B097TQZ38L?cat=powerbanks'
+    url: '/products/B097TQZ38L?cat=powerbanks',
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const featuredProducts = [
     price: '$299.00',
     buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/bLRNKGq/highlights-Two.webp',
-    url: '/products/B0C22BRGLG?cat=mobiles'
+    url: '/products/B0C22BRGLG?cat=mobiles',
   },
   {
     id: 3,
@@ -24,8 +24,8 @@ export const featuredProducts = [
     price: '$429.00',
     buttonTitle: 'Shop Now',
     image: 'https://i.ibb.co/G951N5B/highlights-One.webp',
-    url: '/products/B0CCZ1L489?cat=headphones'
-  }
+    url: '/products/B0CCZ1L489?cat=headphones',
+  },
 ];
 
 export const blogsData = [
@@ -36,7 +36,7 @@ export const blogsData = [
     title: 'Your Guide to Choosing a Graphics Card',
     url: 'https://www.digitaltrends.com/computing/gpu-buying-guide/',
     description:
-      'Learn how to select the best graphics card for your gaming or professional needs, with tips on performance, compatibility, and budget considerations.'
+      'Learn how to select the best graphics card for your gaming or professional needs, with tips on performance, compatibility, and budget considerations.',
   },
   {
     id: 2,
@@ -45,7 +45,7 @@ export const blogsData = [
     title: 'Top 5 Motherboards for 2024',
     url: 'https://www.tomshardware.com/best-picks/best-motherboards',
     description:
-      'Discover the best motherboards of 2024, featuring top-notch performance, advanced features, and compatibility with the latest processors.'
+      'Discover the best motherboards of 2024, featuring top-notch performance, advanced features, and compatibility with the latest processors.',
   },
   {
     id: 3,
@@ -54,7 +54,7 @@ export const blogsData = [
     title: 'SSD vs HDD: Which One Should You Choose?',
     url: 'https://www.crucial.com/articles/about-ssd/ssd-vs-hdd',
     description:
-      'Compare the benefits and drawbacks of SSDs and HDDs to make an informed decision on which storage solution is right for your needs.'
+      'Compare the benefits and drawbacks of SSDs and HDDs to make an informed decision on which storage solution is right for your needs.',
   },
   {
     id: 4,
@@ -63,7 +63,7 @@ export const blogsData = [
     title: 'Building Your Own PC: A Step-by-Step Guide',
     url: 'https://www.pcmag.com/how-to/how-to-build-a-pc-the-ultimate-beginners-guide',
     description:
-      'Follow this comprehensive guide to building your own PC, from selecting components to assembling and configuring your system.'
+      'Follow this comprehensive guide to building your own PC, from selecting components to assembling and configuring your system.',
   },
   {
     id: 5,
@@ -72,6 +72,6 @@ export const blogsData = [
     title: 'The Best Monitors for Gaming and Productivity',
     url: 'https://www.rtings.com/monitor/reviews/best/monitors',
     description:
-      'Explore the top monitors available in 2024, perfect for both gaming enthusiasts and professionals seeking high productivity.'
-  }
+      'Explore the top monitors available in 2024, perfect for both gaming enthusiasts and professionals seeking high productivity.',
+  },
 ];
