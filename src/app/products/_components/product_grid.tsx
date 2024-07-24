@@ -9,15 +9,43 @@ import { Category, SearchParams, SortValue, TProduct } from '../_lib/types';
 
 import { ProductGridSize } from './product_grid_size';
 import { ProductGridItem } from './product_grid_item';
+import { PaginationButtons } from './pagination_button';
 import { GridItemsSkeleton } from './skeletons/grid_item_skeleton';
-import { ProductPaginationButtons } from './product_pagination_buttons';
 
 type ProductGridProps = {
   searchParams: SearchParams;
 };
 
 export async function ProductGrid({ searchParams }: ProductGridProps) {
-  const { grid } = extractSearchParams(searchParams);
+  const filters = getFilters(searchParams);
+  const sp = extractSearchParams(searchParams);
+  const totalCount = await prisma.product.count({ where: filters });
+
+  const { page, limit } = sp;
+  const limitPerPage = +limit <= 0 ? 8 : +limit;
+  const totalPages = Math.ceil(totalCount / limitPerPage);
+  const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
+  const end = start + limitPerPage;
+  const hasNextPage = end < totalCount;
+  const hasPrevPage = start > 0;
+
+  const params = new URLSearchParams({
+    ...(sp.limit && { limit: sp.limit }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
+    ...(sp.grid && { grid: sp.grid }),
+  });
+
+  const firstPageUrl = `/products/?page=1&${params.toString()}`;
+  const nextPageUrl = `/products/?page=${+page + 1}&${params.toString()}`;
+  const prevPageUrl = `/products/?page=${+page - 1}&${params.toString()}`;
+  const lastPageUrl = `/products/?page=${totalPages}&${params.toString()}`;
+
+  const startingPage = +page <= 0 ? 1 : +page <= totalPages ? +page : 0;
+  const endingPage = totalPages >= 1 ? totalPages : 0;
 
   return (
     <section
@@ -25,13 +53,30 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
         'grid gap-8 grid-cols-2 grid-rows-[auto,1fr] lg:grid-cols-4 xl:col-[2] w-full xl:self-start',
         'py-8 px-4 xl:pr-8 xl:pl-0 max-w-screen-lg mx-auto xl:ml-auto xl:mr-0',
         'sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]',
-        grid === '2' && 'lg:grid-cols-2',
-        grid === '3' && 'lg:grid-cols-3',
-        grid === '4' && 'lg:grid-cols-4'
+        sp.grid === '2' && 'lg:grid-cols-2',
+        sp.grid === '3' && 'lg:grid-cols-3',
+        sp.grid === '4' && 'lg:grid-cols-4'
       )}>
       <div className='flex items-center col-span-full'>
-        <ProductGridSize />
-        <ProductPaginationButtons {...searchParams} />
+        {totalCount > 0 && <ProductGridSize />}
+        {totalPages > 0 && +page > 0 && (
+          <PaginationButtons
+            className='flex items-center justify-center gap-2 ml-auto'
+            page={page}
+            baseUrl={'/products/'}
+            params={params.toString()}
+            startingPage={startingPage}
+            endingPage={endingPage}
+            totalCount={totalCount}
+            totalPages={totalPages}
+            hasPrevPage={hasPrevPage}
+            hasNextPage={hasNextPage}
+            firstPageUrl={firstPageUrl}
+            prevPageUrl={prevPageUrl}
+            nextPageUrl={nextPageUrl}
+            lastPageUrl={lastPageUrl}
+          />
+        )}
       </div>
 
       <Suspense fallback={<GridItemsSkeleton />}>
@@ -82,8 +127,8 @@ export function getFilters(searchParams: SearchParams) {
     filter = {
       ...filter,
       AND: [
-        ...(min ? [{ price: { gte: +min } }] : []),
-        ...(max ? [{ price: { lte: +max } }] : []),
+        ...(min && !isNaN(+min) ? [{ price: { gte: +min } }] : []),
+        ...(max && !isNaN(+max) ? [{ price: { lte: +max } }] : []),
       ],
     };
   }
