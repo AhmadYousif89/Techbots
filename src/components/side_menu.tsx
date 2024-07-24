@@ -12,13 +12,13 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger
+  SheetTrigger,
 } from './ui/sheet';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from './ui/accordion';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -60,8 +60,8 @@ export function SideMenu() {
               elements: {
                 userPreviewMainIdentifier: 'capitalize font-bold',
                 userPreviewSecondaryIdentifier: 'font-medium',
-                userButtonPopoverCard: { pointerEvents: 'initial' }
-              }
+                userButtonPopoverCard: { pointerEvents: 'initial' },
+              },
             }}
           />
         </SheetHeader>

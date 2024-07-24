@@ -13,7 +13,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
+  CommandList,
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 import { Category } from '@/app/products/_lib/types';
@@ -36,8 +36,8 @@ const getSearchedProducts = cache(
         asin: true,
         title: true,
         category: true,
-        mainImage: true
-      }
+        mainImage: true,
+      },
     }) as Promise<Data[]>;
   },
   ['/products', 'getSearchedProducts'],
@@ -56,7 +56,7 @@ export async function SearchProducts() {
         asin: p.asin,
         title: p.title,
         mainImage: p.mainImage,
-        category: p.category as Category
+        category: p.category as Category,
       };
       list[p.category] = [...(list[p.category] ?? []), item];
       return list;

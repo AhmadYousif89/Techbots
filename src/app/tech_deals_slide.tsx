@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from '../components/ui/carousel';
 import { Card, CardContent } from '../components/ui/card';
 import { RatingStars } from './products/_components/reviews/rating_stars';
@@ -21,7 +21,7 @@ const getTechDeals = cache(
   async () => {
     const categories: Category[] = ['gpu', 'routers', 'powerbanks', 'cpu', 'computers'];
     const allProducts = await prisma.product.findMany({
-      where: { category: { in: categories } }
+      where: { category: { in: categories } },
     });
 
     return categories.flatMap(category => {
