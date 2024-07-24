@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 type RatingStarsProps = {
+  className?: string;
   productRating: number;
   reviewsCount?: string | number;
   showTotalReviews?: boolean;
@@ -11,13 +12,14 @@ type RatingStarsProps = {
 };
 
 export function RatingStars({
+  className,
   size = 'xl',
   productRating,
   reviewsCount = '0',
-  showTotalReviews = true
+  showTotalReviews = true,
 }: RatingStarsProps) {
   return (
-    <div className='flex items-center gap-8'>
+    <div className={cn('flex items-center gap-8', className)}>
       <div
         className={cn(
           'relative',
@@ -39,7 +41,7 @@ export function RatingStars({
       {showTotalReviews && (
         <Link
           href='#reviews'
-          className='text-muted-foreground font-medium [html:scroll-smooth] hover:underline'>
+          className='text-muted-foreground font-medium hover:underline'>
           {reviewsCount} Review{+reviewsCount !== 1 ? 's' : ''}
         </Link>
       )}
