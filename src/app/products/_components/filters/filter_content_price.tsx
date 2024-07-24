@@ -27,20 +27,25 @@ export function FilterContentPrice() {
   const { min: paramMin, max: paramMax } = sp;
 
   const handleMinChange: ChangeEventHandler<HTMLInputElement> = e => {
-    setMin(parseInt(e.target.value) + '');
+    const val = parseInt(e.target.value) + '';
+    setMin(isNaN(+val) ? ' ' : val);
   };
 
   const handleMaxChange: ChangeEventHandler<HTMLInputElement> = e => {
-    setMax(parseInt(e.target.value) + '');
+    const val = parseInt(e.target.value) + '';
+    setMax(isNaN(+val) ? ' ' : val);
   };
 
+  console.log('FilterContentPrice: ', { min, max, paramMin, paramMax });
   return (
     <form
-      className='grid gap-4 self-start'
+      className='grid gap-4 self-start w-full'
       onSubmit={e => {
         e.preventDefault();
         router.push(
-          url() + `&min=${min ? min : paramMin}` + `&max=${max ? max : paramMax}`
+          url() +
+            `&min=${min ? min.trim() : paramMin.trim()}` +
+            `&max=${max ? max.trim() : paramMax.trim()}`
         );
       }}>
       <div className='flex items-center justify-between gap-4'>
@@ -66,7 +71,7 @@ export function FilterContentPrice() {
           type='number'
           placeholder='Min'
           className='xl:w-28'
-          value={min ? min : paramMin}
+          value={paramMin ? paramMin : min}
           onChange={handleMinChange}
         />
         <Input
@@ -76,25 +81,26 @@ export function FilterContentPrice() {
           type='number'
           placeholder='Max'
           className='xl:w-28'
-          value={max ? max : paramMax}
+          value={paramMax ? paramMax : max}
           onChange={handleMaxChange}
         />
       </div>
       <small className='text-muted-foreground font-medium'>
-        {paramMin && paramMax ? (
+        {/* trim is necessary for when manually changing the url values */}
+        {paramMin.trim() && paramMax.trim() ? (
           <>
             Showing prices between{' '}
             <strong>
-              {paramMin} & {paramMax}
+              ${paramMin} & ${paramMax}
             </strong>
           </>
-        ) : paramMin ? (
+        ) : paramMin.trim() ? (
           <>
-            Showing prices with minimum value of <strong>{paramMin}</strong>
+            Showing prices with minimum value of <strong>${paramMin}</strong>
           </>
-        ) : paramMax ? (
+        ) : paramMax.trim() ? (
           <>
-            Showing prices with maximum value of <strong>{paramMax}</strong>
+            Showing prices with maximum value of <strong>${paramMax}</strong>
           </>
         ) : null}
       </small>
