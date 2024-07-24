@@ -7,7 +7,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselContent,
-  CarouselPrevious
+  CarouselPrevious,
 } from '../components/ui/carousel';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -24,10 +24,10 @@ const getPopularItems = cache(
       'mobiles',
       'headphones',
       'watches',
-      'accessories'
+      'accessories',
     ];
     const allProducts = await prisma.product.findMany({
-      where: { category: { in: categories } }
+      where: { category: { in: categories } },
     });
 
     return categories.flatMap(category => {
