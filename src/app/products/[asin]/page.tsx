@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Suspense } from 'react';
 import { SearchParams } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
@@ -10,12 +11,14 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { ProductView } from './product_view';
 import { SimilarProducts } from '../_components/similar_products';
 import { ProductReviews } from '../_components/reviews/product_reviews';
 import { SimilarItemSkeleton } from '../_components/skeletons/similar_item_skeleton';
+import prisma from '@/lib/db';
+import { notFound } from 'next/navigation';
 
 type PageProps = {
   params: { asin: string };
@@ -24,25 +27,40 @@ type PageProps = {
 
 export default async function SingleProductPage({ params, searchParams }: PageProps) {
   const { asin } = params;
-  const { category } = extractSearchParams(searchParams);
+  const product = await prisma.product.findUnique({
+    where: { asin },
+    select: { category: true },
+  });
+
+  if (!product) {
+    return notFound();
+  }
+
+  const category = product.category;
 
   return (
     <main className='grid min-h-screen max-view mx-auto'>
       <Breadcrumb className='flex items-center col-span-full px-10 bg-muted h-14'>
         <BreadcrumbList>
           <BreadcrumbItem className='text-xs text-muted-foreground'>
-            <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+            <BreadcrumbLink asChild>
+              <Link href='/'>Home</Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem className='text-xs text-muted-foreground'>
-            <BreadcrumbLink href='/products'>Shop</BreadcrumbLink>
+            <BreadcrumbLink asChild>
+              <Link href='/products'>Shop</Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
           {category && (
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem className='text-xs text-muted-foreground'>
-                <BreadcrumbLink href={`/products?cat=${category}`}>
-                  {capitalizeString(category)}
+                <BreadcrumbLink asChild>
+                  <Link href={`/products?cat=${category}`}>
+                    {capitalizeString(category)}
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </>
