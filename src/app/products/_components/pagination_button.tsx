@@ -26,23 +26,23 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
   return (
     <div className={cn('flex items-center gap-2', props.className)}>
       {props.totalPages > 2 && (
-        <Link className='grid' href={props.firstPageUrl}>
-          <Button
-            variant={'outline'}
-            className='size-6 p-0 disabled:opacity-25'
-            disabled={!props.hasPrevPage}>
-            <ChevronsLeft className='size-4' />
-          </Button>
-        </Link>
-      )}
-      <Link className='grid' href={props.prevPageUrl}>
         <Button
           variant={'outline'}
           className='size-6 p-0 disabled:opacity-25'
           disabled={!props.hasPrevPage}>
-          <ChevronLeft className='size-4' />
+          <Link href={props.firstPageUrl}>
+            <ChevronsLeft className='size-4' />
+          </Link>
         </Button>
-      </Link>
+      )}
+      <Button
+        variant={'outline'}
+        className='size-6 p-0 disabled:opacity-25'
+        disabled={!props.hasPrevPage}>
+        <Link href={props.prevPageUrl}>
+          <ChevronLeft className='size-4' />
+        </Link>
+      </Button>
       <span className='text-xs text-muted-foreground font-semibold'>
         {props.totalPages <= 2 ? (
           <>
@@ -59,23 +59,23 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
           />
         )}
       </span>
-      <Link className='grid' href={props.nextPageUrl}>
+      <Button
+        variant={'outline'}
+        className='size-6 p-0 disabled:opacity-25'
+        disabled={!props.hasNextPage}>
+        <Link href={props.nextPageUrl}>
+          <ChevronRight className='size-4' />
+        </Link>
+      </Button>
+      {props.totalPages > 2 && (
         <Button
           variant={'outline'}
           className='size-6 p-0 disabled:opacity-25'
           disabled={!props.hasNextPage}>
-          <ChevronRight className='size-4' />
-        </Button>
-      </Link>
-      {props.totalPages > 2 && (
-        <Link className='grid' href={props.lastPageUrl}>
-          <Button
-            variant={'outline'}
-            className='size-6 p-0 disabled:opacity-25'
-            disabled={!props.hasNextPage}>
+          <Link href={props.lastPageUrl}>
             <ChevronsRight className='size-4' />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       )}
     </div>
   );
