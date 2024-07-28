@@ -15,14 +15,14 @@ export async function PaginationSummary({
 }: PaginationSummaryProps) {
   const filters = getFilters(searchParams);
   const totalCount = await prisma.product.count({ where: filters });
-  const { page, limit } = extractSearchParams(searchParams);
+  const { page } = extractSearchParams(searchParams);
 
-  const limitPerPage = +limit <= 0 ? 8 : +limit;
+  const limitPerPage = 8;
   const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
   const end = start + limitPerPage;
   const totalPages = Math.ceil(totalCount / limitPerPage);
 
-  if (+page > totalPages || +page <= 0) {
+  if (+page > totalPages || +page < 0) {
     return (
       <p className={cn('text-xs font-medium text-muted-foreground', className)}>
         <span className='font-semibold'>0</span> -{' '}
