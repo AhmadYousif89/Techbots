@@ -15,7 +15,6 @@ export function ProductGridSize() {
   const sp = extractSearchParams(params.entries());
   const newParams = new URLSearchParams({
     ...(sp.page && { page: sp.page }),
-    ...(sp.limit && { limit: sp.limit }),
     ...(sp.category && { cat: sp.category }),
     ...(sp.brand && { brand: sp.brand }),
     ...(sp.sort && { sort: sp.sort }),
