@@ -36,12 +36,8 @@ export function ReviewsPaginationButtons({
   totalPages,
   searchParams,
 }: PaginationSectionProps) {
-  const { page, limit, selectedRating, category } = extractSearchParams(
-    searchParams,
-    '5'
-  );
+  const { page, selectedRating, category } = extractSearchParams(searchParams);
   const params = new URLSearchParams({
-    ...(limit && { limit }),
     ...(category && { cat: category }),
     ...(selectedRating && { sr: selectedRating }),
   });
@@ -58,7 +54,7 @@ export function ReviewsPaginationButtons({
   const nextPageUrl = `/products/${asin}?page=${+page + 1}&${params.toString()}#reviews`;
   const prevPageUrl = `/products/${asin}?page=${+page - 1}&${params.toString()}#reviews`;
   const lastPageUrl = `/products/${asin}?page=${totalPages}&${params.toString()}#reviews`;
-  const resetUrl = `/products/${asin}?page=1&limit=${limit}&cat=${category}#reviews`;
+  const resetUrl = `/products/${asin}?page=1&cat=${category}#reviews`;
 
   const startingPage = +page <= 0 ? 1 : +page <= totalPages ? +page : 0;
   const endingPage = totalPages >= 1 ? totalPages : 0;
@@ -138,8 +134,7 @@ type ProductReviewsProps = {
 };
 
 export async function ProductReviews({ asin, searchParams }: ProductReviewsProps) {
-  const defaultLimit = '5';
-  const { page, limit, selectedRating } = extractSearchParams(searchParams, defaultLimit);
+  const { page, selectedRating } = extractSearchParams(searchParams);
   const { product, reviewsCount } = await getProductDetails(asin, searchParams);
 
   const reviews = product.topReviews;
@@ -169,7 +164,7 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
     );
   }
 
-  const limitPerPage = +limit <= 0 ? +defaultLimit : +limit;
+  const limitPerPage = 5;
   const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
   const totalPages = Math.ceil(reviewsCount / limitPerPage);
   const hasNextPage = start + limitPerPage < reviewsCount;

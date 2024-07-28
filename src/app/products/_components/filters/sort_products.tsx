@@ -20,7 +20,6 @@ export function SortProducts() {
 
   const paramObj: Record<string, string> = {
     ...(sp.page && { page: sp.page }),
-    ...(sp.limit && { limit: sp.limit }),
     ...(sp.category && { cat: sp.category }),
     ...(sp.brand && { brand: sp.brand }),
     ...(sp.min && { min: sp.min }),

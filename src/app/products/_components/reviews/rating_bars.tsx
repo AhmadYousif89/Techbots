@@ -25,7 +25,7 @@ export function ReviewsRatingBars({
   ratingBreakdown,
   searchParams,
 }: ReviewsRatingBarsProps) {
-  const { selectedRating, category } = extractSearchParams(searchParams, '5');
+  const { selectedRating, category } = extractSearchParams(searchParams);
   const keys: Array<keyof RatingBreakdown> = [
     'five_star',
     'four_star',
