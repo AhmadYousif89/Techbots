@@ -5,8 +5,8 @@ import { User } from 'lucide-react';
 import { Logo } from './logo';
 import { MainNav } from './main_nav';
 import { SideMenu } from './side_menu';
-import { WishListMenu } from './wishlist/wishlist_menu';
-import { CartMenu } from '../app/cart/_components/cart_menu';
+import { WishListMenu } from './wishlist_menu/wishlist_menu';
+import { CartMenu } from './cart_menu/cart_menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Separator } from './ui/separator';
 
@@ -37,8 +37,8 @@ export function Header() {
                 appearance={{
                   elements: {
                     userPreviewMainIdentifier: 'capitalize font-bold',
-                    userPreviewSecondaryIdentifier: 'font-medium'
-                  }
+                    userPreviewSecondaryIdentifier: 'font-medium',
+                  },
                 }}
               />
             </div>

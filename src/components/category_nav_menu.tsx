@@ -22,7 +22,6 @@ export function CategoryNavMenu({ data }: { data: Promise<string[]> }) {
   const sp = extractSearchParams(params.entries());
   const newParams = new URLSearchParams({
     ...(sp.page && { page: sp.page }),
-    ...(sp.limit && { limit: sp.limit }),
     ...(sp.brand && { brand: sp.brand }),
     ...(sp.sort && { sort: sp.sort }),
     ...(sp.min && { min: sp.min }),
