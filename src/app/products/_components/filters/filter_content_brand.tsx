@@ -3,7 +3,7 @@ import { ChevronLeft } from 'lucide-react';
 import { use, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { extractSearchParams } from '../../_lib/utils';
-import { useFilter } from '../../_lib/store';
+import { useFilter } from '../../_store/filters';
 import { capitalizeString } from '@/lib/utils';
 
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,6 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const sp = extractSearchParams(params.entries());
   const newParams = new URLSearchParams({
     ...(sp.page && { page: sp.page }),
-    ...(sp.limit && { limit: sp.limit }),
     ...(sp.category && { cat: sp.category }),
     ...(sp.sort && { sort: sp.sort }),
     ...(sp.min && { min: sp.min }),
