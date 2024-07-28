@@ -1,5 +1,5 @@
-import { User } from '@prisma/client';
 import prisma from './db';
+import { User } from '@prisma/client';
 
 export async function addUserToDB(data: User) {
   try {
@@ -11,7 +11,7 @@ export async function addUserToDB(data: User) {
   }
 }
 
-export async function getUserById(id: string, clerkUserId: string) {
+export async function getUserById(id = '', clerkUserId = '') {
   if (!id && !clerkUserId) {
     throw new Error('Please provide either an id or clerkUserId');
   }
@@ -25,7 +25,7 @@ export async function getUserById(id: string, clerkUserId: string) {
   }
 }
 
-export async function updateUser(id: string, data: Partial<User>) {
+export async function updateUser(id = '', data: Partial<User>) {
   try {
     const user = await prisma.user.update({ where: { id }, data });
     return user;
