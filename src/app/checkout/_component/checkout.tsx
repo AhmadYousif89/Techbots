@@ -1,48 +1,42 @@
 'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { Ban } from 'lucide-react';
 
 import {
   Elements,
-  LinkAuthenticationElement,
-  PaymentElement,
+  useStripe,
   useElements,
-  useStripe
+  PaymentElement,
+  LinkAuthenticationElement,
 } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { TProduct } from '@/app/products/_lib/types';
-import { SearchParams } from '@/app/products/_lib/types';
-import { Separator } from '@/components/ui/separator';
+import useStore from '@/components/hooks/use-store';
+import { useCartStore } from '@/app/cart/_store/cart';
+import { NEXT_DAY_SHIPPING_COST } from '@/app/cart/constants';
+import { useShippingStore } from '@/app/cart/_store/shipping_form';
+
 import {
   Card,
-  CardContent,
-  CardFooter,
+  CardTitle,
   CardHeader,
-  CardTitle
+  CardFooter,
+  CardContent,
 } from '@/components/ui/card';
-import { getCartCount, getCartTotal } from '@/lib/utils';
-import { useLocalStorage } from '@/components/hooks/use_local_storage';
-import { useShippingFormStore } from '@/app/cart/_store/shipping_form';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { ProductThumbnail } from '@/app/products/_components/product_thumpnail';
-import { CartItem } from '@/app/cart/_components/cart_item';
-import { useIsMounted } from '@/components/hooks/use_isMounted';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Ban } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { userOrderExists } from '../_actions/actions';
-
-type CheckoutProps = {
-  searchParams: SearchParams;
-  products: TProduct[];
-  clientSecret: string;
-};
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 const loader = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
-export function Checkout({ searchParams, products, clientSecret }: CheckoutProps) {
+type CheckoutProps = {
+  clientSecret: string;
+};
+
+export function Checkout({ clientSecret }: CheckoutProps) {
   return (
     <Elements stripe={loader} options={{ clientSecret }}>
       <PaymentInformation />
@@ -53,22 +47,16 @@ export function Checkout({ searchParams, products, clientSecret }: CheckoutProps
 function PaymentInformation() {
   const stripe = useStripe();
   const elements = useElements();
-  const [isLoading, setIsloading] = useState(false);
   const [email, setEmail] = useState('');
-  const { data, setFormData } = useShippingFormStore();
-  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
-  const isMounted = useIsMounted();
-  let total: number = 0;
-  let itemsCount;
-  let VAT = 0;
+  const [isLoading, setIsloading] = useState(false);
 
-  if (isMounted()) {
-    total = getCartTotal(cart);
-    itemsCount = getCartCount(cart);
-    VAT = total * 0.2;
-  }
+  const data = useShippingStore(s => s.data);
+  const cart = useStore(useCartStore, s => s.cart) ?? [];
+  const VAT = useStore(useCartStore, s => s.getVAT()) ?? 0;
+  const total = useStore(useCartStore, s => s.getTotalValue()) ?? 0;
+  const cartCount = useStore(useCartStore, s => s.getTotalCount()) ?? 0;
 
-  const fullAmount = (total + VAT + (data.shipping === 'next' ? 20 : 0)).toFixed(2);
+  const fullAmount = (total + VAT).toFixed(2);
   const isDisabled = !stripe || !elements || isLoading;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -77,41 +65,31 @@ function PaymentInformation() {
     if (!stripe || !elements || !email) {
       toast.error('Please fill up all required fields', {
         icon: <Ban className='text-destructive' />,
-        duration: 5000
+        duration: 5000,
       });
       return;
     }
     setIsloading(true);
 
-    // const orderExist = await userOrderExists(email);
-
-    // if (orderExist) {
-    //   toast.error('You have already purchased these products.', {
-    //     icon: <Ban className='text-destructive' />,
-    //     duration: 5000
-    //   });
-    //   setIsloading(false);
-    //   return
-    // }
     const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/checkout/stripe/success`;
     // const url = `http://localhost:3000/checkout/stripe/success`;
     stripe
       .confirmPayment({
         elements,
         confirmParams: {
-          return_url: url
-        }
+          return_url: url,
+        },
       })
       .then(({ error }) => {
         if (error.type == 'card_error' || error.type == 'validation_error') {
           toast.error(error.message, {
             icon: <Ban className='text-destructive' />,
-            duration: 5000
+            duration: 5000,
           });
         } else {
           toast.error('An error occurred, please try again', {
             icon: <Ban className='text-destructive' />,
-            duration: 5000
+            duration: 5000,
           });
         }
       })
@@ -136,7 +114,7 @@ function PaymentInformation() {
             <DialogTrigger className='relative w-full h-full'>
               <div className='flex items-center justify-between text-sm text-muted-foreground uppercase font-medium underline cursor-pointer'>
                 <p>Items</p>
-                <span>{itemsCount}</span>
+                <span>{cartCount}</span>
               </div>
             </DialogTrigger>
             <DialogContent className='px-4 py-12 overscroll-y-auto'>
@@ -151,7 +129,7 @@ function PaymentInformation() {
                       className='size-20 object-contain'
                     />
                     <Link
-                      href={`/products/${item.asin}`}
+                      href={`/products/${item.asin}?cat=${item.category}`}
                       className='hover:underline hover:text-blue-500'>
                       <CardTitle className='text-sm font-medium'>
                         {item.title.split(' ').slice(0, 4).join(' ')}
@@ -175,11 +153,13 @@ function PaymentInformation() {
           </div>
           <div className='flex items-center justify-between text-muted-foreground uppercase font-medium my-4'>
             <p className='text-sm'>Shipping</p>
-            <span className='text-sm'>{data.shipping === 'next' ? '$20' : 'Free'}</span>
+            <span className='text-sm'>
+              {data.shipping === 'next' ? `$${NEXT_DAY_SHIPPING_COST}` : 'Free'}
+            </span>
           </div>
           <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
             <p className='text-sm'>Taxes</p>
-            <span className='text-sm'>${VAT}</span>
+            <span className='text-sm'>${VAT.toFixed(2)}</span>
           </div>
           <Separator className='my-4' />
           <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-sm'>
