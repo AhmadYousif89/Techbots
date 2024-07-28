@@ -1,6 +1,5 @@
 'use server';
 import prisma from '@/lib/db';
-import { cache } from '@/lib/cache';
 import { revalidatePath } from 'next/cache';
 import { TCartItem } from '@/app/cart/_lib/types';
 
@@ -17,7 +16,7 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
   );
 
   // Start a transaction to ensure that all operations are atomic
-  await prisma.$transaction(async prisma => {
+  const cartInfo = await prisma.$transaction(async prisma => {
     try {
       // Find the cart in the server
       const serverCart = await prisma.cart.findUnique({
@@ -29,16 +28,16 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
         },
       });
 
-      // If the cart is already synced, return
-      if (serverCart && serverCart.isSynced) {
-        console.log('Cart is in sync');
-        return;
-      }
+      // // If the cart is already synced, return
+      // if (serverCart && serverCart.isSynced) {
+      //   console.log('Cart synced successfully');
+      //   return { id: serverCart.id, isSynced: true };
+      // }
 
       // If the cart doesn't exist, create it
       if (!serverCart) {
         console.log('Syncing with local cart...');
-        await prisma.cart.create({
+        const newCart = await prisma.cart.create({
           data: {
             user: { connect: { clerkUserId } },
             count: cart.length,
@@ -51,7 +50,7 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
         });
         console.log('Local cart synced');
         revalidatePath('/cart');
-        return;
+        return { id: newCart.id, isSynced: true };
       }
 
       console.log('Syncing with server cart...');
@@ -97,12 +96,16 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
         where: { clerkUserId },
         data: { totalValue: cartTotalValue, count: cart.length, isSynced: true },
       });
+
+      console.log('Server cart synced');
+      return { id: serverCart.id, isSynced: true };
     } catch (error) {
       console.error(error);
     }
   });
 
   revalidatePath('/cart');
+  return cartInfo;
 };
 
 // Used outside the cart page to add items to the cart
@@ -148,11 +151,10 @@ export const addServerCartItem = async (
     }
 
     const totalValue = cart.totalValue + itemPrice;
-    const cartCount = cart.count + 1;
 
     await prisma.cart.update({
       where: { clerkUserId },
-      data: { totalValue, count: cartCount },
+      data: { totalValue, count: 1 },
     });
     console.log('Item added to cart');
   });
@@ -160,7 +162,7 @@ export const addServerCartItem = async (
   revalidatePath('/products', 'layout');
 };
 // Used inside or outside the cart page to remove an item from the cart
-export const removeServerCartItem = async (
+export const removeFromServerCart = async (
   clerkUserId: string,
   asin: string,
   itemPrice: number
@@ -191,13 +193,11 @@ export const removeServerCartItem = async (
       where: { cartItemId: { cartId: cart.id, productAsin: asin } },
     });
 
-    const totalValue = cart.totalValue - itemPrice * cartItem.quantity;
-    const cartCount = cart.count - 1;
-    const isLastOne = cartCount === 0;
+    const isLastOne = cart.count === 0;
     if (isLastOne) {
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue: 0, count: 0, isSynced: false },
+        data: { totalValue: 0, count: 0 },
       });
       console.log('Item removed from cart and cart cleared');
       revalidatePath('/cart');
@@ -205,9 +205,10 @@ export const removeServerCartItem = async (
       return;
     }
 
+    const totalValue = cart.totalValue - itemPrice * cartItem.quantity;
     await prisma.cart.update({
       where: { clerkUserId },
-      data: { totalValue, count: cartCount },
+      data: { totalValue, count: { decrement: 1 } },
     });
     console.log('Item removed from cart');
   });
@@ -237,30 +238,30 @@ export const incrementServerCartItem = async (
       throw new Error('Cart not found');
     }
 
-    const cartItems = cart.cartItems;
-    const cartItem = cartItems.find(item => item.productAsin === asin);
+    const cartItem = cart.cartItems.find(item => item.productAsin === asin);
     if (!cartItem) {
       throw new Error('Cart item not found');
     }
     const prodStock = cartItem.Product.stockQuantity;
-    let totalValue = cart.totalValue;
 
     const newQuantity = Math.min(cartItem.quantity + 1, prodStock);
 
     await prisma.cartItem.update({
       where: { cartItemId: { cartId: cart.id, productAsin: asin } },
-      data: { quantity: { increment: newQuantity } },
+      data: { quantity: newQuantity },
     });
 
+    let totalValue = cart.totalValue;
     totalValue += itemPrice;
 
     await prisma.cart.update({
       where: { clerkUserId },
       data: { totalValue },
     });
+    console.log('Item incremented');
   });
 
-  revalidatePath('/cart');
+  // revalidatePath('/cart');
 };
 
 // Used inside the cart page to decrement the quantity of an item
@@ -283,43 +284,40 @@ export const decrementServerCartItem = async (
       throw new Error('Cart not found');
     }
 
-    const cartItems = cart.cartItems;
-    const cartItem = cartItems.find(item => item.productAsin === asin);
+    const cartItem = cart.cartItems.find(item => item.productAsin === asin);
     if (!cartItem) {
       throw new Error('Cart item not found');
     }
 
-    let cartCount = cart.count;
+    let totalValue = cart.totalValue;
+    totalValue -= itemPrice;
 
     if (cartItem.quantity === 1) {
       await prisma.cartItem.delete({
         where: { cartItemId: { cartId: cart.id, productAsin: asin } },
       });
-      cartCount = cart.count - 1;
-    } else {
-      await prisma.cartItem.update({
-        where: { cartItemId: { cartId: cart.id, productAsin: asin } },
-        data: { quantity: { decrement: 1 } },
-      });
-    }
-
-    const isLastOne = cartCount === 1;
-    if (isLastOne) {
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue: 0, count: 0, isSynced: false },
+        data: { totalValue, count: { decrement: 1 } },
       });
-      revalidatePath('/cart');
-      revalidatePath('/products', 'layout');
+      console.log('Item decremented and removed from cart');
+      // revalidatePath('/cart');
       return;
     }
+
+    await prisma.cartItem.update({
+      where: { cartItemId: { cartId: cart.id, productAsin: asin } },
+      data: { quantity: { decrement: 1 } },
+    });
+
     await prisma.cart.update({
       where: { clerkUserId },
-      data: { totalValue: cart.totalValue - itemPrice, count: cartCount },
+      data: { totalValue },
     });
+    console.log('Item decremented');
   });
 
-  revalidatePath('/cart');
+  // revalidatePath('/cart');
 };
 
 // Used inside or outside the cart page to clear the cart
@@ -344,10 +342,12 @@ export const clearServerCart = async (clerkUserId: string) => {
 
     await prisma.cart.update({
       where: { clerkUserId },
-      data: { totalValue: 0, count: 0, isSynced: false },
+      data: { totalValue: 0, count: 0 },
     });
+
+    console.log('Cart cleared');
   });
 
-  revalidatePath('/cart');
+  // revalidatePath('/cart');
   revalidatePath('/products', 'layout');
 };
