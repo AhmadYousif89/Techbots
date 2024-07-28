@@ -5,10 +5,10 @@ import { extractSearchParams } from '../_lib/utils';
 import { TProduct, SearchParams } from '../_lib/types';
 
 import { RatingStars } from './reviews/rating_stars';
-import { AddToCartButton } from '../../cart/_components/add_to_cart_button';
-import { AddToWishlistButton } from '@/components/wishlist/add_to_wishlist_button';
-import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { AddToCartButton } from '../../../components/cart_menu/add_button';
 import { Separator } from '@/components/ui/separator';
+import { AddToWishlistButton } from '@/components/wishlist_menu/add_button';
+import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
   product: TProduct;
@@ -16,18 +16,8 @@ type Props = {
 };
 
 export async function ProductGridItem({ product, searchParams }: Props) {
-  const sp = extractSearchParams(searchParams);
-  const newParams = new URLSearchParams({
-    ...(sp.page && { page: sp.page }),
-    ...(sp.limit && { limit: sp.limit }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.max }),
-    ...(sp.grid && { grid: sp.grid }),
-  });
   const { asin, rating, mainImage, title, price, category } = product;
+  const { grid } = extractSearchParams(searchParams);
   const prodUrl = `/products/${asin}?cat=${category}`;
 
   return (
@@ -40,8 +30,8 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           height={150}
           className={cn(
             'size-28 object-contain',
-            sp.grid === '3' && 'lg:size-36 p-0',
-            sp.grid === '2' && 'lg:size-44 p-2'
+            grid === '3' && 'lg:size-36 p-0',
+            grid === '2' && 'lg:size-44 p-2'
           )}
         />
       </Link>
@@ -51,7 +41,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           <CardTitle
             className={cn(
               'text-xs font-medium hover:underline hover:text-blue-700',
-              sp.grid === '2' && 'text-sm'
+              grid === '2' && 'text-sm'
             )}>
             {title}
           </CardTitle>
@@ -67,7 +57,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           size={'sm'}
           action='BuyNow'
           product={product}
-          forceRedirect={`/cart?${newParams.toString()}`}
+          forceRedirect={true}
         />
         <AddToWishlistButton logoSize={18} product={product} />
       </CardFooter>
