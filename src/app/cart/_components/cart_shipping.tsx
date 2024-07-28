@@ -1,16 +1,13 @@
 'use client';
+
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { TProduct } from '@/app/products/_lib/types';
-import { getCartCount, getCartTotal } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
-import { z } from 'zod';
+import { useRouter } from 'next/navigation';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Card,
@@ -19,27 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useShippingFormStore } from '../_store/shipping_form';
-import { useIsMounted } from '@/components/hooks/use_isMounted';
-
-type ShippingType = 'free' | 'next';
-
-const validate = z.string().min(1, { message: 'Field is required' });
-// .refine(value => !value.startsWith(' '), { message: 'Field start with empty spaces' });
-
-const shippingSchema = z.object({
-  firstname: validate,
-  lastname: validate,
-  mainAddress: validate,
-  optionalAddress: z.string().optional(),
-  city: validate,
-  phone: z
-    .number({ coerce: true, message: 'Invalid phone number' })
-    .min(1, { message: 'Field is required' }),
-  shipping: z.union([z.literal('free'), z.literal('next')]),
-});
-
-export type ShippingForm = z.infer<typeof shippingSchema>;
+import { useCartStore } from '../_store/cart';
+import { ShippingType } from '../_lib/types';
+import { NEXT_DAY_SHIPPING_COST } from '../constants';
+import useStore from '@/components/hooks/use-store';
+import { ShippingFormKeys, useShippingStore } from '../_store/shipping_form';
 
 const initTouchState = {
   firstname: false,
@@ -51,61 +32,25 @@ const initTouchState = {
   shipping: false,
 };
 
-export type Order = {
-  id: string;
-  userId: string;
-  items: Partial<TProduct>[]; //  { asin: BSKXOZA23, quantity: 1 }
-  shippingInfo: ShippingForm;
-  total: number;
-};
-type ShippingFormKeys = keyof ShippingForm;
-
 export function CartShippingView() {
   const router = useRouter();
   const { userId } = useAuth();
-  const [cart, setCart] = useLocalStorage<TProduct[]>('cart', []);
-  const [hasOrder, setHasOrder] = useLocalStorage('hasOrder', false);
-  const { data, setFormData } = useShippingFormStore();
-  const [touchState, setTouchState] =
-    useState<Record<ShippingFormKeys, boolean>>(initTouchState);
-  const isMounted = useIsMounted();
-  const total = getCartTotal(cart);
-  const itemsCount = getCartCount(cart);
-  let VAT = 0;
+  const [touchState, setTouchState] = useState(initTouchState);
+  const { data, setFormData } = useShippingStore();
+  const formResult = useShippingStore(s => s.formState());
+  const VAT = useStore(useCartStore, s => s.getVAT()) ?? 0;
+  const total = useStore(useCartStore, s => s.getTotalValue()) ?? 0;
+  const cartCount = useStore(useCartStore, s => s.getTotalCount()) ?? 0;
 
-  if (isMounted()) {
-    VAT = +(total * 0.2).toFixed(2);
-  }
+  const handleInputChange = (value: string, name: ShippingFormKeys) => {
+    setFormData({ ...data, [name]: value.trim() });
+    setTouchState({ ...touchState, [name]: true });
+  };
 
-  const onFirstNameChange = (value: string, name: ShippingFormKeys) => {
-    setFormData({ ...data, firstname: value.trim() });
-    setTouchState({ ...touchState, firstname: true });
-  };
-  const onLastNameChange = (value: string, name: ShippingFormKeys) => {
-    setFormData({ ...data, lastname: value.trim() });
-    setTouchState({ ...touchState, lastname: true });
-  };
-  const onMainAddressChange = (value: string, name: ShippingFormKeys) => {
-    setFormData({ ...data, mainAddress: value.trim() });
-    setTouchState({ ...touchState, mainAddress: true });
-  };
-  const onOptionalAddressChange = (value: string, name: ShippingFormKeys) => {
-    setFormData({ ...data, optionalAddress: value.trim() });
-    setTouchState({ ...touchState, optionalAddress: true });
-  };
-  const onCityChange = (value: string, name: ShippingFormKeys) => {
-    setFormData({ ...data, city: value.trim() });
-    setTouchState({ ...touchState, city: true });
-  };
-  const onPhoneChange = (value: number, name: ShippingFormKeys) => {
-    setFormData({ ...data, phone: value });
-    setTouchState({ ...touchState, phone: true });
-  };
-  const onShippingChange = (value: ShippingType) => {
+  const onShippingValueChange = (value: ShippingType) => {
     setFormData({ ...data, shipping: value });
   };
 
-  const formResult = shippingSchema.safeParse(data);
   let errors;
   if (formResult.success == false) {
     errors = formResult.error.formErrors.fieldErrors;
@@ -126,7 +71,7 @@ export function CartShippingView() {
                   placeholder='First Name'
                   name='firstname'
                   onChange={e =>
-                    onFirstNameChange(e.target.value, e.target.name as ShippingFormKeys)
+                    handleInputChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
                 {errors && errors.firstname && touchState.firstname && (
@@ -141,7 +86,7 @@ export function CartShippingView() {
                   placeholder='Last Name'
                   name='lastname'
                   onChange={e =>
-                    onLastNameChange(e.target.value, e.target.name as ShippingFormKeys)
+                    handleInputChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
                 {errors && errors.lastname && touchState.lastname && (
@@ -158,7 +103,7 @@ export function CartShippingView() {
                   placeholder='Main Address'
                   name='main-address'
                   onChange={e =>
-                    onMainAddressChange(e.target.value, e.target.name as ShippingFormKeys)
+                    handleInputChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
                 {errors && errors.mainAddress && touchState.mainAddress && (
@@ -173,10 +118,7 @@ export function CartShippingView() {
                 name='optional-address'
                 required={false}
                 onChange={e =>
-                  onOptionalAddressChange(
-                    e.target.value,
-                    e.target.name as ShippingFormKeys
-                  )
+                  handleInputChange(e.target.value, e.target.name as ShippingFormKeys)
                 }
               />
             </fieldset>
@@ -188,7 +130,7 @@ export function CartShippingView() {
                   type='text'
                   name='city'
                   onChange={e =>
-                    onCityChange(e.target.value, e.target.name as ShippingFormKeys)
+                    handleInputChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
                 {errors && errors.city && touchState.city && (
@@ -204,10 +146,7 @@ export function CartShippingView() {
                   type='number'
                   name='phone'
                   onChange={e =>
-                    onPhoneChange(
-                      e.target.valueAsNumber,
-                      e.target.name as ShippingFormKeys
-                    )
+                    handleInputChange(e.target.value, e.target.name as ShippingFormKeys)
                   }
                 />
                 {errors && errors.phone && touchState.phone && (
@@ -222,9 +161,9 @@ export function CartShippingView() {
 
             <RadioGroup
               name='shipping'
-              defaultValue={data.shipping}
               value={data.shipping}
-              onValueChange={onShippingChange}
+              defaultValue={data.shipping}
+              onValueChange={onShippingValueChange}
               className='flex flex-wrap gap-4'>
               <Label
                 htmlFor='r1'
@@ -243,7 +182,9 @@ export function CartShippingView() {
                 className='flex items-center gap-4 p-4 min-w-56 rounded-lg bg-muted text-sm cursor-pointer hover:bg-foreground/5 shadow-sm'>
                 <RadioGroupItem value='next' id='r2' />
                 <div className='space-y-1'>
-                  <p className='text-xs font-medium'>Next Day Shipping - $20</p>
+                  <p className='text-xs font-medium'>
+                    Next Day Shipping - ${NEXT_DAY_SHIPPING_COST}
+                  </p>
                   <p className='text-xs text-muted-foreground'>24 hour from checkout</p>
                 </div>
               </Label>
@@ -262,7 +203,7 @@ export function CartShippingView() {
             {/* Cart items */}
             <div className='flex items-center justify-between text-sm text-muted-foreground uppercase font-medium'>
               <p>Items</p>
-              <span>{itemsCount}</span>
+              <span>{cartCount}</span>
             </div>
             <Separator className='my-8' />
             {/* Subtotal */}
@@ -272,31 +213,33 @@ export function CartShippingView() {
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium my-4'>
               <p className='text-sm'>Shipping</p>
-              <span className='text-sm'>{data.shipping === 'next' ? '$20' : 'Free'}</span>
+              <span className='text-sm'>
+                {data.shipping === 'next' ? `$${NEXT_DAY_SHIPPING_COST}` : 'Free'}
+              </span>
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Taxes</p>
-              <span className='text-sm'>${VAT}</span>
+              <span className='text-sm'>${VAT.toFixed(2)}</span>
             </div>
             <Separator className='my-8' />
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
               <p>Total</p>
-              <span>
-                ${(total + VAT + (data.shipping === 'next' ? 20 : 0)).toFixed(2)}
-              </span>
+              <span>${(total + VAT).toFixed(2)}</span>
             </div>
           </CardContent>
         </section>
       </CardContent>
       <CardFooter className='gap-4 justify-end lg:justify-center lg:py-8'>
         <Button
-          disabled={formResult.success === false}
+          disabled={!formResult.success}
           onClick={() => {
-            if (!userId) return router.push('/sign-in');
-            setHasOrder(true);
-            router.push('/cart?fr=success#cart-payment');
+            if (!userId) {
+              router.push('/sign-in');
+              return;
+            }
+            router.push('/cart#cart-payment');
           }}>
-          Add your payment
+          Continue to payment
         </Button>
         <Button
           variant={'outline'}

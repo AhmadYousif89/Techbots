@@ -1,11 +1,8 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Fragment, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Fragment, useState } from 'react';
 import { ShoppingCart, Slash } from 'lucide-react';
 
-import { CartItem } from './cart_item';
-import { getCartTotal } from '@/lib/utils';
-import { useLocalStorage } from '@/components/hooks/use_local_storage';
 import {
   Card,
   CardContent,
@@ -23,47 +20,23 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
-import { TProduct } from '@/app/products/_lib/types';
-import { useIsMounted } from '@/components/hooks/use_isMounted';
-import { extractSearchParams } from '@/app/products/_lib/utils';
+import useStore from '@/components/hooks/use-store';
 
-export function CartListView({ setNextTab }: { setNextTab: (value: string) => void }) {
+import { CartItem } from './cart_item';
+import { useCartStore } from '../_store/cart';
+import { DeleteCartItems } from './delete_button';
+
+export function CartListView() {
   const router = useRouter();
-  const params = useSearchParams();
-  const [couponValue, setCouponValue] = useState('');
-  const [isInvalidCoupon, setIsInvalidCoupon] = useState(false);
-  const [cart] = useLocalStorage<TProduct[]>('cart', []);
-  const total = getCartTotal(cart);
-  const isMounted = useIsMounted();
-
-  const sp = extractSearchParams(params.entries());
-
-  const newParams = new URLSearchParams({
-    ...(sp.page && { page: sp.page }),
-    ...(sp.limit && { limit: sp.limit }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.max }),
-    ...(sp.grid && { grid: sp.grid }),
-  });
-
-  let VAT = 0;
-  let cartCount = 0;
-
-  if (isMounted()) {
-    cartCount = cart.length;
-    VAT = +(total * 0.2).toFixed(2);
-  }
-
-  useEffect(() => {
-    if (couponValue === '50off') {
-      setIsInvalidCoupon(false);
-    } else {
-      setIsInvalidCoupon(true);
-    }
-  }, [couponValue]);
+  const cart = useStore(useCartStore, s => s.cart) ?? [];
+  const VAT = useStore(useCartStore, s => s.getVAT()) ?? 0;
+  const total = useStore(useCartStore, s => s.getTotalValue()) ?? 0;
+  const cartCount = useStore(useCartStore, s => s.getTotalCount()) ?? 0;
+  const coupon = useStore(useCartStore, s => s.coupon) ?? '';
+  const setCouponValue = useCartStore(s => s.setCouponValue);
+  const couponIsValid = useStore(useCartStore, s => s.couponIsValid());
+  const [localCouponValue, setLocalCouponValue] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   let content;
   if (cartCount === 0) {
@@ -71,13 +44,17 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
       <CardContent className='flex flex-col pt-6'>
         <CardHeader>
           <CardTitle className='text-muted-foreground'>Cart Details</CardTitle>
-          <CardDescription>
+          <CardDescription className='text-xs lg:text-sm'>
             Your cart is empty. Start adding some items to continue.
           </CardDescription>
         </CardHeader>
-        <Slash strokeWidth={1} className='size-64 m-auto'>
-          <ShoppingCart strokeWidth={1} className='text-muted-foreground' />
-        </Slash>
+        <div className='my-10'>
+          <Slash
+            strokeWidth={1}
+            className='size-44 lg:size-56 m-auto text-muted-foreground'>
+            <ShoppingCart strokeWidth={1} className='text-muted-foreground/75' />
+          </Slash>
+        </div>
       </CardContent>
     );
   } else {
@@ -86,16 +63,12 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
         <div className='row-[1]'>
           <CardHeader className='px-0 pt-0 flex-row justify-between items-center'>
             <CardTitle className='text-muted-foreground'>Cart Details</CardTitle>
-            {/* <Button
-              variant='secondary'
-              className='size-7 p-0 hover:bg-destructive hover:text-secondary'>
-              <Trash2 className='size-5' />
-            </Button> */}
+            <DeleteCartItems action='deleteAll' />
           </CardHeader>
-          <section className='flex flex-col gap-8 '>
-            {cart.map((item, index) => (
-              <Fragment key={item.asin + index}>
-                <CartItem product={item} />
+          <section className='flex flex-col gap-8 py-4 max-h-[600px] overflow-y-auto'>
+            {cart.map(item => (
+              <Fragment key={item.id}>
+                <CartItem asin={item.asin} />
                 <Separator className='last:hidden' />
               </Fragment>
             ))}
@@ -114,28 +87,37 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
               <AccordionTrigger className='text-xs text-muted-foreground underline uppercase hover:text-foreground/50'>
                 I have a coupon code
               </AccordionTrigger>
-              <AccordionContent>
-                <Input
-                  placeholder='Enter coupon code'
-                  className='focus-visible:rounded-none'
-                  value={couponValue}
-                  onChange={e => {
-                    setIsInvalidCoupon(false);
-                    setCouponValue(e.target.value);
+              <AccordionContent className='pr-2'>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    setCouponValue?.(localCouponValue);
+                    setIsSubmitted(true);
                   }}
-                />
-                {isInvalidCoupon &&
-                  couponValue?.toLowerCase() !== '50off' &&
-                  couponValue.length > 4 && (
-                    <span className='text-destructive px-1 mt-2 inline-block font-medium text-xs'>
+                  className='relative flex items-center justify-between gap-4 my-2'>
+                  <Input
+                    value={localCouponValue}
+                    placeholder='Enter coupon code'
+                    className='focus-visible:rounded-lg focus-visible:ring-inset'
+                    onChange={e => setLocalCouponValue(e.target.value)}
+                  />
+                  {isSubmitted && !couponIsValid && (
+                    <span className='absolute top-10 left-2 text-destructive font-medium text-sm'>
                       Invalid coupon code
                     </span>
                   )}
-                {!isInvalidCoupon && couponValue?.toLowerCase() === '50off' && (
-                  <span className='text-green-500 px-1 mt-2 inline-block font-medium text-xs'>
-                    50% discount applied
-                  </span>
-                )}
+                  {couponIsValid && (
+                    <span className='absolute top-10 left-2 text-green-500 font-medium text-sm'>
+                      {coupon.slice(0, 2)}% discount applied
+                    </span>
+                  )}
+                  <Button
+                    size={'sm'}
+                    disabled={!localCouponValue || coupon === localCouponValue}
+                    type='submit'>
+                    Apply
+                  </Button>
+                </form>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -151,7 +133,7 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
             </div>
             <div className='flex items-center justify-between text-muted-foreground uppercase font-medium'>
               <p className='text-sm'>Taxes</p>
-              <span className='text-sm'>${VAT}</span>
+              <span className='text-sm'>${VAT.toFixed(2)}</span>
             </div>
             <Separator className='my-8' />
             <div className='flex items-center justify-between text-muted-foreground uppercase font-semibold text-lg'>
@@ -167,21 +149,22 @@ export function CartListView({ setNextTab }: { setNextTab: (value: string) => vo
   return (
     <Card className='py-8 rounded-none min-h-screen'>
       <>{content}</>
-      <CardFooter className='gap-4 justify-end lg:justify-center lg:ml-8 lg:py-8'>
+      <CardFooter className='gap-4 justify-center lg:ml-8 lg:py-8'>
         <Button
+          size={'sm'}
           disabled={cartCount == 0}
           className='w-28'
           onClick={() => {
-            setNextTab('details');
             router.push('/cart#cart-details', { scroll: true });
           }}>
           Next
         </Button>
         <Button
+          size={'sm'}
           variant={'outline'}
           className='w-28'
           onClick={() => {
-            router.push(`/products?${newParams.toString()}`);
+            router.replace(`/products`);
           }}>
           Cancle
         </Button>
