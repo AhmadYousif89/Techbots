@@ -66,6 +66,7 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
           <SortProducts />
         </div>
       </div>
+
       <div className='xl:grid xl:gap-4 xl:grid-cols-[minmax(20%,auto),1fr] pb-8'>
         <div className='relative hidden xl:flex self-start justify-between pt-6'>
           <FilterProducts searchParams={searchParams} open='filter' />

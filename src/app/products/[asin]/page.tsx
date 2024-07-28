@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { SearchParams } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
-import { extractSearchParams } from '../_lib/utils';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {

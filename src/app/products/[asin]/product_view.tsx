@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import prisma from '@/lib/db';
-import { cache } from '@/lib/cache';
 import { notFound } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import { capitalizeString, cn } from '@/lib/utils';
 
 import { Category, TProduct } from '../_lib/types';
@@ -18,55 +19,46 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ProductCarousel } from '../_components/product_carousel';
-import { AddToCartButton } from '@/app/cart/_components/add_to_cart_button';
-import { AddToWishlistButton } from '@/components/wishlist/add_to_wishlist_button';
+import { AddToCartButton } from '@/components/cart_menu/add_button';
+import { AddToWishlistButton } from '@/components/wishlist_menu/add_button';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 
-const day = 60 * 60 * 24;
+export const getProductDetails = async (asin: string, searchParams: SearchParams) => {
+  const { page, selectedRating } = extractSearchParams(searchParams);
+  const limitPerPage = 8;
+  const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
+  let product = {} as TProduct;
 
-export const getProductDetails = cache(
-  async (asin: string, searchParams: SearchParams) => {
-    const defaultLimit = '5';
-    const { page, limit, selectedRating } = extractSearchParams(
-      searchParams,
-      defaultLimit
-    );
-    const limitPerPage = +limit <= 0 ? +defaultLimit : +limit;
-    const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
-    let product = {} as TProduct;
-
-    try {
-      product = (await prisma.product.findUnique({
-        where: { asin },
-        include: {
-          images: true,
-          topReviews: {
-            where: { asin, rating: selectedRating ? +selectedRating : undefined },
-            orderBy: { date: 'desc' },
-            take: limitPerPage,
-            skip: start,
-          },
+  try {
+    product = (await prisma.product.findUnique({
+      where: { asin },
+      include: {
+        images: true,
+        topReviews: {
+          where: { asin, rating: selectedRating ? +selectedRating : undefined },
+          orderBy: { date: 'desc' },
+          take: limitPerPage,
+          skip: start,
         },
-      })) as TProduct;
-    } catch (error) {
-      console.error('Error fetching product details:', error);
-      throw error;
-    }
+      },
+    })) as TProduct;
+  } catch (error) {
+    console.error('Error fetching product details:', error);
+    throw error;
+  }
 
-    const reviewsCount = await prisma.review.count({
-      where: { asin, rating: selectedRating ? +selectedRating : undefined },
-    });
+  const reviewsCount = await prisma.review.count({
+    where: { asin, rating: selectedRating ? +selectedRating : undefined },
+  });
 
-    return { product, reviewsCount };
-  },
-  ['getProductDetails'],
-  { revalidate: day }
-);
+  return { product, reviewsCount };
+};
 
 type SingleProductViewProps = {
   asin: string;
@@ -74,7 +66,13 @@ type SingleProductViewProps = {
 };
 
 export async function ProductView({ asin, searchParams }: SingleProductViewProps) {
+  const { userId } = auth();
   const { product } = await getProductDetails(asin, searchParams);
+  const serverCartItem = await prisma.cartItem.findFirst({
+    where: { productAsin: asin },
+    select: { cartId: true, quantity: true },
+  });
+  const inCart = serverCartItem?.quantity && userId;
 
   if (!product) {
     return notFound();
@@ -112,7 +110,12 @@ export async function ProductView({ asin, searchParams }: SingleProductViewProps
               </Badge>
               {product.color && (
                 <div className='flex items-center text-muted-foreground font-medium text-sm ml-2'>
-                  Color : <Badge className='ml-4'>{product.color}</Badge>
+                  Color :{' '}
+                  <Badge
+                    variant={'outline'}
+                    className='shadow-sm ml-4 text-muted-foreground'>
+                    {product.color}
+                  </Badge>
                 </div>
               )}
             </div>
@@ -127,11 +130,20 @@ export async function ProductView({ asin, searchParams }: SingleProductViewProps
           )}
           <div className='flex flex-col gap-8'>
             <div className='flex items-center justify-between gap-4 col-span-full'>
-              <Badge className='text-sm shadow-sm py-1' variant={'outline'}>
-                <p className='cursor-default text-muted-foreground font-medium'>
+              <div className='flex items-center gap-4'>
+                <Badge
+                  className='shadow-sm py-1 text-muted-foreground'
+                  variant={'outline'}>
                   $ {product.price.toFixed(2)}
-                </p>
-              </Badge>
+                </Badge>
+                {inCart && (
+                  <Button
+                    size={'sm'}
+                    className='text-xs font-semibold shadow-sm h-auto py-1 rounded-full active:translate-y-[1px]'>
+                    <Link href={`/cart?cid=${serverCartItem.cartId}`}>View in cart</Link>
+                  </Button>
+                )}
+              </div>
               <div className='flex items-center gap-4 lg:gap-8'>
                 <AddToCartButton action='addToCart' product={product} />
                 <AddToWishlistButton logoSize={20} product={product} />
