@@ -41,8 +41,8 @@ export function RatingStars({
       {showTotalReviews && (
         <Link
           href='#reviews'
-          className='text-muted-foreground font-medium hover:underline'>
-          {reviewsCount} Review{+reviewsCount !== 1 ? 's' : ''}
+          className='text-sm text-muted-foreground font-medium hover:underline'>
+          Reviews: {reviewsCount}
         </Link>
       )}
     </div>
