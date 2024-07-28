@@ -15,7 +15,7 @@ export default async function Page({ searchParams }: PageProps) {
   Object.entries(searchParams).map(item => {
     const prod = {
       asin: item[1]?.split(' ')[0],
-      cartQuantity: item[1]?.split(' ')[1]
+      cartQuantity: item[1]?.split(' ')[1],
     } as Partial<TProduct>;
     items.push(prod);
   });
@@ -23,9 +23,9 @@ export default async function Page({ searchParams }: PageProps) {
   const products = (await prisma.product.findMany({
     where: {
       asin: {
-        in: items.map(item => item.asin) as string[]
-      }
-    }
+        in: items.map(item => item.asin) as string[],
+      },
+    },
   })) as TProduct[];
 
   const totalAmount = products.reduce((acc, item) => {
@@ -41,7 +41,7 @@ export default async function Page({ searchParams }: PageProps) {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: totalAmount * 100, // in cents
     currency: 'USD',
-    metadata: result // { '1': 'B07JGJ7B17', '2': 'B07JGJ7B18'}
+    metadata: result, // { '1': 'B07JGJ7B17', '2': 'B07JGJ7B18'}
   });
 
   if (paymentIntent.client_secret == null) {
@@ -50,11 +50,7 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <main className='bg-background min-h-screen max-view mx-auto'>
-      <Checkout
-        searchParams={searchParams}
-        products={products}
-        clientSecret={paymentIntent.client_secret}
-      />
+      <Checkout clientSecret={paymentIntent.client_secret} />
     </main>
   );
 }
