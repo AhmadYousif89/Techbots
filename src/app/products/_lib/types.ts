@@ -26,10 +26,10 @@ export type SortValue =
   | '';
 export type TProduct = Product & {
   category: Category;
-  images: ProductImages[];
+  cartQuantity: number;
   topReviews: Review[];
+  images: ProductImages[];
   orderItems: OrderItem[];
-  cartQuantity?: number;
 };
 export type RatingDetails = {
   percentage: number;

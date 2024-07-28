@@ -1,8 +1,7 @@
 import { Category, SearchParams, SortValue } from './types';
 
 export function extractSearchParams(
-  searchParams: SearchParams | IterableIterator<[string, string]>,
-  customLimit = '8'
+  searchParams: SearchParams | IterableIterator<[string, string]>
 ) {
   let params: { [key: string]: any } = {};
 
@@ -15,8 +14,7 @@ export function extractSearchParams(
   }
 
   const result = {
-    page: '1',
-    limit: customLimit,
+    page: '',
     brand: '',
     category: '' as Category,
     sort: '' as SortValue,
@@ -24,17 +22,19 @@ export function extractSearchParams(
     selectedRating: '',
     min: '',
     max: '',
+    cid: '',
   };
   type Result = typeof result;
 
   for (const key in params) {
     if (key === 'cat') {
       result['category'] = params[key];
+      continue;
     } else if (key === 'sr') {
       result['selectedRating'] = params[key];
-    } else {
-      result[key as keyof Result] = params[key];
+      continue;
     }
+    result[key as keyof Result] = params[key];
   }
 
   return result;
