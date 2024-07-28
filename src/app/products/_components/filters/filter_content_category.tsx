@@ -6,7 +6,7 @@ import { capitalizeString } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useFilter } from '../../_lib/store';
+import { useFilter } from '../../_store/filters';
 import { useSearchParams } from 'next/navigation';
 
 export function FilterContentCategory({ data }: { data: Promise<string[]> }) {
