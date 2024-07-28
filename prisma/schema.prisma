@@ -28,6 +28,7 @@ model Cart {
   count       Int        @default(0)
   totalValue  Float      @default(0) @map("total_value")
   cartItems   CartItem[]
+  isSynced    Boolean    @default(false) @map("is_synced")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
