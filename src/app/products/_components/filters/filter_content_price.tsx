@@ -68,7 +68,8 @@ export function FilterContentPrice() {
           </Button>
         )}
       </div>
-      <div className='flex items-center gap-4'>
+
+      <div className='flex items-center gap-4 xl:flex-col xl:items-stretch xl:max-w-52'>
         <Label htmlFor='min' className='relative flex-1 min-w-28'>
           <Input
             id='min'
