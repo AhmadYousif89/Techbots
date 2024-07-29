@@ -17,19 +17,21 @@ export function FilterContentPrice() {
   const { min, max, setMax, setMin, clearPrice } = useFilter(s => s.price);
 
   const sp = extractSearchParams(params.entries());
-  const newParams = new URLSearchParams();
-  for (const [key, value] of Object.entries(sp)) {
-    if (key === 'min' || key === 'max') continue;
-    if (value) newParams.append(key, value);
-  }
+  const newParams = new URLSearchParams({
+    ...(sp.page && { page: sp.page }),
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.grid && { grid: sp.grid }),
+  });
 
   const { min: paramMin, max: paramMax } = sp;
-  const ps = newParams.toString();
   const minParam = min && `min=${min ? min : paramMin}`;
   const maxParam = max && `max=${max ? max : paramMax}`;
   const url = () => {
-    const params = [ps, minParam, maxParam].filter(Boolean).join('&');
-    return `/products${params ? `?${params}` : ''}`;
+    return `/products?${newParams.toString()}${minParam ? `&${minParam}` : ''}${
+      maxParam ? `&${maxParam}` : ''
+    }`;
   };
 
   const handleMinChange: ChangeEventHandler<HTMLInputElement> = e => {
@@ -42,6 +44,11 @@ export function FilterContentPrice() {
     setMax(isNaN(val) ? '' : val.toString());
   };
 
+  const handleReset = () => {
+    router.push(`/products?${newParams.toString()}`);
+    clearPrice();
+  };
+
   return (
     <form
       className='grid gap-4 self-start w-full max-w-sm'
@@ -51,14 +58,11 @@ export function FilterContentPrice() {
       }}>
       <div className='flex items-center justify-between gap-4'>
         <h3 className='font-medium text-muted-foreground'>Price</h3>
-        {(paramMin.trim() || paramMax.trim()) && (
+        {(paramMin || paramMax) && (
           <Button
             type='button'
             variant={'link'}
-            onClick={() => {
-              clearPrice();
-              router.push(url());
-            }}
+            onClick={handleReset}
             className='gap-1 text-xs py-0 h-auto font-medium text-muted-foreground hover:text-destructive'>
             <ChevronLeft className='size-3' /> Reset
           </Button>
