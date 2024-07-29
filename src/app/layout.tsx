@@ -1,22 +1,25 @@
+import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/header';
 import { Footer } from '@/app/footer';
 
 const inter = Inter({
-  subsets: ['latin']
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: 'TechBots',
-  description: 'Explore computer and electronic parts at TechBots.'
+  title: {
+    default: 'Techbots - Home',
+    template: 'Techbots - %s',
+  },
+  description: 'Explore computer and electronic parts at Techbots.',
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -37,8 +40,8 @@ export default function RootLayout({
                 title: 'font-semibold',
                 description: 'text-xs',
                 actionButton:
-                  'px-4 py-1 font-medium bg-background text-primary text-sm rounded'
-              }
+                  'px-4 py-1 font-medium bg-background text-primary text-sm rounded',
+              },
             }}
             duration={2000}
           />

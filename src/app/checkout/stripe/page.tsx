@@ -1,8 +1,13 @@
-import { SearchParams } from '@/app/products/_lib/types';
+import Stripe from 'stripe';
+import prisma from '@/lib/db';
 import { Checkout } from '../_component/checkout';
 import { TProduct } from '@/app/products/_lib/types';
-import prisma from '@/lib/db';
-import Stripe from 'stripe';
+import { SearchParams } from '@/app/products/_lib/types';
+
+export const metadata = {
+  title: 'Checkout',
+  description: 'Checkout your items and pay securely with Stripe.',
+};
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 

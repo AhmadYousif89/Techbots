@@ -1,5 +1,9 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+
+import prisma from '@/lib/db';
 import { SearchParams } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
 
@@ -16,8 +20,24 @@ import { ProductView } from './product_view';
 import { SimilarProducts } from '../_components/similar_products';
 import { ProductReviews } from '../_components/reviews/product_reviews';
 import { SimilarItemSkeleton } from '../_components/skeletons/similar_item_skeleton';
-import prisma from '@/lib/db';
-import { notFound } from 'next/navigation';
+
+export const generateMetadata = async ({
+  params,
+  searchParams,
+}: PageProps): Promise<Metadata> => {
+  const product = await prisma.product.findUnique({
+    where: { asin: params.asin },
+    select: { brand: true, title: true },
+  });
+  const category = capitalizeString(searchParams.cat ?? '', false);
+  const prodTitle = product?.title.split(' ').slice(0, 5).join(' ') ?? '';
+  const brand = capitalizeString(product?.brand ?? '', false);
+
+  return {
+    title: `${category} | ${prodTitle}`,
+    description: `Shop the new ${prodTitle} from ${brand}. Enjoy the best features and quality at Techbots.`,
+  };
+};
 
 type PageProps = {
   params: { asin: string };
