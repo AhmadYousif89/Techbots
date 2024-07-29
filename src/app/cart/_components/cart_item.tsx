@@ -52,7 +52,13 @@ export function CartItem({ asin }: { asin: string }) {
   return (
     <div className='flex gap-8 mt-4 even:pt-8 max-w-xl'>
       <Card className='p-2 shadow-sm w-full max-w-24 self-start grid place-content-center'>
-        <Image src={item.mainImage} alt={item.title} width={100} height={100} />
+        <Image
+          title={asin}
+          src={item.mainImage}
+          alt={item.title}
+          width={100}
+          height={100}
+        />
       </Card>
 
       <div>
@@ -66,9 +72,11 @@ export function CartItem({ asin }: { asin: string }) {
             $ {item.price.toFixed(2)}
           </Badge>
         </div>
-        <CardTitle className='text-xs sm:text-sm text-muted-foreground font-medium'>
-          <Link href={`/products/${item.asin}?cat=${item.category}`}>{item.title}</Link>
-        </CardTitle>
+        <Link href={`/products/${item.asin}?cat=${item.category}`} className='group'>
+          <CardTitle className='text-xs sm:text-sm text-muted-foreground font-medium group-hover:text-muted-foreground/80 transition-colors group-hover:underline'>
+            {item.title}
+          </CardTitle>
+        </Link>
 
         <div className='flex items-center gap-4 mt-6'>
           <Button
