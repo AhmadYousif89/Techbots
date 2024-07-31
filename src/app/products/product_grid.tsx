@@ -29,11 +29,14 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
   const hasNextPage = end < totalCount;
   const hasPrevPage = start > 0;
 
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(sp)) {
-    if (key === 'page') continue;
-    if (value) params.append(key, value);
-  }
+  const params = new URLSearchParams({
+    ...(sp.category && { cat: sp.category }),
+    ...(sp.brand && { brand: sp.brand }),
+    ...(sp.sort && { sort: sp.sort }),
+    ...(sp.min && { min: sp.min }),
+    ...(sp.max && { max: sp.max }),
+    ...(sp.grid && { grid: sp.grid }),
+  });
 
   const ps = params.toString() ? `&${params.toString()}` : '';
 
