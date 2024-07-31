@@ -6,10 +6,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/header';
 import { Footer } from '@/app/footer';
 
-const inter = Inter({
-  subsets: ['latin'],
-});
-
 export const metadata: Metadata = {
   title: {
     default: 'Techbots - Home',
@@ -18,11 +14,12 @@ export const metadata: Metadata = {
   description: 'Explore computer and electronic parts at Techbots.',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const inter = Inter({
+  subsets: ['latin'],
+  style: 'normal',
+});
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
       <html lang='en'>
@@ -43,7 +40,7 @@ export default function RootLayout({
                   'px-4 py-1 font-medium bg-background text-primary text-sm rounded',
               },
             }}
-            duration={2000}
+            duration={2500}
           />
         </body>
       </html>
