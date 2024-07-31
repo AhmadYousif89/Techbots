@@ -136,7 +136,7 @@ export const addServerCartItem = async (
         },
       });
       console.log('Cart created and item added');
-      revalidatePath('/products', 'layout');
+      revalidatePath('/products/[asin]', 'page');
       return;
     }
 
@@ -159,7 +159,7 @@ export const addServerCartItem = async (
     console.log('Item added to cart');
   });
 
-  revalidatePath('/products', 'layout');
+  revalidatePath('/products/[asin]', 'page');
 };
 // Used inside or outside the cart page to remove an item from the cart
 export const removeFromServerCart = async (
@@ -201,7 +201,7 @@ export const removeFromServerCart = async (
       });
       console.log('Item removed from cart and cart cleared');
       revalidatePath('/cart');
-      revalidatePath('/products', 'layout');
+      revalidatePath('/products/[asin]', 'page');
       return;
     }
 
@@ -214,7 +214,7 @@ export const removeFromServerCart = async (
   });
 
   revalidatePath('/cart');
-  revalidatePath('/products', 'layout');
+  revalidatePath('/products/[asin]', 'page');
 };
 
 // Used inside the cart page to increment the quantity of an item
@@ -260,8 +260,6 @@ export const incrementServerCartItem = async (
     });
     console.log('Item incremented');
   });
-
-  // revalidatePath('/cart');
 };
 
 // Used inside the cart page to decrement the quantity of an item
@@ -301,7 +299,7 @@ export const decrementServerCartItem = async (
         data: { totalValue, count: { decrement: 1 } },
       });
       console.log('Item decremented and removed from cart');
-      // revalidatePath('/cart');
+
       return;
     }
 
@@ -316,8 +314,6 @@ export const decrementServerCartItem = async (
     });
     console.log('Item decremented');
   });
-
-  // revalidatePath('/cart');
 };
 
 // Used inside or outside the cart page to clear the cart
@@ -348,6 +344,5 @@ export const clearServerCart = async (clerkUserId: string) => {
     console.log('Cart cleared');
   });
 
-  // revalidatePath('/cart');
   revalidatePath('/products', 'layout');
 };
