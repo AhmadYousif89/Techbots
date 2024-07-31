@@ -4,15 +4,15 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function ItemCarouselSkeleton() {
   return (
-    <div className='min-h-[600px] self-start pt-6 pb-16'>
+    <div className='min-h-[800px] self-start pt-10 pb-16'>
       <div className='mx-4'>
-        <Skeleton className='h-96 w-full bg-input/70' />
+        <Skeleton className='min-h-96 w-full bg-input/70' />
         <Skeleton className='w-full h-1 my-8 bg-input' />
       </div>
       <Carousel
@@ -21,14 +21,14 @@ export function ItemCarouselSkeleton() {
         <CarouselContent className='px-4'>
           {Array.from({ length: 8 }).map((image, index) => (
             <CarouselItem key={index} className='basis-32 sm:basis-36 lg:basis-40'>
-              <Card className='p-2 grid min-h-28 shadow-sm'>
-                <Skeleton className='bg-input/70' />
-              </Card>
+              <Skeleton className='min-h-28'></Skeleton>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className='top-36 left-4' />
-        <CarouselNext className='top-36 right-4' />
+        <div className='flex justify-between mt-4 px-4'>
+          <Skeleton className='rounded-full size-10' />
+          <Skeleton className='rounded-full size-10' />
+        </div>
       </Carousel>
     </div>
   );
