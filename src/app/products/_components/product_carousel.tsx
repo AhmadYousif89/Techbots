@@ -9,16 +9,15 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   ResizableHandle,
   ResizablePanel,
-  ResizablePanelGroup
+  ResizablePanelGroup,
 } from '@/components/ui/resizable';
-import { TProduct } from '../_lib/types';
+import { Card } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 export function ProductCarousel(product: any) {
   const [imageIndex, setImageIndex] = useState(0);
@@ -26,8 +25,8 @@ export function ProductCarousel(product: any) {
   return (
     <ResizablePanelGroup
       direction='vertical'
-      style={{ height: '700px', minHeight: '600px' }}
-      className='self-start lg:py-6'>
+      className='sticky top-20 self-start'
+      style={{ height: '700px', minHeight: '600px' }}>
       <ResizablePanel defaultSize={70} className='mx-auto w-full h-full max-w-screen-sm'>
         <Dialog>
           <DialogTrigger className='relative w-full h-full'>
@@ -59,7 +58,7 @@ export function ProductCarousel(product: any) {
                 <Card
                   className={cn([
                     'py-6 grid border-0 cursor-pointer items-center justify-center shadow-none rounded',
-                    imageIndex === index && 'border shadow-sm'
+                    imageIndex === index && 'border shadow-sm',
                   ])}
                   onClick={() => setImageIndex(index)}>
                   <Image
