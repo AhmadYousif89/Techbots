@@ -4,10 +4,13 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 
 import prisma from '@/lib/db';
-import { SearchParams } from '../_lib/types';
 import { capitalizeString, cn } from '@/lib/utils';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SearchParams } from '../_lib/types';
+import { ProductDetails } from './product_details';
+import { ProductReviews } from './product_reviews';
+import { SimilarProducts } from './product_similar_items';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,9 +19,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { ProductView } from './product_view';
-import { SimilarProducts } from '../_components/similar_products';
-import { ProductReviews } from '../_components/reviews/product_reviews';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SimilarItemSkeleton } from '../_components/skeletons/similar_item_skeleton';
 
 export const generateMetadata = async ({
@@ -91,7 +92,7 @@ export default async function SingleProductPage({ params, searchParams }: PagePr
         </BreadcrumbList>
       </Breadcrumb>
 
-      <ProductView asin={asin} searchParams={searchParams} />
+      <ProductDetails asin={asin} searchParams={searchParams} />
 
       <Suspense fallback={<SimilarItemSkeleton />}>
         <SimilarProducts asin={asin} category={category} />
