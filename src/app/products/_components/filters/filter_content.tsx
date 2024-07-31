@@ -10,7 +10,7 @@ import { FilterItemsSkeleton } from '../skeletons/filter_items_skeleton';
 
 export async function FilterContent(searchParams: SearchParams) {
   const { category } = extractSearchParams(searchParams);
-  const categories = getCategoryList();
+  // const categories = getCategoryList();
   const brands = getBrandList(category);
 
   return (

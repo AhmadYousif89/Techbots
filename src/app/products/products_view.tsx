@@ -1,6 +1,7 @@
-import { SearchParams } from '@/app/products/_lib/types';
-import { extractSearchParams } from './_lib/utils';
+import Link from 'next/link';
 import { capitalizeString } from '@/lib/utils';
+import { extractSearchParams } from './_lib/utils';
+import { SearchParams } from '@/app/products/_lib/types';
 
 import {
   Breadcrumb,
@@ -12,11 +13,10 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { PaginationSummary } from './_components/pagination_summary';
-import { ProductGrid } from '@/app/products/_components/product_grid';
+import { ProductGrid } from '@/app/products/product_grid';
 import { FilterProducts } from './_components/filters/filter_products';
 import { SearchProducts } from './_components/filters/search_products';
 import { SortProducts } from './_components/filters/sort_products';
-import Link from 'next/link';
 
 type ProductsViewProps = {
   searchParams: SearchParams;
