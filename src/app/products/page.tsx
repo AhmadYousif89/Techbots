@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import { capitalizeString } from '@/lib/utils';
 
 import { ProductsView } from './products_view';
 import { SearchParams } from '@/app/products/_lib/types';
+import { ProductsViewSkeleton } from './_components/skeletons/products_view_skeleton';
 
 export const generateMetadata = ({ searchParams }: PageProps): Metadata => {
   const category = capitalizeString(searchParams['cat'] ?? '', false);
@@ -29,7 +31,9 @@ type PageProps = {
 export default function ProductsPage({ searchParams }: PageProps) {
   return (
     <main className='min-h-screen max-view mx-auto bg-background'>
-      <ProductsView searchParams={searchParams} />
+      <Suspense fallback={<ProductsViewSkeleton />}>
+        <ProductsView searchParams={searchParams} />
+      </Suspense>
     </main>
   );
 }
