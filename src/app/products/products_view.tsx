@@ -12,8 +12,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { PaginationSummary } from './_components/pagination_summary';
 import { ProductGrid } from '@/app/products/product_grid';
+import { PaginationSummary } from './_components/pagination_summary';
 import { FilterProducts } from './_components/filters/filter_products';
 import { SearchProducts } from './_components/filters/search_products';
 import { SortProducts } from './_components/filters/sort_products';
@@ -30,13 +30,13 @@ export function ProductsView({ searchParams }: ProductsViewProps) {
       <div className='px-4 md:px-10 flex items-center justify-between h-14 bg-muted'>
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem className='text-xs'>
+            <BreadcrumbItem className='text-xs hover:underline underline-offset-4'>
               <BreadcrumbLink asChild>
                 <Link href='/'>Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            <BreadcrumbItem className='text-xs'>
+            <BreadcrumbItem className='text-xs hover:underline underline-offset-4'>
               <BreadcrumbLink asChild>
                 <Link href='/products'>Shop</Link>
               </BreadcrumbLink>
