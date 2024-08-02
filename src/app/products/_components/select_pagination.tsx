@@ -35,12 +35,18 @@ export function SelectPaginations({
       <SelectTrigger className='[&>svg]:hidden text-xs p-1 h-auto'>
         {startingPage} / {endingPage}
       </SelectTrigger>
-      <SelectContent align='center'>
+      <SelectContent
+        align='center'
+        ref={ref =>
+          ref?.addEventListener('touchend', e => {
+            e.preventDefault();
+          })
+        }>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
           <SelectItem
             key={num}
             value={num + ''}
-            className='p-2 my-1 text-xs text-muted-foreground font-semibold'>
+            className='select-item p-2 my-1 text-xs text-muted-foreground font-semibold select-none'>
             {num}
           </SelectItem>
         ))}
