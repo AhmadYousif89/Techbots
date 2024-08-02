@@ -1,8 +1,8 @@
 import prisma from '@/lib/db';
+import { cn } from '@/lib/utils';
 import { Suspense } from 'react';
 import { Ban } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { capitalizeString, cn } from '@/lib/utils';
 import { extractSearchParams } from './_lib/utils';
 import { Category, SearchParams, SortValue, TProduct } from './_lib/types';
 
