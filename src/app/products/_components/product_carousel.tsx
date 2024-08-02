@@ -25,7 +25,7 @@ export function ProductCarousel(product: any) {
   return (
     <ResizablePanelGroup
       direction='vertical'
-      className='sticky top-20 self-start'
+      className='lg:sticky lg:top-20 self-start'
       style={{ height: '700px', minHeight: '600px' }}>
       <ResizablePanel defaultSize={70} className='mx-auto w-full h-full max-w-screen-sm'>
         <Dialog>
