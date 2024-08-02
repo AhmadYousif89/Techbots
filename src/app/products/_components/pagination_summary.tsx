@@ -17,10 +17,10 @@ export async function PaginationSummary({
   const totalCount = await prisma.product.count({ where: filters });
   const { page } = extractSearchParams(searchParams);
 
-  const limitPerPage = 8;
-  const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
-  const end = start + limitPerPage;
-  const totalPages = Math.ceil(totalCount / limitPerPage);
+  const limit = 8;
+  const start = (+page <= 0 ? 0 : +page - 1) * limit;
+  const end = start + limit;
+  const totalPages = Math.ceil(totalCount / limit);
 
   if (+page > totalPages || +page < 0) {
     return (
