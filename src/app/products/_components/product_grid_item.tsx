@@ -21,7 +21,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
   const prodUrl = `/products/${asin}?cat=${category}`;
 
   return (
-    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] justify-self-center py-2 px-4 rounded shadow-none border-0 max-w-xs ring-offset-4 hover:ring-1 hover:ring-muted group-has-[[data-fetching]]:animate-pulse group-has-[[data-fetching]]:bg-muted'>
+    <Card className='grid auto-rows-[150px_3px_1fr_3px_auto] md:auto-rows-[200px_3px_1fr_3px_auto] justify-self-center py-2 px-4 rounded shadow-none border-0 max-w-xs ring-offset-4 hover:ring-1 hover:ring-muted'>
       <Link href={prodUrl} className='place-self-center rounded'>
         <Image
           src={mainImage}
@@ -29,30 +29,30 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           width={150}
           height={150}
           className={cn(
-            'size-28 object-contain group-has-[[data-fetching]]:size-0',
+            'size-28 object-contain',
             grid === '3' && 'lg:size-36 p-0',
             grid === '2' && 'lg:size-44 p-2'
           )}
         />
       </Link>
-      <Separator className='group-has-[[data-fetching]]:bg-transparent' />
+      <Separator />
       <CardHeader className='p-0 py-4 justify-center space-y-0'>
         <Link href={prodUrl}>
           <CardTitle
             className={cn(
-              'text-xs font-medium hover:underline hover:text-blue-700 group-has-[[data-fetching]]:text-transparent',
+              'text-xs font-medium hover:underline hover:text-blue-700',
               grid === '2' && 'text-sm'
             )}>
             {title}
           </CardTitle>
         </Link>
-        <div className='group-has-[[data-fetching]]:hidden w-full flex justify-between items-end text-muted-foreground md:text-sm font-medium pt-4 mt-auto self-end flex-1'>
+        <div className='w-full flex justify-between items-end text-muted-foreground md:text-sm font-medium pt-4 mt-auto self-end flex-1'>
           <RatingStars productRating={rating} showTotalReviews={false} size='xs' />
           <span className='text-xs place-self-end'>${price.toFixed(2)}</span>
         </div>
       </CardHeader>
-      <Separator className='group-has-[[data-fetching]]:bg-transparent' />
-      <CardFooter className='p-0 pt-2 gap-4 justify-between group-has-[[data-fetching]]:hidden'>
+      <Separator />
+      <CardFooter className='p-0 pt-2 gap-4 justify-between'>
         <AddToCartButton
           size={'sm'}
           action='BuyNow'
