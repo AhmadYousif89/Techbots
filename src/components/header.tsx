@@ -1,12 +1,12 @@
+import { User } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
-import { User } from 'lucide-react';
 
 import { Logo } from './logo';
 import { MainNav } from './main_nav';
 import { SideMenu } from './side_menu';
-import { WishListMenu } from './wishlist_menu/wishlist_menu';
 import { CartMenu } from './cart_menu/cart_menu';
+import { WishListMenu } from './wishlist_menu/wishlist_menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
