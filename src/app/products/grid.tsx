@@ -2,6 +2,7 @@ import prisma from '@/lib/db';
 import { cn } from '@/lib/utils';
 import { Suspense } from 'react';
 import { Ban } from 'lucide-react';
+import { cache } from '@/lib/cache';
 import { redirect } from 'next/navigation';
 import { extractSearchParams } from './_lib/utils';
 import { Category, SearchParams, SortValue, TProduct } from './_lib/types';
@@ -47,16 +48,8 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
   const lastPageUrl = `/products/?page=${totalPages}${ps}`;
 
   return (
-    <section
-      className={cn(
-        'grid gap-8 grid-cols-2 grid-rows-[auto,1fr] lg:grid-cols-4 xl:col-[2] w-full xl:self-start',
-        'py-8 px-4 xl:pr-8 xl:pl-0 max-w-screen-lg mx-auto xl:ml-auto xl:mr-0',
-        'sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]',
-        sp.grid === '2' && 'lg:grid-cols-2',
-        sp.grid === '3' && 'lg:grid-cols-3',
-        sp.grid === '4' && 'lg:grid-cols-4'
-      )}>
-      <div className='flex items-center col-span-full'>
+    <div>
+      <div className='flex items-center h-16 px-8'>
         {totalCount > 0 && <ProductGridSize />}
         {totalPages > 0 && (
           <PaginationButtons
@@ -75,11 +68,22 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
           />
         )}
       </div>
-
-      <Suspense fallback={<GridItemsSkeleton />}>
-        <DisplayProductsGrid {...searchParams} />
-      </Suspense>
-    </section>
+      <section
+        className={cn(
+          'grid gap-y-16 gap-x-8 grid-cols-2 grid-rows-[auto,1fr] lg:grid-cols-4 xl:col-[2] w-full xl:self-start',
+          'py-8 px-4 xl:pr-8 xl:pl-0 max-w-screen-lg mx-auto xl:ml-auto',
+          'sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]',
+          sp.grid === '2' && 'lg:grid-cols-2',
+          sp.grid === '3' && 'lg:grid-cols-3',
+          sp.grid === '4' && 'lg:grid-cols-4'
+        )}>
+        <Suspense
+          key={JSON.stringify(searchParams)}
+          fallback={<GridItemsSkeleton grid={sp.grid} />}>
+          <DisplayProductsGrid {...searchParams} />
+        </Suspense>
+      </section>
+    </div>
   );
 }
 
@@ -99,12 +103,8 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
 
   return (
     <>
-      {products.map((product, index) => (
-        <ProductGridItem
-          key={product.asin + index}
-          searchParams={searchParams}
-          product={product}
-        />
+      {products.map(product => (
+        <ProductGridItem key={product.id} searchParams={searchParams} product={product} />
       ))}
     </>
   );
@@ -133,50 +133,55 @@ export function getFilters(searchParams: SearchParams) {
   return filter;
 }
 
-const getProducts = async (searchParams: SearchParams) => {
-  const { page, sort } = extractSearchParams(searchParams);
-  const filter = getFilters(searchParams);
-  const totalCount = await prisma.product.count({ where: filter });
-  const limitPerPage = 8;
-  const totalPages = Math.ceil(totalCount / limitPerPage);
-  const start = (+page <= 0 || +page > totalPages ? 0 : +page - 1) * limitPerPage;
+const getProducts = cache(
+  async (searchParams: SearchParams) => {
+    const limit = 8;
+    const filter = getFilters(searchParams);
+    const { page, sort } = extractSearchParams(searchParams);
+    const totalCount = await prisma.product.count({ where: filter });
+    const totalPages = Math.ceil(totalCount / limit);
+    const start = (+page <= 0 || +page > totalPages ? 0 : +page - 1) * limit;
 
-  type SortOptions = Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>>;
-  const sortOptions: Omit<SortOptions, 'reset'> = {
-    popular: { rating: 'desc' },
-    newest: { createdAt: 'desc' },
-    'lowest-price': { price: 'asc' },
-    'highest-price': { price: 'desc' },
-  };
+    type SortOptions = Record<Exclude<SortValue, ''>, Record<string, 'asc' | 'desc'>>;
+    const sortOptions: Omit<SortOptions, 'reset'> = {
+      popular: { rating: 'desc' },
+      newest: { createdAt: 'desc' },
+      'lowest-price': { price: 'asc' },
+      'highest-price': { price: 'desc' },
+    };
 
-  const args: {
-    where?: any;
-    orderBy: Record<string, 'asc' | 'desc'>;
-    take: number;
-    skip: number;
-  } = {
-    orderBy: sort ? sortOptions[sort as keyof typeof sortOptions] : { brand: 'asc' },
-    take: limitPerPage,
-    skip: start,
-  };
+    const args: {
+      where?: any;
+      orderBy: Record<string, 'asc' | 'desc'>;
+      take: number;
+      skip: number;
+    } = {
+      orderBy: sort
+        ? sortOptions[sort as keyof typeof sortOptions]
+        : { createdAt: 'asc' },
+      take: limit,
+      skip: start,
+    };
 
-  if (Object.values(filter).length > 0) {
-    args.where = filter;
-  }
+    if (Object.values(filter).length > 0) {
+      args.where = filter;
+    }
 
-  let products: TProduct[] = [];
-  try {
-    products = (await prisma.product.findMany(args)) as TProduct[];
-  } catch (error) {
-    console.error('Error fetching products:', error);
-  }
+    let products: TProduct[] = [];
+    try {
+      products = (await prisma.product.findMany(args)) as TProduct[];
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
 
-  // Redirect to first page if is products and page is out of bounds
-  if (totalCount > 0 && (+page > totalPages || +page < 0)) {
-    console.log('Redirecting to first page');
-    const newParams = new URLSearchParams({ ...searchParams, page: '1' });
-    redirect(`/products/?${newParams.toString()}`);
-  }
+    // Redirect to first page if is products and page is out of bounds
+    if (totalCount > 0 && (+page > totalPages || +page < 0)) {
+      console.log('Redirecting to first page');
+      const newParams = new URLSearchParams({ ...searchParams, page: '1' });
+      redirect(`/products/?${newParams.toString()}`);
+    }
 
-  return products;
-};
+    return products;
+  },
+  ['/products', 'getProducts']
+);
