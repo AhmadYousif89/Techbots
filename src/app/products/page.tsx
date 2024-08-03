@@ -36,10 +36,10 @@ type PageProps = {
 };
 
 export default function ProductsPage({ searchParams }: PageProps) {
-  const { category } = extractSearchParams(searchParams);
+  const { category, grid } = extractSearchParams(searchParams);
 
   return (
-    <Suspense fallback={<ProductsViewSkeleton />}>
+    <Suspense fallback={<ProductsViewSkeleton grid={grid} />}>
       <main className='group min-h-screen max-view mx-auto bg-background'>
         <div className='px-4 md:px-10 flex items-center justify-between h-14 bg-muted'>
           <BreadcrumbSection category={category} />
