@@ -1,10 +1,10 @@
+import { Suspense } from 'react';
 import { HotProducts } from '@/app/hot_products';
 import { LatestBlogs } from '@/app/featured_blogs';
 import { PopularItemsSlide } from '@/app/popular_items_slide';
 import { TechDealsSlide } from '@/app/tech_deals_slide';
-import { HomeSlider } from '@/components/slider';
-import { Suspense } from 'react';
 import { MainPageSlideSkeleton } from '@/components/skeletons/main_page_slide_skeleton';
+import { HomeSlider } from '@/components/slider';
 
 export default function Home() {
   return (
