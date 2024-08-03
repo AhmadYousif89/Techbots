@@ -28,9 +28,10 @@ export function CategoryNavMenu({ data }: { data: Promise<string[]> }) {
     ...(sp.max && { max: sp.max }),
     ...(sp.grid && { grid: sp.grid }),
   });
+  const ps = newParams.toString() ? `&${newParams.toString()}` : '';
   const end = 14;
   const cats = categories.length > end ? categories.slice(0, end) : categories;
-  const url = (cat: string) => `/products/?cat=${cat}&${newParams.toString()}`;
+  const url = (cat: string) => `/products/?cat=${cat}${ps}`;
 
   return (
     <Accordion type='single' collapsible>
