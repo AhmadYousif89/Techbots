@@ -108,7 +108,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
           <Accordion type='single' collapsible className='col-span-full'>
             <AccordionItem value='cats-2' className='border-b-0'>
               <AccordionContent>
-                <div className='grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 xl:grid-cols-[minmax(120px,auto),auto] xl:gap-x-0'>
+                <div className='grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 xl:grid-cols-[1fr,.95fr] xl:gap-x-0'>
                   {brands.slice(end).map((brand, i) => {
                     const key = brand + '-' + i;
                     return (
