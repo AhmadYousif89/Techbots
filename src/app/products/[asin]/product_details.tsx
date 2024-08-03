@@ -133,12 +133,12 @@ export async function ProductDetails({ asin, searchParams }: ProductDetailsProps
             </CardDescription>
           )}
           <div className='flex flex-col gap-8 pb-4'>
-            <Suspense fallback={<h1>Loading...</h1>}>
-              <ProductInteractionButtons
-                product={product}
-                checkCartItem={checkItemInCart}
-              />
-            </Suspense>
+            {/* <Suspense fallback={<h1>Loading...</h1>}> */}
+            <ProductInteractionButtons
+              product={product}
+              checkCartItem={checkItemInCart}
+            />
+            {/* </Suspense> */}
           </div>
         </CardContent>
         <CardFooter className='flex-col items-stretch max-w-prose'>
