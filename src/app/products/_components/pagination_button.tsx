@@ -41,9 +41,9 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
 
   return (
     <div
-      data-fetching={isPending ? '' : undefined}
+      // data-pending={isPending ? '' : undefined}
       className={cn('flex items-center gap-2', props.className)}>
-      {props.totalPages > 2 && (
+      {totalPages > 2 && (
         <Button
           variant={'outline'}
           className='size-6 p-0 disabled:opacity-25'
@@ -60,16 +60,16 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
         <ChevronLeft className='size-4' />
       </Button>
       <span className='text-xs text-muted-foreground font-semibold'>
-        {props.totalPages <= 2 ? (
+        {totalPages <= 2 ? (
           <>
             {optimisticPage} / {endingPage}
           </>
         ) : (
           <SelectPaginations
-            page={optimisticPage + ''}
+            page={page}
             url={props.baseUrl}
             params={props.params}
-            totalPages={props.totalPages}
+            totalPages={totalPages}
             startingPage={startingPage}
             endingPage={endingPage}
           />
@@ -82,7 +82,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
         disabled={!props.hasNextPage}>
         <ChevronRight className='size-4' />
       </Button>
-      {props.totalPages > 2 && (
+      {totalPages > 2 && (
         <Button
           variant={'outline'}
           className='size-6 p-0 disabled:opacity-25'
