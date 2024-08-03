@@ -1,26 +1,29 @@
-import Link from 'next/link';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
 
 import prisma from '@/lib/db';
-import { capitalizeString, cn } from '@/lib/utils';
+import { capitalizeString } from '@/lib/utils';
 
 import { SearchParams } from '../_lib/types';
 import { ProductDetails } from './product_details';
 import { ProductReviews } from './product_reviews';
 import { SimilarProducts } from './product_similar_items';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SimilarItemSkeleton } from '../_components/skeletons/similar_item_skeleton';
+import { BreadcrumbSkeleton } from '../_components/skeletons/breadcrumb';
+import { BreadcrumbSection } from '../_components/product_breadcrumb';
+import { SimilarItemSkeleton } from './skeletons/similar_items';
+import { ProductDetailSkeleton } from './skeletons/main_view';
+import { ReviewSkeleton } from './skeletons/reviews';
+
+export const getProductCategory = async (asin: string) => {
+  const product = await prisma.product.findUnique({
+    where: { asin },
+    select: { category: true },
+  });
+
+  return product?.category ?? '';
+};
 
 export const generateMetadata = async ({
   params,
@@ -47,58 +50,22 @@ type PageProps = {
 
 export default async function SingleProductPage({ params, searchParams }: PageProps) {
   const { asin } = params;
-  const product = await prisma.product.findUnique({
-    where: { asin },
-    select: { category: true },
-  });
-
-  if (!product) {
-    return notFound();
-  }
-
-  const category = product.category;
 
   return (
     <main className='grid min-h-screen max-view mx-auto'>
-      <Breadcrumb className='flex items-center col-span-full px-4 lg:px-10 bg-muted h-14'>
-        <BreadcrumbList>
-          <BreadcrumbItem className='text-xs text-muted-foreground'>
-            <BreadcrumbLink asChild>
-              <Link href='/'>Home</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem className='text-xs text-muted-foreground'>
-            <BreadcrumbLink asChild>
-              <Link href='/products'>Shop</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          {category && (
-            <>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem className='text-xs text-muted-foreground'>
-                <BreadcrumbLink asChild>
-                  <Link href={`/products?cat=${category}`}>
-                    {capitalizeString(category)}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </>
-          )}
-          <BreadcrumbSeparator />
-          <BreadcrumbItem className='text-xs'>
-            <BreadcrumbPage>{asin}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <ProductDetails asin={asin} searchParams={searchParams} />
-
-      <Suspense fallback={<SimilarItemSkeleton />}>
-        <SimilarProducts asin={asin} category={category} />
+      <Suspense fallback={<BreadcrumbSkeleton />}>
+        <BreadcrumbSection asin={asin} type='single' />
       </Suspense>
 
-      <Suspense fallback={<h1>Loading reviews...</h1>}>
+      <Suspense fallback={<ProductDetailSkeleton />}>
+        <ProductDetails asin={asin} searchParams={searchParams} />
+      </Suspense>
+
+      <Suspense fallback={<SimilarItemSkeleton />}>
+        <SimilarProducts asin={asin} />
+      </Suspense>
+
+      <Suspense fallback={<ReviewSkeleton />}>
         <Card id='reviews' className='rounded-none py-10 sm:px-4 xl:px-8'>
           <CardHeader>
             <CardTitle className='text-2xl font-medium'>Customer’s Review</CardTitle>
