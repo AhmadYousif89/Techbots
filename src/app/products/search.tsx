@@ -72,7 +72,7 @@ export async function SearchProducts() {
         <Button
           title='search'
           variant={'ghost'}
-          className='group size-auto p-0 aspect-square rounded-full ring-2 ring-input hover:bg-input'>
+          className='group z-10 size-auto p-0 aspect-square rounded-full ring-2 ring-input max-xl:hover:bg-input xl:hover:bg-transparent'>
           <Search strokeWidth={2.5} className='size-6 p-1 text-muted-foreground' />
         </Button>
       </DialogTrigger>
