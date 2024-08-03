@@ -12,9 +12,12 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { getProductCategory } from './page';
 
 const getSimilarProducts = cache(
-  async (asin: string, category: string) => {
+  async (asin: string) => {
+    const category = await getProductCategory(asin);
+
     return await prisma.product.findMany({
       where: { asin: { not: asin }, category },
       orderBy: { rating: 'desc' },
@@ -24,13 +27,8 @@ const getSimilarProducts = cache(
   ['getSimilarProducts']
 );
 
-type SimilarProductsProps = {
-  asin: string;
-  category: string;
-};
-
-export async function SimilarProducts({ asin, category }: SimilarProductsProps) {
-  const products = await getSimilarProducts(asin, category);
+export async function SimilarProducts({ asin }: { asin: string }) {
+  const products = await getSimilarProducts(asin);
 
   return (
     <Card id='similar_products' className='rounded-none py-10 sm:px-4 xl:px-8'>
