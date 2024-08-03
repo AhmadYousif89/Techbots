@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function capitalizeString(str: string, removeHyphen = true) {
-  if (!str) return '';
+  if (!str) return 'General';
   let res = str[0].toUpperCase() + str.slice(1).toLowerCase();
   if (removeHyphen) return res.replace('-', ' ');
   const hyphenIdx = str.indexOf('-');
