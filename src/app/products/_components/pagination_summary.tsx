@@ -2,7 +2,7 @@ import prisma from '@/lib/db';
 import { cn } from '@/lib/utils';
 import { SearchParams } from '../_lib/types';
 import { extractSearchParams } from '../_lib/utils';
-import { getFilters } from '../product_grid';
+import { getFilters } from '../grid';
 
 type PaginationSummaryProps = {
   searchParams: SearchParams;
