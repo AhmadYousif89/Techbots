@@ -154,8 +154,6 @@ export function ReviewsPaginationButtons({
           page={page}
           params={params.toString()}
           baseUrl={`/products/${asin}/`}
-          startingPage={startingPage}
-          endingPage={endingPage}
           totalPages={totalPages}
           hasPrevPage={hasPrevPage}
           hasNextPage={hasNextPage}
