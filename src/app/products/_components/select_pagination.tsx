@@ -28,33 +28,33 @@ export function SelectPaginations({
   url,
 }: SelectPaginationsProps) {
   const router = useRouter();
-  const [optimisticPage, setOptimisticPage] = useOptimistic(page);
   const [isPending, startTransition] = useTransition();
+  const [optimisticPage, setOptimisticPage] = useOptimistic(page);
 
-  const handleOnChange = (v: string) => {
+  const handleOnChange = (p: string) => {
     startTransition(() => {
-      setOptimisticPage(v);
-      if (url.endsWith('products/')) router.push(`${url}?page=${v}${params}`);
-      else router.push(`${url}?page=${v}${params}#reviews`);
+      setOptimisticPage(p);
+      if (url.endsWith('products/')) router.push(`${url}?page=${p}${params}`);
+      else router.push(`${url}?page=${p}${params}#reviews`);
     });
   };
 
   return (
     <Select name='pagination' value={optimisticPage} onValueChange={handleOnChange}>
       <SelectTrigger
-        data-fetching={isPending ? '' : undefined}
-        className='[&>svg]:hidden text-xs p-1 h-auto'>
-        <SelectValue>
+        // data-pending={isPending ? '' : undefined}
+        className='[&>svg]:hidden text-xs p-1 px-2 h-auto hover:bg-muted'>
+        <SelectValue placeholder='Page'>
           {startingPage} / {endingPage}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+      <SelectContent align='center'>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <SelectItem
-            key={num}
-            value={num + ''}
+            key={page}
+            value={page.toString()}
             className='select-item p-2 my-1 text-xs text-muted-foreground font-semibold select-none'>
-            {num}
+            {page}
           </SelectItem>
         ))}
       </SelectContent>
