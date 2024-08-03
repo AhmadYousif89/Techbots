@@ -1,8 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useOptimistic, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type SelectPaginationsProps = {
   page: string;
@@ -22,26 +28,27 @@ export function SelectPaginations({
   url,
 }: SelectPaginationsProps) {
   const router = useRouter();
-  const [value, setValue] = useState('');
+  const [optimisticPage, setOptimisticPage] = useOptimistic(page);
+  const [isPending, startTransition] = useTransition();
 
   const handleOnChange = (v: string) => {
-    setValue(v);
-    if (url.endsWith('products/')) router.push(`${url}?page=${v}&${params}`);
-    else router.push(`${url}?page=${v}&${params}#reviews`);
+    startTransition(() => {
+      setOptimisticPage(v);
+      if (url.endsWith('products/')) router.push(`${url}?page=${v}${params}`);
+      else router.push(`${url}?page=${v}${params}#reviews`);
+    });
   };
 
   return (
-    <Select name='pagination' value={value ? value : page} onValueChange={handleOnChange}>
-      <SelectTrigger className='[&>svg]:hidden text-xs p-1 h-auto'>
-        {startingPage} / {endingPage}
+    <Select name='pagination' value={optimisticPage} onValueChange={handleOnChange}>
+      <SelectTrigger
+        data-fetching={isPending ? '' : undefined}
+        className='[&>svg]:hidden text-xs p-1 h-auto'>
+        <SelectValue>
+          {startingPage} / {endingPage}
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent
-        align='center'
-        ref={ref =>
-          ref?.addEventListener('touchend', e => {
-            e.preventDefault();
-          })
-        }>
+      <SelectContent>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
           <SelectItem
             key={num}
