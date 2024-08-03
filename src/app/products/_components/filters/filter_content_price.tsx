@@ -1,11 +1,11 @@
 'use client';
 
-import { ChangeEventHandler, useState } from 'react';
+import { useState, useTransition, FormEventHandler, ChangeEventHandler } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { extractSearchParams } from '../../_lib/utils';
 import { useFilter } from '../../_store/filters';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -14,9 +14,11 @@ import { Badge } from '@/components/ui/badge';
 export function FilterContentPrice() {
   const router = useRouter();
   const params = useSearchParams();
+  const sp = extractSearchParams(params.entries());
+  const [isPending, startTransition] = useTransition();
+
   const { min, max, setMax, setMin, clearPrice } = useFilter(s => s.price);
 
-  const sp = extractSearchParams(params.entries());
   const newParams = new URLSearchParams({
     ...(sp.page && { page: sp.page }),
     ...(sp.category && { cat: sp.category }),
@@ -49,13 +51,15 @@ export function FilterContentPrice() {
     clearPrice();
   };
 
+  const handleSubmit: FormEventHandler = e => {
+    e.preventDefault();
+    startTransition(() => {
+      router.push(url());
+    });
+  };
+
   return (
-    <form
-      className='grid gap-4 self-start w-full max-w-sm'
-      onSubmit={e => {
-        e.preventDefault();
-        router.push(url());
-      }}>
+    <form className='grid gap-4 self-start w-full max-w-sm' onSubmit={handleSubmit}>
       <div className='flex items-center justify-between gap-4'>
         <h3 className='font-medium text-muted-foreground'>Price</h3>
         {(paramMin || paramMax) && (
@@ -81,7 +85,7 @@ export function FilterContentPrice() {
             onChange={handleMinChange}
             value={min}
           />
-          {paramMin.trim() && (
+          {paramMin.trim() && !min && (
             <Badge
               variant={'secondary'}
               className='absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground'>
@@ -100,7 +104,7 @@ export function FilterContentPrice() {
             onChange={handleMaxChange}
             value={max}
           />
-          {paramMax.trim() && (
+          {paramMax.trim() && !max && (
             <Badge
               variant={'secondary'}
               className='absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground'>
@@ -132,9 +136,9 @@ export function FilterContentPrice() {
       </small>
       <Button
         size={'sm'}
-        disabled={+min < 1 && +max < 1}
+        disabled={(+min < 1 && +max < 1) || isPending}
         className='text-xs justify-self-start min-w-20 active:translate-y-1 duration-200 transition-transform'>
-        Apply
+        {isPending ? <Loader2 className='size-5 animate-spin' /> : 'Apply'}
       </Button>
     </form>
   );
