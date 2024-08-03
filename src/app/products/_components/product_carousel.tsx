@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { TProduct } from '../_lib/types';
 
 import {
   Carousel,
@@ -19,7 +20,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
-export function ProductCarousel(product: any) {
+export function ProductCarousel(product: TProduct) {
   const [imageIndex, setImageIndex] = useState(0);
 
   return (
