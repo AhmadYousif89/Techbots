@@ -8,64 +8,79 @@ import {
   SelectValue,
   SelectTrigger,
   SelectContent,
+  SelectSeparator,
 } from '@/components/ui/select';
 import { SearchParams, SortValue } from '@/app/products/_lib/types';
 import { extractSearchParams } from '@/app/products/_lib/utils';
 import { LoaderButton } from './_components/skeletons/loader_btn';
+import { ChevronDown } from 'lucide-react';
+
+const sortList = [
+  { value: 'popular', label: 'Most popular' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'lowest-price', label: 'Lowest Price' },
+  { value: 'highest-price', label: 'Highest Price' },
+];
 
 export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
   const sp = extractSearchParams(searchParams);
-  const [optimisticSort, setOptimisticSort] = useOptimistic(sp.sort);
   const [isPending, startTransition] = useTransition();
+  const [optimisticSort, setOptimisticSort] = useOptimistic(sp.sort);
 
-  const params = {
+  const params: Record<string, string> = {
     ...(sp.page && { page: sp.page }),
     ...(sp.category && { cat: sp.category }),
     ...(sp.brand && { brand: sp.brand }),
     ...(sp.min && { min: sp.min }),
     ...(sp.max && { max: sp.max }),
     ...(sp.grid && { grid: sp.grid }),
-    ...(sp.sort && { sort: '' }),
-  } satisfies SearchParams;
+  };
 
-  const handleSelectChange = (v: SortValue) => {
-    params.sort = v === 'reset' ? '' : v;
+  const handleOnChange = (value: SortValue) => {
+    value !== 'reset' ? (params.sort = value) : undefined;
+
     const newParams = new URLSearchParams(params);
     startTransition(() => {
-      setOptimisticSort(v);
+      setOptimisticSort(value);
       router.push(`/products?${newParams.toString()}`);
     });
   };
 
   return (
-    <Select name='sort' value={optimisticSort} onValueChange={handleSelectChange}>
+    <Select name='sort' value={optimisticSort} onValueChange={handleOnChange}>
       {isPending && optimisticSort === 'reset' ? (
         <LoaderButton />
       ) : (
         <SelectTrigger
-          data-fetching={isPending ? '' : undefined}
-          className='gap-1 w-28 text-xs font-medium px-1 pl-2 border-0 rounded hover:bg-muted hover:ring-1 hover:ring-input'>
-          <SelectValue placeholder='Sort By' />
+          // data-pending={isPending ? '' : undefined}
+          className={`gap-1 w-28 text-xs font-medium px-1 pl-2 border-0 rounded hover:bg-muted hover:ring-1 hover:ring-input`}>
+          <SelectValue placeholder='Sort By'>
+            {optimisticSort
+              ? sortList.find(({ value }) => value === optimisticSort)?.label
+              : 'Sort By'}
+          </SelectValue>
         </SelectTrigger>
       )}
-      <SelectContent className='justify-center'>
-        <SelectItem className='p-2 text-xs' value='popular'>
-          Most popular
-        </SelectItem>
-        <SelectItem className='p-2 text-xs' value='newest'>
-          Newest
-        </SelectItem>
-        <SelectItem className='p-2 text-xs' value='lowest-price'>
-          Lowest Price
-        </SelectItem>
-        <SelectItem className='p-2 text-xs' value='highest-price'>
-          Highest Price
-        </SelectItem>
-        {optimisticSort && (
-          <SelectItem disabled={!optimisticSort} className='p-2 text-xs' value='reset'>
-            Reset
+      <SelectContent className='group'>
+        {sortList.map(({ value, label }) => (
+          <SelectItem
+            key={value}
+            value={value}
+            className='p-2 text-xs text-muted-foreground font-medium'>
+            {label}
           </SelectItem>
+        ))}
+        {optimisticSort && (
+          <>
+            <SelectSeparator />
+            <SelectItem
+              disabled={!optimisticSort}
+              className='p-2 text-xs text-muted-foreground font-medium'
+              value='reset'>
+              Clear
+            </SelectItem>
+          </>
         )}
       </SelectContent>
     </Select>
