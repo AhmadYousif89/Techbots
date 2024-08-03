@@ -56,7 +56,7 @@ export function ReviewSkeleton() {
           </div>
 
           {Array.from({ length: 3 }).map((_, i) => (
-            <article className='space-y-6'>
+            <article key={i} className='space-y-6'>
               <div className='flex flex-col'>
                 <div className='flex p-0 gap-4'>
                   <Skeleton className='size-10 rounded-full' />
