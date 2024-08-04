@@ -1,8 +1,8 @@
-import prisma from '@/lib/db';
-import { cn } from '@/lib/utils';
-import { SearchParams } from '../_lib/types';
-import { extractSearchParams } from '../_lib/utils';
-import { getFilters } from '../grid';
+import prisma from "@/lib/db";
+import { cn } from "@/app/lib/utils";
+import { SearchParams } from "../_lib/types";
+import { extractSearchParams } from "../_lib/utils";
+import { getFilters } from "../grid";
 
 type PaginationSummaryProps = {
   searchParams: SearchParams;
@@ -22,21 +22,24 @@ export async function PaginationSummary({
   const end = start + limit;
   const totalPages = Math.ceil(totalCount / limit);
 
+  if (totalCount === 0) return null;
   if (+page > totalPages || +page < 0) {
     return (
-      <p className={cn('text-xs font-medium text-muted-foreground', className)}>
-        <span className='font-semibold'>0</span> -{' '}
-        <span className='font-semibold'>0</span> of{' '}
-        <span className='font-semibold'>0</span> results
+      <p className={cn("text-xs font-medium text-muted-foreground", className)}>
+        <span className="font-semibold">0</span> -{" "}
+        <span className="font-semibold">0</span> of{" "}
+        <span className="font-semibold">0</span> results
       </p>
     );
   }
 
   return (
-    <p className={cn('text-xs font-medium text-muted-foreground', className)}>
-      <span className='font-semibold'>{start + 1}</span> -{' '}
-      <span className='font-semibold'>{end > totalCount ? totalCount : end}</span> of{' '}
-      <span className='font-semibold'>{totalCount}</span> results
+    <p className={cn("text-xs font-medium text-muted-foreground", className)}>
+      <span className="font-semibold">{start + 1}</span> -{" "}
+      <span className="font-semibold">
+        {end > totalCount ? totalCount : end}
+      </span>{" "}
+      of <span className="font-semibold">{totalCount}</span> results
     </p>
   );
 }
