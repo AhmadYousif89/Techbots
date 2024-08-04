@@ -1,11 +1,11 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { Suspense } from 'react';
+import Link from "next/link";
+import Image from "next/image";
+import { Suspense } from "react";
 
-import prisma from '@/lib/db';
-import { cache } from '@/lib/cache';
-import { Search } from 'lucide-react';
-import { capitalizeString } from '@/lib/utils';
+import prisma from "@/lib/db";
+import { cache } from "@/lib/cache";
+import { Search } from "lucide-react";
+import { capitalizeString } from "@/app/lib/utils";
 
 import {
   Command,
@@ -14,11 +14,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
-import { Button } from '@/components/ui/button';
-import { Category } from '@/app/products/_lib/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+} from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
+import { Category } from "@/app/products/_lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 type Data = {
   asin: string;
@@ -40,8 +40,8 @@ const getSearchedProducts = cache(
       },
     }) as Promise<Data[]>;
   },
-  ['/products', 'getSearchedProducts'],
-  { revalidate: day }
+  ["/products", "getSearchedProducts"],
+  { revalidate: day },
 );
 
 export async function SearchProducts() {
@@ -50,7 +50,7 @@ export async function SearchProducts() {
   try {
     const data = await getSearchedProducts();
 
-    categories = [...new Set(data.map(i => i.category))];
+    categories = [...new Set(data.map((i) => i.category))];
     itemsByCategory = data.reduce((list: Record<string, Data[]>, p) => {
       const item: Data = {
         asin: p.asin,
@@ -63,44 +63,53 @@ export async function SearchProducts() {
     }, {});
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch search data!');
+    throw new Error("Failed to fetch search data!");
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          title='search'
-          variant={'ghost'}
-          className='group z-10 size-auto p-0 aspect-square rounded-full ring-2 ring-input max-xl:hover:bg-input xl:hover:bg-transparent'>
-          <Search strokeWidth={2.5} className='size-6 p-1 text-muted-foreground' />
+          title="search"
+          variant={"ghost"}
+          className="group z-10 aspect-square size-auto rounded-full p-0 ring-2 ring-input max-xl:hover:bg-input xl:hover:bg-transparent"
+        >
+          <Search
+            strokeWidth={2.5}
+            className="size-6 p-1 text-muted-foreground"
+          />
         </Button>
       </DialogTrigger>
-      <DialogContent className='p-4'>
+      <DialogContent className="p-4">
         <Command>
-          <CommandInput placeholder='Type something to search...' />
+          <CommandInput placeholder="Type something to search..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             {categories.map((category, i) => (
-              <Suspense key={i} fallback={<Skeleton className='w-20 h-2 bg-input' />}>
+              <Suspense
+                key={i}
+                fallback={<Skeleton className="h-2 w-20 bg-input" />}
+              >
                 <CommandGroup
-                  key={i + '-' + category}
-                  className='pb-4'
-                  heading={capitalizeString(category)}>
+                  key={i + "-" + category}
+                  className="pb-4"
+                  heading={capitalizeString(category)}
+                >
                   {itemsByCategory[category].map((item, i) => (
-                    <CommandItem key={i} className='!p-0 my-2 cursor-pointer'>
+                    <CommandItem key={i} className="my-2 cursor-pointer !p-0">
                       <Link
-                        href={`/products/${item.asin}?cat=${item.category}`}
-                        className='flex items-center gap-4'>
+                        href={`/products/${item.asin}`}
+                        className="flex items-center gap-4"
+                      >
                         <Image
                           src={item.mainImage}
                           alt={item.title}
                           width={48}
                           height={48}
-                          className='size-12'
+                          className="size-12"
                         />
-                        <p className='text-xs text-muted-foreground font-medium'>
-                          {item.title.split(' ').slice(0, 8).join(' ')}
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {item.title.split(" ").slice(0, 8).join(" ")}
                         </p>
                       </Link>
                     </CommandItem>
