@@ -1,5 +1,10 @@
-import { useSideMenuState } from '@/lib/store';
-import { SignInButton, SignOutButton, SignUpButton, useAuth } from '@clerk/nextjs';
+import { useSideMenuState } from "@/app/lib/store";
+import {
+  SignInButton,
+  SignOutButton,
+  SignUpButton,
+  useAuth,
+} from "@clerk/nextjs";
 
 export function AuthButtons() {
   const { userId } = useAuth();
@@ -8,18 +13,20 @@ export function AuthButtons() {
   return (
     <>
       {!userId ? (
-        <div className='py-2 flex items-center justify-between gap-4'>
+        <div className="flex items-center justify-between gap-4 py-2">
           <div
             onClick={() => setIsOpen(false)}
-            className='bg-muted flex items-center justify-center w-28 h-9 border rounded text-sm hover:bg-foreground/10 *:w-full *:px-6 *:py-2'>
-            <SignInButton fallbackRedirectUrl={'/products'} mode='modal'>
+            className="flex h-9 w-28 items-center justify-center rounded border bg-muted text-sm *:w-full *:px-6 *:py-2 hover:bg-foreground/10"
+          >
+            <SignInButton fallbackRedirectUrl={"/products"} mode="modal">
               Login
             </SignInButton>
           </div>
           <div
             onClick={() => setIsOpen(false)}
-            className='bg-foreground flex items-center justify-center w-28 h-9 rounded text-sm text-background hover:bg-primary/80 *:w-full *:px-6 *:py-2'>
-            <SignUpButton fallbackRedirectUrl={'/products'} mode='modal'>
+            className="flex h-9 w-28 items-center justify-center rounded bg-foreground text-sm text-background *:w-full *:px-6 *:py-2 hover:bg-primary/80"
+          >
+            <SignUpButton fallbackRedirectUrl={"/products"} mode="modal">
               Sign up
             </SignUpButton>
           </div>
@@ -27,8 +34,9 @@ export function AuthButtons() {
       ) : (
         <div
           onClick={() => setIsOpen(false)}
-          className='bg-primary text-secondary rounded hover:bg-foreground/80 *:w-full *:px-6 *:py-2'>
-          <SignOutButton redirectUrl='/' />
+          className="rounded bg-primary text-secondary *:w-full *:px-6 *:py-2 hover:bg-foreground/80"
+        >
+          <SignOutButton redirectUrl="/" />
         </div>
       )}
     </>

@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { capitalizeString } from '@/lib/utils';
-import { getProductCategory } from '../[asin]/page';
+import Link from "next/link";
+import { capitalizeString } from "@/app/lib/utils";
+import { getProductCategory } from "../[asin]/page";
 
 import {
   Breadcrumb,
@@ -9,40 +9,40 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";
 
 type BreadcrumbSectionProps = {
   asin?: string;
-  type?: 'single' | '';
+  type?: "single" | "";
   category?: string;
 };
 
 export async function BreadcrumbSection({
   asin,
-  type = '',
-  category = '',
+  type = "",
+  category = "",
 }: BreadcrumbSectionProps) {
-  if (type === 'single') {
-    const category = asin ? await getProductCategory(asin) : '';
+  if (type === "single") {
+    const category = asin ? await getProductCategory(asin) : "";
 
     return (
-      <Breadcrumb className='flex items-center col-span-full px-4 lg:px-10 bg-muted h-14'>
+      <Breadcrumb className="col-span-full flex h-14 items-center bg-muted px-4 lg:px-10">
         <BreadcrumbList>
-          <BreadcrumbItem className='text-xs text-muted-foreground hover:underline underline-offset-4'>
+          <BreadcrumbItem className="text-xs text-muted-foreground underline-offset-4 hover:underline">
             <BreadcrumbLink asChild>
-              <Link href='/'>Home</Link>
+              <Link href="/">Home</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
-          <BreadcrumbItem className='text-xs text-muted-foreground hover:underline underline-offset-4'>
+          <BreadcrumbItem className="text-xs text-muted-foreground underline-offset-4 hover:underline">
             <BreadcrumbLink asChild>
-              <Link href='/products'>Shop</Link>
+              <Link href="/products">Shop</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           {category && (
             <>
               <BreadcrumbSeparator />
-              <BreadcrumbItem className='text-xs text-muted-foreground hover:underline underline-offset-4'>
+              <BreadcrumbItem className="text-xs text-muted-foreground underline-offset-4 hover:underline">
                 <BreadcrumbLink asChild>
                   <Link href={`/products?cat=${category}`}>
                     {capitalizeString(category)}
@@ -52,7 +52,7 @@ export async function BreadcrumbSection({
             </>
           )}
           <BreadcrumbSeparator />
-          <BreadcrumbItem className='text-xs'>
+          <BreadcrumbItem className="text-xs">
             <BreadcrumbPage>{asin}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -63,22 +63,22 @@ export async function BreadcrumbSection({
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem className='text-xs hover:underline underline-offset-4'>
+        <BreadcrumbItem className="text-xs underline-offset-4 hover:underline">
           <BreadcrumbLink asChild>
-            <Link href='/'>Home</Link>
+            <Link href="/">Home</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
-        <BreadcrumbItem className='text-xs hover:underline underline-offset-4'>
+        <BreadcrumbItem className="text-xs underline-offset-4 hover:underline">
           <BreadcrumbLink asChild>
-            <Link href='/products'>Shop</Link>
+            <Link href="/products">Shop</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        {category && !category.includes(',') && (
+        {category && !category.includes(",") && (
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className='text-xs text-muted-foreground font-semibold'>
+              <BreadcrumbPage className="text-xs font-semibold text-muted-foreground">
                 {capitalizeString(category)}
               </BreadcrumbPage>
             </BreadcrumbItem>

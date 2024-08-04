@@ -1,63 +1,62 @@
-import { User } from 'lucide-react';
-import { auth } from '@clerk/nextjs/server';
-import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+import { User } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
-import { Logo } from './logo';
-import { MainNav } from './main_nav';
-import { SideMenu } from './side_menu';
-import { CartMenu } from './cart_menu/cart_menu';
-import { WishListMenu } from './wishlist_menu/wishlist_menu';
+import { Logo } from "./logo";
+import { MainNav } from "./main_nav";
+import { SideMenu } from "./side_menu";
+import { CartMenu } from "./cart_menu/cart_menu";
+import { WishListMenu } from "./wishlist_menu/wishlist_menu";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import { Separator } from './ui/separator';
+} from "./ui/dropdown-menu";
+import { Separator } from "./ui/separator";
 
 export function Header() {
   const { userId } = auth();
 
   return (
-    <header className='sticky top-0 z-20 h-20 px-8 bg-foreground/85 backdrop-blur-sm'>
-      <div className='flex items-center justify-between max-view h-full mx-auto'>
+    <header className="sticky top-0 z-20 h-20 bg-foreground/85 px-8 backdrop-blur-sm">
+      <div className="max-view mx-auto flex h-full items-center justify-between">
         <SideMenu />
         <Logo />
         <MainNav />
-        <div className='flex items-center gap-4 lg:gap-8'>
+        <div className="flex items-center gap-4 lg:gap-8">
           <WishListMenu />
           <CartMenu />
           {userId ? (
-            <div className='hidden lg:grid place-content-center ring-1 ring-input rounded-full ring-offset-1 size-7 bg-muted-foreground'>
+            <div className="hidden size-7 place-content-center rounded-full bg-muted-foreground ring-1 ring-input ring-offset-1 lg:grid">
               <UserButton
-                afterSignOutUrl='/'
+                afterSignOutUrl="/"
                 appearance={{
                   elements: {
-                    userPreviewMainIdentifier: 'capitalize font-bold',
-                    userPreviewSecondaryIdentifier: 'font-medium',
+                    userPreviewMainIdentifier: "capitalize font-bold",
+                    userPreviewSecondaryIdentifier: "font-medium",
                   },
                 }}
               />
             </div>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild className='hidden lg:flex'>
-                <div className='ring-1 ring-input rounded-full ring-offset-1 size-7 grid place-content-center cursor-pointer text-secondary bg-primary hover:bg-secondary hover:text-primary'>
-                  <User className='size-6' />
+              <DropdownMenuTrigger asChild className="hidden lg:flex">
+                <div className="grid size-7 cursor-pointer place-content-center rounded-full bg-primary text-secondary ring-1 ring-input ring-offset-1 hover:bg-secondary hover:text-primary">
+                  <User className="size-6" />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='min-w-44'>
+              <DropdownMenuContent align="end" className="min-w-44">
                 <DropdownMenuLabel>Account</DropdownMenuLabel>
                 <Separator />
-                <DropdownMenuRadioGroup className='*:p-4 divide-y'>
-                  <DropdownMenuItem className='hover:bg-muted *:text-xs *:font-medium'>
-                    <SignInButton mode='modal'>Login</SignInButton>
+                <DropdownMenuRadioGroup className="divide-y *:p-4">
+                  <DropdownMenuItem className="*:text-xs *:font-medium hover:bg-muted">
+                    <SignInButton mode="modal">Login</SignInButton>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className='hover:bg-muted *:text-xs *:font-medium'>
-                    <SignUpButton mode='modal' />
+                  <DropdownMenuItem className="*:text-xs *:font-medium hover:bg-muted">
+                    <SignUpButton mode="modal" />
                   </DropdownMenuItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
