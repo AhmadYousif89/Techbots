@@ -1,7 +1,7 @@
-' user server';
+" user server";
 
-import prisma from '@/lib/db';
+import prisma from "@/lib/db";
 
-export async function userOrderExists(email: string) {
+export async function userOrderExists() {
   return (await prisma.order.findFirst({})) !== null;
 }

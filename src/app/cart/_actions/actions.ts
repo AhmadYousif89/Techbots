@@ -1,22 +1,22 @@
-'use server';
-import prisma from '@/lib/db';
-import { revalidatePath } from 'next/cache';
-import { TCartItem } from '@/app/cart/_lib/types';
+"use server";
+import prisma from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { TCartItem } from "@/app/cart/_lib/types";
 
 // Sync the local cart with the server cart
 export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
-  const localCartItems = cart.map(item => ({
+  const localCartItems = cart.map((item) => ({
     productAsin: item.asin,
     quantity: item.cartQuantity,
   }));
 
   const cartTotalValue = cart.reduce(
     (acc, item) => acc + item.price * item.cartQuantity,
-    0
+    0,
   );
 
   // Start a transaction to ensure that all operations are atomic
-  const cartInfo = await prisma.$transaction(async prisma => {
+  const cartInfo = await prisma.$transaction(async (prisma) => {
     try {
       // Find the cart in the server
       const serverCart = await prisma.cart.findUnique({
@@ -36,7 +36,7 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
 
       // If the cart doesn't exist, create it
       if (!serverCart) {
-        console.log('Syncing with local cart...');
+        console.log("Syncing with local cart...");
         const newCart = await prisma.cart.create({
           data: {
             user: { connect: { clerkUserId } },
@@ -48,19 +48,22 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
             isSynced: true,
           },
         });
-        console.log('Local cart synced');
-        revalidatePath('/cart');
+        console.log("Local cart synced");
+        revalidatePath("/cart");
         return { id: newCart.id, isSynced: true };
       }
 
-      console.log('Syncing with server cart...');
+      console.log("Syncing with server cart...");
       // If the cart exists, update the cart items
-      const serverCartItems = serverCart.cartItems.reduce((acc, item) => {
-        acc[item.productAsin] = item.quantity;
-        return acc;
-      }, {} as Record<string, number>);
+      const serverCartItems = serverCart.cartItems.reduce(
+        (acc, item) => {
+          acc[item.productAsin] = item.quantity;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
-      const updatedCartItems = localCartItems.map(item => {
+      const updatedCartItems = localCartItems.map((item) => {
         const serverQuantity = serverCartItems[item.productAsin] || 0;
         return {
           cartId: serverCart.id,
@@ -72,10 +75,12 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
       // Find the items that are in the server cart but not in the local cart
       const deletedCartItems = serverCart.cartItems
         .filter(
-          item =>
-            !localCartItems.some(localItem => localItem.productAsin === item.productAsin)
+          (item) =>
+            !localCartItems.some(
+              (localItem) => localItem.productAsin === item.productAsin,
+            ),
         )
-        .map(item => item.productAsin); // Get the ASINs of the items to delete
+        .map((item) => item.productAsin); // Get the ASINs of the items to delete
 
       // Delete the items that are in the server cart but not in the local cart
       await prisma.cartItem.deleteMany({
@@ -94,17 +99,21 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
       // Update the total value and count of the cart
       await prisma.cart.update({
         where: { clerkUserId },
-        data: { totalValue: cartTotalValue, count: cart.length, isSynced: true },
+        data: {
+          totalValue: cartTotalValue,
+          count: cart.length,
+          isSynced: true,
+        },
       });
 
-      console.log('Server cart synced');
+      console.log("Server cart synced");
       return { id: serverCart.id, isSynced: true };
     } catch (error) {
       console.error(error);
     }
   });
 
-  revalidatePath('/cart');
+  revalidatePath("/cart");
   return cartInfo;
 };
 
@@ -112,9 +121,14 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
 export const addServerCartItem = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number
+  itemPrice: number,
 ) => {
-  await prisma.$transaction(async prisma => {
+  await prisma.$transaction(async (prisma) => {
+    console.log("Add item to cart");
+    const user = await prisma.user.findUnique({ where: { clerkUserId } });
+    if (!user) {
+      throw new Error("User not found");
+    }
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
       include: {
@@ -135,8 +149,8 @@ export const addServerCartItem = async (
           },
         },
       });
-      console.log('Cart created and item added');
-      revalidatePath('/products/[asin]', 'page');
+      console.log("Cart created and item added");
+      // revalidatePath("/products/[asin]", "page");
       return;
     }
 
@@ -154,20 +168,26 @@ export const addServerCartItem = async (
 
     await prisma.cart.update({
       where: { clerkUserId },
-      data: { totalValue, count: 1 },
+      data: { totalValue, count: { increment: 1 } },
     });
-    console.log('Item added to cart');
+    console.log("Item added to cart");
   });
 
-  revalidatePath('/products/[asin]', 'page');
+  // revalidatePath("/products/[asin]", "page");
 };
 // Used inside or outside the cart page to remove an item from the cart
 export const removeFromServerCart = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number
+  itemPrice: number,
 ) => {
-  await prisma.$transaction(async prisma => {
+  await prisma.$transaction(async (prisma) => {
+    console.log("Remove item from cart");
+    const user = await prisma.user.findUnique({ where: { clerkUserId } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
       include: {
@@ -178,7 +198,7 @@ export const removeFromServerCart = async (
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new Error("Cart not found");
     }
 
     const cartItem = await prisma.cartItem.findUnique({
@@ -186,7 +206,7 @@ export const removeFromServerCart = async (
     });
 
     if (!cartItem) {
-      throw new Error('Cart item not found');
+      throw new Error("Cart item not found");
     }
 
     await prisma.cartItem.delete({
@@ -199,9 +219,8 @@ export const removeFromServerCart = async (
         where: { clerkUserId },
         data: { totalValue: 0, count: 0 },
       });
-      console.log('Item removed from cart and cart cleared');
-      revalidatePath('/cart');
-      revalidatePath('/products/[asin]', 'page');
+      console.log("Item removed from cart and cart cleared");
+      // revalidatePath("/products/[asin]", "page");
       return;
     }
 
@@ -210,20 +229,19 @@ export const removeFromServerCart = async (
       where: { clerkUserId },
       data: { totalValue, count: { decrement: 1 } },
     });
-    console.log('Item removed from cart');
+    console.log("Item removed from cart");
   });
 
-  revalidatePath('/cart');
-  revalidatePath('/products/[asin]', 'page');
+  // revalidatePath("/products/[asin]", "page");
 };
 
 // Used inside the cart page to increment the quantity of an item
 export const incrementServerCartItem = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number
+  itemPrice: number,
 ) => {
-  await prisma.$transaction(async prisma => {
+  await prisma.$transaction(async (prisma) => {
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
       include: {
@@ -235,12 +253,12 @@ export const incrementServerCartItem = async (
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new Error("Cart not found");
     }
 
-    const cartItem = cart.cartItems.find(item => item.productAsin === asin);
+    const cartItem = cart.cartItems.find((item) => item.productAsin === asin);
     if (!cartItem) {
-      throw new Error('Cart item not found');
+      throw new Error("Cart item not found");
     }
     const prodStock = cartItem.Product.stockQuantity;
 
@@ -258,7 +276,7 @@ export const incrementServerCartItem = async (
       where: { clerkUserId },
       data: { totalValue },
     });
-    console.log('Item incremented');
+    console.log("Item incremented");
   });
 };
 
@@ -266,9 +284,9 @@ export const incrementServerCartItem = async (
 export const decrementServerCartItem = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number
+  itemPrice: number,
 ) => {
-  await prisma.$transaction(async prisma => {
+  await prisma.$transaction(async (prisma) => {
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
       include: {
@@ -279,12 +297,12 @@ export const decrementServerCartItem = async (
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new Error("Cart not found");
     }
 
-    const cartItem = cart.cartItems.find(item => item.productAsin === asin);
+    const cartItem = cart.cartItems.find((item) => item.productAsin === asin);
     if (!cartItem) {
-      throw new Error('Cart item not found');
+      throw new Error("Cart item not found");
     }
 
     let totalValue = cart.totalValue;
@@ -298,7 +316,7 @@ export const decrementServerCartItem = async (
         where: { clerkUserId },
         data: { totalValue, count: { decrement: 1 } },
       });
-      console.log('Item decremented and removed from cart');
+      console.log("Item decremented and removed from cart");
 
       return;
     }
@@ -312,13 +330,13 @@ export const decrementServerCartItem = async (
       where: { clerkUserId },
       data: { totalValue },
     });
-    console.log('Item decremented');
+    console.log("Item decremented");
   });
 };
 
 // Used inside or outside the cart page to clear the cart
 export const clearServerCart = async (clerkUserId: string) => {
-  await prisma.$transaction(async prisma => {
+  await prisma.$transaction(async (prisma) => {
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
       include: {
@@ -329,7 +347,7 @@ export const clearServerCart = async (clerkUserId: string) => {
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new Error("Cart not found");
     }
 
     await prisma.cartItem.deleteMany({
@@ -341,8 +359,8 @@ export const clearServerCart = async (clerkUserId: string) => {
       data: { totalValue: 0, count: 0 },
     });
 
-    console.log('Cart cleared');
+    console.log("Cart cleared");
   });
 
-  revalidatePath('/products', 'layout');
+  revalidatePath("/products", "layout");
 };

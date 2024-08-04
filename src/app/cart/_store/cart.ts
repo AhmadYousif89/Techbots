@@ -1,10 +1,14 @@
-import { create } from 'zustand';
-import { StateStorage, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-import { TCartItem } from '../_lib/types';
-import { TProduct } from '@/app/products/_lib/types';
-import { useShippingStore } from './shipping_form';
-import { VAT_PERCENTAGE, VALID_COUPONS, NEXT_DAY_SHIPPING_COST } from '../constants';
+import { TCartItem } from "../_lib/types";
+import { TProduct } from "@/app/products/_lib/types";
+import { useShippingStore } from "./shipping_form";
+import {
+  VAT_PERCENTAGE,
+  VALID_COUPONS,
+  NEXT_DAY_SHIPPING_COST,
+} from "../constants";
 
 export type CartState = {
   cart: TProduct[];
@@ -29,7 +33,7 @@ export const useCartStore = create<CartState>()(
       cartItems: () => {
         const { cart } = get();
         if (cart.length > 0)
-          return cart.map(item => ({
+          return cart.map((item) => ({
             asin: item.asin,
             price: item.price,
             cartQuantity: item.cartQuantity,
@@ -43,51 +47,54 @@ export const useCartStore = create<CartState>()(
       getTotalValue: () => {
         const { cart } = get();
         const ShippingType = useShippingStore.getState().data.shipping;
-        const total = cart.reduce((acc, item) => acc + item.price * item.cartQuantity, 0);
+        const total = cart.reduce(
+          (acc, item) => acc + item.price * item.cartQuantity,
+          0,
+        );
 
-        return ShippingType === 'next' ? total + NEXT_DAY_SHIPPING_COST : total;
+        return ShippingType === "next" ? total + NEXT_DAY_SHIPPING_COST : total;
       },
       getVAT: () => {
         const { getTotalValue: totalValue } = get();
         return totalValue() * VAT_PERCENTAGE;
       },
-      addToCart: item => set(state => ({ cart: [...state.cart, item] })),
-      removeFromCart: asin =>
-        set(state => ({
-          cart: state.cart.filter(cartItem => cartItem.asin !== asin),
+      addToCart: (item) => set((state) => ({ cart: [...state.cart, item] })),
+      removeFromCart: (asin) =>
+        set((state) => ({
+          cart: state.cart.filter((cartItem) => cartItem.asin !== asin),
         })),
-      increaseQuantity: asin =>
-        set(state => ({
-          cart: state.cart.map(cartItem =>
+      increaseQuantity: (asin) =>
+        set((state) => ({
+          cart: state.cart.map((cartItem) =>
             cartItem.asin === asin
               ? { ...cartItem, cartQuantity: cartItem.cartQuantity + 1 }
-              : cartItem
+              : cartItem,
           ),
         })),
-      decreaseQuantity: asin =>
-        set(state => ({
-          cart: state.cart.map(cartItem =>
+      decreaseQuantity: (asin) =>
+        set((state) => ({
+          cart: state.cart.map((cartItem) =>
             cartItem.asin === asin
               ? { ...cartItem, cartQuantity: cartItem.cartQuantity - 1 }
-              : cartItem
+              : cartItem,
           ),
         })),
-      clearCart: () => set({ cart: [], coupon: '' }),
+      clearCart: () => set({ cart: [], coupon: "" }),
 
-      coupon: '',
+      coupon: "",
       couponIsValid: () => {
         const { coupon } = get();
         return VALID_COUPONS.includes(coupon && coupon.toLowerCase());
       },
-      setCouponValue: value => {
+      setCouponValue: (value) => {
         for (const coupon in VALID_COUPONS) {
           if (coupon.toLowerCase() === value) {
-            if (value.toLowerCase() === '25off') {
+            if (value.toLowerCase() === "25off") {
               set({
                 coupon: value,
                 getTotalValue: () => get().getTotalValue() * 0.75,
               });
-            } else if (value.toLowerCase() === '50off') {
+            } else if (value.toLowerCase() === "50off") {
               set({
                 coupon: value,
                 getTotalValue: () => get().getTotalValue() * 0.5,
@@ -99,6 +106,6 @@ export const useCartStore = create<CartState>()(
         }
       },
     }),
-    { name: 'cart' }
-  )
+    { name: "cart" },
+  ),
 );
