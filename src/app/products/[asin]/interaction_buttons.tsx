@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { use, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { use } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-import { TProduct } from '../_lib/types';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { AddToCartButton } from '@/components/cart_menu/add_button';
-import { AddToWishlistButton } from '@/components/wishlist_menu/add_button';
+import { TProduct } from "../_lib/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { AddToCartButton } from "@/components/cart_menu/add_button";
+import { AddToWishlistButton } from "@/components/wishlist_menu/add_button";
 
 type Item = {
   cartId: string;
@@ -20,27 +20,33 @@ type Props = {
 };
 
 export function ProductInteractionButtons({ product, checkCartItem }: Props) {
-  const { userId } = useAuth();
+  const params = useSearchParams();
   const checkItemInCart = use(checkCartItem);
 
-  const inCart = checkItemInCart && userId;
+  const inCart = checkItemInCart || params.get("q");
 
   return (
-    <div className='flex items-center justify-between gap-4 col-span-full'>
-      <div className='flex items-center gap-4'>
-        <Badge className='shadow-sm py-1 text-muted-foreground' variant={'outline'}>
+    <div className="col-span-full flex items-center justify-between gap-4">
+      <div className="flex items-center gap-4">
+        <Badge
+          className="py-1 text-muted-foreground shadow-sm"
+          variant={"outline"}
+        >
           $ {product.price.toFixed(2)}
         </Badge>
         {inCart && (
           <Button
-            size={'sm'}
-            className='text-xs font-semibold shadow-sm h-auto py-1 rounded-full active:translate-y-[1px]'>
-            <Link href={`/cart?cid=${checkItemInCart.cartId}`}>View in cart</Link>
+            size={"sm"}
+            className="h-auto rounded-full py-1 text-xs font-semibold shadow-sm active:translate-y-[1px]"
+          >
+            <Link href={`/cart?cid=${checkItemInCart?.cartId}`}>
+              View in cart
+            </Link>
           </Button>
         )}
       </div>
-      <div className='flex items-center gap-4 lg:gap-8'>
-        <AddToCartButton action='addToCart' product={product} />
+      <div className="flex items-center gap-4 lg:gap-8">
+        <AddToCartButton action="addToCart" product={product} />
         <AddToWishlistButton logoSize={20} product={product} />
       </div>
     </div>
