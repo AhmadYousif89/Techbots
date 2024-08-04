@@ -1,12 +1,11 @@
-import prisma from '@/lib/db';
-import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
-import { capitalizeString, cn } from '@/lib/utils';
+import prisma from "@/lib/db";
+import { notFound } from "next/navigation";
+import { capitalizeString, cn } from "@/app/lib/utils";
 
-import { Category, TProduct } from '../_lib/types';
-import { extractSearchParams } from '../_lib/utils';
-import { SearchParams } from '@/app/products/_lib/types';
-import { RatingStars } from '../_components/reviews/rating_stars';
+import { TProduct } from "../_lib/types";
+import { extractSearchParams } from "../_lib/utils";
+import { SearchParams } from "@/app/products/_lib/types";
+import { RatingStars } from "../_components/reviews/rating_stars";
 import {
   Card,
   CardContent,
@@ -14,22 +13,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { ProductCarousel } from '../_components/product_carousel';
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ProductCarousel } from "../_components/product_carousel";
 import {
   Accordion,
   AccordionItem,
   AccordionContent,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { ProductInteractionButtons } from './interaction_buttons';
+} from "@/components/ui/accordion";
+import { ProductInteractionButtons } from "./interaction_buttons";
 
 export const getProductDetails = async (
   asin: string,
   searchParams: SearchParams,
-  limit = 8
+  limit = 8,
 ) => {
   const { page, selectedRating } = extractSearchParams(searchParams);
   const limitPerPage = limit;
@@ -43,14 +42,14 @@ export const getProductDetails = async (
         images: true,
         topReviews: {
           where: { asin, rating: selectedRating ? +selectedRating : undefined },
-          orderBy: { date: 'desc' },
+          orderBy: { date: "desc" },
           take: limitPerPage,
           skip: start,
         },
       },
     })) as TProduct;
   } catch (error) {
-    console.error('Error fetching product details:', error);
+    console.error("Error fetching product details:", error);
     throw error;
   }
 
@@ -62,7 +61,7 @@ export const getProductDetails = async (
 };
 
 export const checkCartItem = async (asin: string) => {
-  'use server';
+  "use server";
   return prisma.cartItem.findFirst({
     where: { productAsin: asin },
     select: { cartId: true, quantity: true },
@@ -74,7 +73,10 @@ type ProductDetailsProps = {
   searchParams: SearchParams;
 };
 
-export async function ProductDetails({ asin, searchParams }: ProductDetailsProps) {
+export async function ProductDetails({
+  asin,
+  searchParams,
+}: ProductDetailsProps) {
   const { product } = await getProductDetails(asin, searchParams);
   const checkItemInCart = checkCartItem(product.asin);
 
@@ -86,38 +88,40 @@ export async function ProductDetails({ asin, searchParams }: ProductDetailsProps
   const productFeatures = parseProductDetails(product.featureBulletsFlat);
 
   return (
-    <Card className='grid items-center pb-10 rounded-none lg:grid-cols-2 lg:gap-10'>
+    <Card className="grid items-center rounded-none pb-10 lg:grid-cols-2 lg:gap-10">
       <ProductCarousel {...product} />
 
       <div>
-        <CardHeader className='gap-4 max-w-prose'>
-          <Badge variant='outline' className='w-fit'>
+        <CardHeader className="max-w-prose gap-4">
+          <Badge variant="outline" className="w-fit">
             {capitalizeString(product.category)}
           </Badge>
-          <div className='space-y-6'>
-            <CardTitle className='text-sm lg:text-lg font-medium text-balance'>
+          <div className="space-y-6">
+            <CardTitle className="text-balance text-sm font-medium lg:text-lg">
               {product.title}
             </CardTitle>
             <RatingStars
               productRating={product.rating}
               reviewsCount={product.ratingsTotal.toLocaleString()}
             />
-            <div className='flex items-center justify-between gap-4'>
+            <div className="flex items-center justify-between gap-4">
               <Badge
-                variant={product.stockQuantity > 0 ? 'outline' : 'destructive'}
+                variant={product.stockQuantity > 0 ? "outline" : "destructive"}
                 className={cn(
                   product.stockQuantity > 0
-                    ? 'bg-emerald-500 text-secondary border-0'
-                    : ''
-                )}>
-                {product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}
+                    ? "border-0 bg-emerald-500 text-secondary"
+                    : "",
+                )}
+              >
+                {product.stockQuantity > 0 ? "In Stock" : "Out of Stock"}
               </Badge>
               {product.color && (
-                <div className='flex items-center text-muted-foreground font-medium text-sm ml-2'>
-                  Color :{' '}
+                <div className="ml-2 flex items-center text-sm font-medium text-muted-foreground">
+                  Color :{" "}
                   <Badge
-                    variant={'outline'}
-                    className='shadow-sm ml-4 text-muted-foreground'>
+                    variant={"outline"}
+                    className="ml-4 text-muted-foreground shadow-sm"
+                  >
                     {product.color}
                   </Badge>
                 </div>
@@ -126,13 +130,13 @@ export async function ProductDetails({ asin, searchParams }: ProductDetailsProps
             <Separator />
           </div>
         </CardHeader>
-        <CardContent className='max-w-prose'>
+        <CardContent className="max-w-prose">
           {product.description && (
-            <CardDescription className='mb-4 border-b pb-2'>
+            <CardDescription className="mb-4 border-b pb-2">
               {product.description}
             </CardDescription>
           )}
-          <div className='flex flex-col gap-8 pb-4'>
+          <div className="flex flex-col gap-8 pb-4">
             {/* <Suspense fallback={<h1>Loading...</h1>}> */}
             <ProductInteractionButtons
               product={product}
@@ -141,16 +145,21 @@ export async function ProductDetails({ asin, searchParams }: ProductDetailsProps
             {/* </Suspense> */}
           </div>
         </CardContent>
-        <CardFooter className='flex-col items-stretch max-w-prose'>
-          {productFeatures && <ProductDetailsTable type='feats' data={productFeatures} />}
-          {productSpecs && <ProductDetailsTable type='specs' data={productSpecs} />}
+        <CardFooter className="max-w-prose flex-col items-stretch">
+          {productFeatures && (
+            <ProductDetailsTable type="feats" data={productFeatures} />
+          )}
+          {productSpecs && (
+            <ProductDetailsTable type="specs" data={productSpecs} />
+          )}
           {!productFeatures && !productSpecs && (
             <span>
-              {product.title} Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Facilis ipsam quas optio itaque, quo aperiam autem rerum ratione sunt.
-              Voluptates distinctio animi veniam, libero aliquid harum quisquam ullam
-              beatae iusto accusantium magnam laudantium officiis aperiam, asperiores
-              incidunt in aspernatur rem. Qui temporibus libero eum iure ratione quia,
+              {product.title} Lorem ipsum dolor sit amet, consectetur
+              adipisicing elit. Facilis ipsam quas optio itaque, quo aperiam
+              autem rerum ratione sunt. Voluptates distinctio animi veniam,
+              libero aliquid harum quisquam ullam beatae iusto accusantium
+              magnam laudantium officiis aperiam, asperiores incidunt in
+              aspernatur rem. Qui temporibus libero eum iure ratione quia,
               corporis eius voluptatum.
             </span>
           )}
@@ -162,33 +171,37 @@ export async function ProductDetails({ asin, searchParams }: ProductDetailsProps
 
 type ProductDetailsTableProps = {
   data: Record<string, string>;
-  type: 'specs' | 'feats';
+  type: "specs" | "feats";
 };
 
 const ProductDetailsTable = ({ data, type }: ProductDetailsTableProps) => {
   return (
-    <Accordion type='single' collapsible>
-      <AccordionItem value='details' className={cn(type == 'specs' ? 'border-b-0' : '')}>
+    <Accordion type="single" collapsible>
+      <AccordionItem
+        value="details"
+        className={cn(type == "specs" ? "border-b-0" : "")}
+      >
         <AccordionTrigger
           className={cn(
-            `text-xs text-muted-foreground uppercase hover:text-foreground/50`,
-            type == 'feats' && 'sm:pt-0'
-          )}>
-          {type === 'specs' ? 'Specifications' : 'Features'}
+            `text-xs uppercase text-muted-foreground hover:text-foreground/50`,
+            type == "feats" && "sm:pt-0",
+          )}
+        >
+          {type === "specs" ? "Specifications" : "Features"}
         </AccordionTrigger>
         <AccordionContent>
-          <table className='bg-secondary text-xs'>
-            <thead className='bg-primary text-secondary'>
+          <table className="bg-secondary text-xs">
+            <thead className="bg-primary text-secondary">
               <tr>
-                <th className='w-1/4 p-2'>Attribute</th>
-                <th className='w-3/4 p-2'>Value</th>
+                <th className="w-1/4 p-2">Attribute</th>
+                <th className="w-3/4 p-2">Value</th>
               </tr>
             </thead>
-            <tbody className='text-gray-700'>
+            <tbody className="text-gray-700">
               {Object.entries(data).map(([key, value]) => (
                 <tr key={key}>
-                  <td className='border px-4 py-2'>{key}</td>
-                  <td className='border px-4 py-2'>{value}</td>
+                  <td className="border px-4 py-2">{key}</td>
+                  <td className="border px-4 py-2">{value}</td>
                 </tr>
               ))}
             </tbody>
@@ -202,17 +215,17 @@ const ProductDetailsTable = ({ data, type }: ProductDetailsTableProps) => {
 function parseProductDetails(data: string | null) {
   const obj: { [key: string]: string } = {};
   if (!data) return obj;
-  const parts = data.split('. ');
+  const parts = data.split(". ");
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i].trim();
     // Check if this part contains a colon and is not the last part
-    if (part.includes(':') && i < parts.length - 1) {
-      const item = part.split(':').map(item => item.trim());
+    if (part.includes(":") && i < parts.length - 1) {
+      const item = part.split(":").map((item) => item.trim());
       let key = item[0];
       const value = item[1];
       // Remove brackets from keys if present
-      if (key.startsWith('[') && key.endsWith(']')) {
+      if (key.startsWith("[") && key.endsWith("]")) {
         key = key.slice(1, -1);
       }
 

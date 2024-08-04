@@ -1,15 +1,15 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { TProduct } from '../_lib/types';
-import { extractSearchParams } from '../_lib/utils';
-import { RatingBreakdown, SearchParams } from '../_lib/types';
+import { TProduct } from "../_lib/types";
+import { extractSearchParams } from "../_lib/utils";
+import { RatingBreakdown, SearchParams } from "../_lib/types";
 
-import { getProductDetails } from './product_details';
-import { AddReview } from '../_components/reviews/add_review';
-import { ReviewItem } from '../_components/reviews/review_item';
-import { RatingStars } from '../_components/reviews/rating_stars';
-import { PaginationButtons } from '../_components/pagination_button';
-import { ReviewsRatingBars } from '../_components/reviews/rating_bars';
+import { getProductDetails } from "./product_details";
+import { AddReview } from "../_components/reviews/add_review";
+import { ReviewItem } from "../_components/reviews/review_item";
+import { RatingStars } from "../_components/reviews/rating_stars";
+import { PaginationButtons } from "../_components/pagination_button";
+import { ReviewsRatingBars } from "../_components/reviews/rating_bars";
 
 import {
   Card,
@@ -18,28 +18,38 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type ProductReviewsProps = {
   asin: string;
   searchParams: SearchParams;
 };
 
-export async function ProductReviews({ asin, searchParams }: ProductReviewsProps) {
+export async function ProductReviews({
+  asin,
+  searchParams,
+}: ProductReviewsProps) {
   const limit = 5;
   const { page, selectedRating } = extractSearchParams(searchParams);
-  const { product, reviewsCount } = await getProductDetails(asin, searchParams, limit);
+  const { product, reviewsCount } = await getProductDetails(
+    asin,
+    searchParams,
+    limit,
+  );
 
   const reviews = product.topReviews;
 
   if (reviewsCount === 0 && !selectedRating) {
     return (
-      <Card className='max-w-screen-sm mx-6'>
+      <Card className="mx-6 max-w-screen-sm">
         <CardHeader>
-          <CardTitle className='text-lg w-fit'>No reviews for this product!</CardTitle>
-          <CardDescription className='py-4 ml-4'>
-            Be the first to review this product and help others make a better decision.
+          <CardTitle className="w-fit text-lg">
+            No reviews for this product!
+          </CardTitle>
+          <CardDescription className="ml-4 py-4">
+            Be the first to review this product and help others make a better
+            decision.
           </CardDescription>
         </CardHeader>
         <CardFooter>
@@ -52,7 +62,7 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
   let content;
   if (selectedRating && reviewsCount === 0) {
     content = (
-      <CardTitle className='text-lg text-muted-foreground'>
+      <CardTitle className="text-lg text-muted-foreground">
         No reviews for this rating!
       </CardTitle>
     );
@@ -64,9 +74,9 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
   const hasNextPage = end < reviewsCount;
   const hasPrevPage = start > 0;
 
-  if (reviews.length > 0) {
+  if (reviewsCount) {
     content = (
-      <div className='space-y-8'>
+      <div className="group space-y-8">
         <ReviewsPaginationButtons
           asin={asin}
           searchParams={searchParams}
@@ -74,7 +84,7 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
           hasNextPage={hasNextPage}
           totalPages={totalPages}
         />
-        {reviews.map(review => (
+        {reviews.map((review) => (
           <ReviewItem key={review.id} {...review} />
         ))}
       </div>
@@ -83,11 +93,11 @@ export async function ProductReviews({ asin, searchParams }: ProductReviewsProps
 
   return (
     <CardContent>
-      <section className='flex flex-col lg:flex-row lg:justify-between gap-8'>
+      <section className="flex flex-col gap-8 lg:flex-row lg:justify-between">
         <RatingOverview searchParams={searchParams} product={product} />
-        <Card className='p-6 flex-1 lg:basis-full flex flex-col justify-between'>
+        <Card className="flex flex-1 flex-col justify-between p-6 lg:basis-full">
           <>{content}</>
-          <CardFooter className='p-6 px-0'>
+          <CardFooter className="p-6 px-0">
             <AddReview />
           </CardFooter>
         </Card>
@@ -117,7 +127,7 @@ export function ReviewsPaginationButtons({
     ...(selectedRating && { sr: selectedRating }),
   });
 
-  let reviewsTitle = 'Top Reviews';
+  let reviewsTitle = "Top Reviews";
   for (let i = 0; i < 5; i++) {
     if (selectedRating === `${5 - i}`) {
       reviewsTitle = `${5 - i} Star Reviews`;
@@ -125,42 +135,31 @@ export function ReviewsPaginationButtons({
     }
   }
 
-  const firstPageUrl = `/products/${asin}?page=1&${params.toString()}#reviews`;
-  const nextPageUrl = `/products/${asin}?page=${
-    +page == 0 ? 2 : +page + 1
-  }&${params.toString()}#reviews`;
-  const prevPageUrl = `/products/${asin}?page=${+page - 1}&${params.toString()}#reviews`;
-  const lastPageUrl = `/products/${asin}?page=${totalPages}&${params.toString()}#reviews`;
-  const resetUrl = `/products/${asin}?page=1&cat=${category}#reviews`;
-
-  const startingPage = +page <= 0 ? 1 : +page <= totalPages ? +page : 0;
-  const endingPage = totalPages >= 1 ? totalPages : 0;
+  const resetUrl = `/products/${asin}?page=1#reviews`;
 
   return (
-    <div className='flex justify-between items-center'>
-      <h3 className='font-medium text-xl mb-auto'>{reviewsTitle}</h3>
-      <div className='grid items-center gap-y-2'>
+    <div className="flex items-center justify-between">
+      <h3 className="mb-auto text-xl font-medium">{reviewsTitle}</h3>
+      <div className="grid items-center gap-y-2">
         {selectedRating && (
           <Button
-            size='sm'
-            variant='outline'
-            className='place-self-center'
-            disabled={!selectedRating}>
+            size="sm"
+            variant="outline"
+            className="place-self-center"
+            disabled={!selectedRating}
+          >
             <Link href={resetUrl}>Reset</Link>
           </Button>
         )}
 
         <PaginationButtons
+          asin={asin}
           page={page}
           params={params.toString()}
           baseUrl={`/products/${asin}/`}
           totalPages={totalPages}
           hasPrevPage={hasPrevPage}
           hasNextPage={hasNextPage}
-          firstPageUrl={firstPageUrl}
-          prevPageUrl={prevPageUrl}
-          nextPageUrl={nextPageUrl}
-          lastPageUrl={lastPageUrl}
         />
       </div>
     </div>
@@ -168,7 +167,10 @@ export function ReviewsPaginationButtons({
 }
 
 type RatingOverviewProps = {
-  product: Pick<TProduct, 'asin' | 'rating' | 'ratingsTotal' | 'ratingBreakdown'>;
+  product: Pick<
+    TProduct,
+    "asin" | "rating" | "ratingsTotal" | "ratingBreakdown"
+  >;
   searchParams: SearchParams;
 };
 
@@ -177,19 +179,19 @@ function RatingOverview({ product, searchParams }: RatingOverviewProps) {
   const ratingBreakdown = product.ratingBreakdown as RatingBreakdown;
 
   return (
-    <div className='grid gap-4 flex-1 lg:basis-1/2 lg:self-start'>
-      <Card className='grid items-center justify-center max-w-32 aspect-square p-2 shadow-sm'>
-        <h3 className='grid items-center justify-center place-self-center size-12 text-2xl font-semibold rounded-full ring-1 ring-zinc-300 shadow-sm aspect-square p-2 text-muted-foreground'>
+    <div className="grid flex-1 gap-4 lg:basis-1/2 lg:self-start">
+      <Card className="grid aspect-square max-w-32 items-center justify-center p-2 shadow-sm">
+        <h3 className="grid aspect-square size-12 items-center justify-center place-self-center rounded-full p-2 text-2xl font-semibold text-muted-foreground shadow-sm ring-1 ring-zinc-300">
           {rating}
         </h3>
         <RatingStars
-          size={'sm'}
-          className='justify-center'
+          size={"sm"}
+          className="justify-center"
           productRating={rating}
           reviewsCount={ratingsTotal}
           showTotalReviews={false}
         />
-        <p className='text-xs text-center text-muted-foreground font-medium'>
+        <p className="text-center text-xs font-medium text-muted-foreground">
           {ratingsTotal.toLocaleString()} rating
         </p>
       </Card>
