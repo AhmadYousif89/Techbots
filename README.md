@@ -1,18 +1,19 @@
 # TechBots
 
-![TechBots](public/images/home-full.png)
+- **Deployed Site:** [TechBots](https://techbots.vercel.app/)
+- **Developer LinkedIn:** [Ahmad Yousif](https://www.linkedin.com/in/dev-ahmadyousif/)
 
 ## Introduction
 
 **TechBots** is an e-commerce platform dedicated to providing a comprehensive selection of computer and electronics parts. Users can browse products, read detailed reviews, manage their shopping cart, and place orders seamlessly.
 
-- **Deployed Site:** [TechBots](https://techBots.vercel.app/)
-- **Final Project Blog Article:** [TechBots Development Journey](https://medium.com/techBots-journey)
-- **Authors LinkedIn:** [Ahmad Yousif](https://www.linkedin.com/in/dev-ahmadyousif/)
+## Add Environment Variables
+
+Create a `.env` file in the root directory of the project and add the following environment variables found in this [.env.example](.env.example) file
 
 ## Installation
 
-To run TechBots locally, follow these steps:
+To run TechBots locally, please follow these steps:
 
 1. **Clone the repository:**
 
@@ -24,7 +25,7 @@ To run TechBots locally, follow these steps:
 2. **Install the node module depenencies:**
 
    ```sh
-   npm install
+   pnpm install
    ```
 
 3. **Set up the database:**
@@ -36,50 +37,52 @@ To run TechBots locally, follow these steps:
 4. **Seed products into the database (one time action):**
 
    ```sh
-   npm run seed
+   pnpm seed
    ```
 
 5. **Run the development server:**
 
    ```sh
-   npm run dev
+   pnpm dev
    ```
 
 6. **Access the application:**
-   Open your web browser and go to `http://localhost:3000`
+   ```
+   Open your browser and go to `http://localhost:3000/`.
+   ```
 
 ## Usage
 
 1. **Register an account:**
 
-   - Go to the registration page and create a new account.
-     ![Signup](public/images/auth-1.png)
-     ![Signin](public/images/auth-2.png)
-     ![UserProfile](public/images/auth-3.png)
+- Go to the registration page and create a new account.
+  ![Signup](public/images/auth-1.png)
+  ![UserProfile](public/images/auth-3.png)
 
 2. **Browse products:**
 
-   - Explore various categories of computer and electronics parts.
-     ![Products](public/images/p1.png)
-     ![Products](public/images/sp-full.png)
+- Explore various categories of computer and electronics parts.
+  ![Products](public/images/p1.png)
+  ![Products](public/images/sp-full.png)
 
 3. **Manage your cart:**
 
-   - Add items to your cart, update quantities, and remove items as needed.
-     ![Cart](public/images/cart-1.png)
-     ![Shipping-1](public/images/cart-ship1.png)
-     ![Shipping-2](public/images/cart-ship2.png)
-     ![Shipping-3](public/images/cart-ship3.png)
+- Add items to your cart, update quantities, and remove items as needed.
+  ![Cart](public/images/cart-1.png)
+  ![Shipping-1](public/images/cart-ship1.png)
+  ![Shipping-2](public/images/cart-ship2.png)
+  ![Shipping-3](public/images/cart-ship3.png)
 
 4. **Place an order:**
 
-   - Proceed to checkout, enter your shipping information, and complete the payment process.
-     ![Orders](public/images/orders.png)
-     ![Order](public/images/order.png)
+- Proceed to checkout, enter your shipping information, and complete the payment process.
+  ![Orders](public/images/orders.png)
+  ![Order](public/images/order.png)
 
 5. **Write reviews:**
-   - Share your feedback on purchased products by writing reviews.
-     ![Review](public/images/review.png)
+
+- Share your feedback on purchased products by writing reviews.
+  ![Review](public/images/review.png)
 
 ## Contributing
 
@@ -87,7 +90,7 @@ We welcome contributions from the community! To contribute to TechBots:
 
 1. **Fork the repository:**
 
-   - Click on the "Fork" button at the top right corner of the repo page.
+   Click on the "Fork" button at the top right corner of the repo page.
 
 2. **Clone your fork:**
 
@@ -104,7 +107,7 @@ We welcome contributions from the community! To contribute to TechBots:
 
 4. **Make your changes:**
 
-   - Implement your feature or bug fix.
+   Implement your feature or bug fix.
 
 5. **Commit your changes:**
 
@@ -120,19 +123,10 @@ We welcome contributions from the community! To contribute to TechBots:
    ```
 
 7. **Create a pull request:**
-   - Go to the original repository and click on "New Pull Request."
 
-## Related Projects
+   Go to the original repository and click on "New Pull Request."
 
-Here are some projects related to TechBots:
-
-- **Newegg:** A popular e-commerce platform for computer hardware and consumer electronics.
-- **Amazon Electronics:** The electronics section of Amazon, featuring a wide range of products.
-- **PCPartPicker:** A platform for building and sharing PC part lists, with price comparisons and compatibility checks.
-
-## Licensing
-
-TechBots is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+<br>
 
 ---
 
