@@ -60,7 +60,7 @@ export const getProductDetails = async (
   return { product, reviewsCount };
 };
 
-export const checkCartItem = async (asin: string) => {
+export const getServerCartItem = async (asin: string) => {
   "use server";
   return prisma.cartItem.findFirst({
     where: { productAsin: asin },
@@ -78,7 +78,6 @@ export async function ProductDetails({
   searchParams,
 }: ProductDetailsProps) {
   const { product } = await getProductDetails(asin, searchParams);
-  const checkItemInCart = checkCartItem(product.asin);
 
   if (!product) {
     return notFound();
@@ -89,7 +88,9 @@ export async function ProductDetails({
 
   return (
     <Card className="grid items-center rounded-none pb-10 lg:grid-cols-2 lg:gap-10">
-      <ProductCarousel {...product} />
+      <div className="self-start lg:sticky lg:top-20 lg:p-8">
+        <ProductCarousel {...product} />
+      </div>
 
       <div>
         <CardHeader className="max-w-prose gap-4">
@@ -137,12 +138,10 @@ export async function ProductDetails({
             </CardDescription>
           )}
           <div className="flex flex-col gap-8 pb-4">
-            {/* <Suspense fallback={<h1>Loading...</h1>}> */}
             <ProductInteractionButtons
               product={product}
-              checkCartItem={checkItemInCart}
+              getServerCartItem={getServerCartItem(product.asin)}
             />
-            {/* </Suspense> */}
           </div>
         </CardContent>
         <CardFooter className="max-w-prose flex-col items-stretch">

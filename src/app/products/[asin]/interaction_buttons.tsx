@@ -2,13 +2,13 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 import { TProduct } from "../_lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AddToCartButton } from "@/components/cart_menu/add_button";
 import { AddToWishlistButton } from "@/components/wishlist_menu/add_button";
+import { useCartStore } from "@/app/cart/_store/cart";
 
 type Item = {
   cartId: string;
@@ -16,14 +16,17 @@ type Item = {
 };
 type Props = {
   product: TProduct;
-  checkCartItem: Promise<Item | null>;
+  getServerCartItem: Promise<Item | null>;
 };
 
-export function ProductInteractionButtons({ product, checkCartItem }: Props) {
-  const params = useSearchParams();
-  const checkItemInCart = use(checkCartItem);
+export function ProductInteractionButtons({
+  product,
+  getServerCartItem,
+}: Props) {
+  const serverCartItem = use(getServerCartItem);
+  const cart = useCartStore((s) => s.cart);
 
-  const inCart = checkItemInCart || params.get("q");
+  const inCart = cart.find((item) => item.asin === product.asin);
 
   return (
     <div className="col-span-full flex items-center justify-between gap-4">
@@ -37,9 +40,9 @@ export function ProductInteractionButtons({ product, checkCartItem }: Props) {
         {inCart && (
           <Button
             size={"sm"}
-            className="h-auto rounded-full py-1 text-xs font-semibold shadow-sm active:translate-y-[1px]"
+            className="h-auto rounded-full py-1 text-xs font-semibold shadow-sm active:translate-y-px"
           >
-            <Link href={`/cart?cid=${checkItemInCart?.cartId}`}>
+            <Link href={`/cart?cid=${serverCartItem?.cartId}`}>
               View in cart
             </Link>
           </Button>
