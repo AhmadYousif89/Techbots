@@ -38,7 +38,7 @@ export async function ProductReviews({
     limit,
   );
 
-  const reviews = product.topReviews;
+  const reviews = product?.topReviews;
 
   if (reviewsCount === 0 && !selectedRating) {
     return (
@@ -74,16 +74,27 @@ export async function ProductReviews({
   const hasNextPage = end < reviewsCount;
   const hasPrevPage = start > 0;
 
+  let headDesciption = "Top Reviews";
+  for (let i = 0; i < 5; i++) {
+    if (selectedRating === `${5 - i}`) {
+      headDesciption = `${5 - i} Star Reviews`;
+      break;
+    }
+  }
+
   if (reviewsCount) {
     content = (
-      <div className="group space-y-8">
-        <ReviewsPaginationButtons
-          asin={asin}
-          searchParams={searchParams}
-          hasPrevPage={hasPrevPage}
-          hasNextPage={hasNextPage}
-          totalPages={totalPages}
-        />
+      <div className="group">
+        <div className="flex items-center justify-between pb-8">
+          <h3 className="mb-auto text-xl font-medium">{headDesciption}</h3>
+          <ReviewsPaginationButtons
+            asin={asin}
+            searchParams={searchParams}
+            hasPrevPage={hasPrevPage}
+            hasNextPage={hasNextPage}
+            totalPages={totalPages}
+          />
+        </div>
         {reviews.map((review) => (
           <ReviewItem key={review.id} {...review} />
         ))}
@@ -127,41 +138,30 @@ export function ReviewsPaginationButtons({
     ...(selectedRating && { sr: selectedRating }),
   });
 
-  let reviewsTitle = "Top Reviews";
-  for (let i = 0; i < 5; i++) {
-    if (selectedRating === `${5 - i}`) {
-      reviewsTitle = `${5 - i} Star Reviews`;
-      break;
-    }
-  }
-
   const resetUrl = `/products/${asin}?page=1#reviews`;
 
   return (
-    <div className="flex items-center justify-between">
-      <h3 className="mb-auto text-xl font-medium">{reviewsTitle}</h3>
-      <div className="grid items-center gap-y-2">
-        {selectedRating && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="place-self-center"
-            disabled={!selectedRating}
-          >
-            <Link href={resetUrl}>Reset</Link>
-          </Button>
-        )}
+    <div className="grid items-center gap-y-2">
+      {selectedRating && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="place-self-center"
+          disabled={!selectedRating}
+        >
+          <Link href={resetUrl}>Reset</Link>
+        </Button>
+      )}
 
-        <PaginationButtons
-          asin={asin}
-          page={page}
-          params={params.toString()}
-          baseUrl={`/products/${asin}/`}
-          totalPages={totalPages}
-          hasPrevPage={hasPrevPage}
-          hasNextPage={hasNextPage}
-        />
-      </div>
+      <PaginationButtons
+        asin={asin}
+        page={page}
+        params={params.toString()}
+        baseUrl={`/products/${asin}/`}
+        totalPages={totalPages}
+        hasPrevPage={hasPrevPage}
+        hasNextPage={hasNextPage}
+      />
     </div>
   );
 }
