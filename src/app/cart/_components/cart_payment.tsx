@@ -21,7 +21,7 @@ import { useShippingStore } from "../_store/shipping_form";
 export function CartPaymentView() {
   const router = useRouter();
   const { userId } = useAuth();
-  const items = useCartStore((s) => s.cartItems());
+  const items = useCartStore((s) => s.cart);
   const { data, setFormData } = useShippingStore();
   const total = useStore(useCartStore, (s) => s.getTotalValue()) ?? 0;
   const [orders, creatOrder] = useOrderStore((s) => [s.orders, s.creatOrder]);

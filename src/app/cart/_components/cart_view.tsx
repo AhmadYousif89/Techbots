@@ -31,11 +31,7 @@ export function CartViews() {
     );
 
   return (
-    <Tabs
-      defaultValue="cart"
-      orientation="vertical"
-      className="bg-muted pb-1 pt-10"
-    >
+    <Tabs defaultValue="cart" className="bg-muted pb-1 pt-10">
       <TabsList className="lg:max-view grid h-20 grid-cols-3 rounded-none pb-0 sm:gap-8 sm:px-0 md:mx-auto md:max-w-screen-lg md:gap-16">
         <TabsTrigger
           id="cart-list"
@@ -57,9 +53,7 @@ export function CartViews() {
         <TabsTrigger
           id="cart-payment"
           value="payment"
-          disabled={
-            !cartItems.length || !userId || shippingFormState.success == false
-          }
+          disabled={!cartItems.length || !userId || !shippingFormState.success}
           className="h-full gap-2 rounded-bl-none rounded-br-none text-xs hover:bg-primary-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary sm:text-sm"
         >
           <span className="hidden sm:block">3.</span> Payment Options

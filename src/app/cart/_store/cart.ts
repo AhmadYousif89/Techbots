@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { TCartItem } from "../_lib/types";
 import { TProduct } from "@/app/products/_lib/types";
 import { useShippingStore } from "./shipping_form";
 import {
@@ -12,7 +11,6 @@ import {
 
 export type CartState = {
   cart: TProduct[];
-  cartItems: () => TCartItem[];
   getVAT: () => number;
   getTotalCount: () => number;
   getTotalValue: () => number;
@@ -30,16 +28,6 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       cart: [],
-      cartItems: () => {
-        const { cart } = get();
-        if (cart.length > 0)
-          return cart.map((item) => ({
-            asin: item.asin,
-            price: item.price,
-            cartQuantity: item.cartQuantity,
-          }));
-        return [];
-      },
       getTotalCount: () => {
         const { cart } = get();
         return cart.length;
