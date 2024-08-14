@@ -13,6 +13,7 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { useCartStore } from "@/app/cart/_store/cart";
 import { removeFromServerCart } from "@/app/cart/_actions/actions";
 import { useLocalStorage } from "@/components/hooks/use_local_storage";
+import { useWishlistStore } from "@/app/cart/_store/wishlist";
 
 type ProductThumbnailProps = {
   product: TProduct;
@@ -56,7 +57,7 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
               else setIsWishlistOpen(false);
             }}
           >
-            {product.title.split(" ").slice(0, 4).join(" ")}
+            {product.title.split(" ").slice(0, 6).join(" ")}
           </Link>
         </CardTitle>
 
@@ -70,6 +71,7 @@ function DeleteThumbnailButton({ product, type }: ProductThumbnailProps) {
   const { userId } = useAuth();
   const removeFromCart = useCartStore((s) => s.removeFromCart);
   const { "1": setStoredItems } = useLocalStorage<TProduct[]>("wishlist", []);
+  const { removeItem } = useWishlistStore();
 
   const handleDelete = () => {
     if (type === "cart") {
@@ -78,9 +80,10 @@ function DeleteThumbnailButton({ product, type }: ProductThumbnailProps) {
         removeFromServerCart(userId, product.asin, product.price);
       }
     } else {
-      setStoredItems((items) =>
-        items.filter((item) => item.asin !== product.asin),
-      );
+      // setStoredItems((items) =>
+      //   items.filter((item) => item.asin !== product.asin),
+      // );
+      removeItem(product.asin);
     }
 
     toast.custom(() => {
