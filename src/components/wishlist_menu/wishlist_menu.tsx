@@ -31,15 +31,17 @@ import { useMediaQuery } from "../hooks/use_media_query";
 import { useLocalStorage } from "../hooks/use_local_storage";
 import { useIsMounted } from "../hooks/use_isMounted";
 import { ClearWishlistButton } from "./clear_button";
+import { useWishlistStore } from "@/app/products/_store/wishlist";
 
 export function WishListMenu() {
   const isMounted = useIsMounted();
   const isNotMobile = useMediaQuery("(min-width: 639px");
   const { isOpen, setIsOpen } = useWishlistMenuState();
-  const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
+  // const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
+  const { wishlist } = useWishlistStore();
 
   let wishlistCount = 0;
-  if (isMounted()) wishlistCount = wishlistItems.length;
+  if (isMounted()) wishlistCount = wishlist.length;
 
   const WishListButton = (
     <Button className="relative size-7 p-1 ring-2 ring-input transition-all hover:bg-background hover:ring-primary">
@@ -134,11 +136,12 @@ export function WishListMenu() {
 }
 
 function WishlistItems() {
-  const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
+  // const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
+  const { wishlist } = useWishlistStore();
 
   return (
     <section className="grid max-h-96 gap-4 overflow-auto p-4 sm:flex sm:max-h-screen sm:flex-col sm:px-0">
-      {wishlistItems.map((product, index) => (
+      {wishlist.map((product, index) => (
         <ProductThumbnail key={index} product={product} type="wishlist" />
       ))}
     </section>

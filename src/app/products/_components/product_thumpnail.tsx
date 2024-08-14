@@ -13,7 +13,7 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { useCartStore } from "@/app/cart/_store/cart";
 import { removeFromServerCart } from "@/app/cart/_actions/actions";
 import { useLocalStorage } from "@/components/hooks/use_local_storage";
-import { useWishlistStore } from "@/app/cart/_store/wishlist";
+import { useWishlistStore } from "@/app/products/_store/wishlist";
 
 type ProductThumbnailProps = {
   product: TProduct;
