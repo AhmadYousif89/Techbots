@@ -116,21 +116,6 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
           ))}
         </SelectContent>
       </Select>
-      {/* <Button
-        asChild
-        variant={'outline'}
-        className='h-7 p-0 text-muted-foreground font-medium'>
-        <div className='relative grid grid-cols-[20px,10px,20px] place-items-center w-16 text-xs'>
-          <span
-            className={`col-span-full row-span-full justify-self-start ${
-              !isPending ? 'pl-2' : ''
-            }`}>
-            {content}
-          </span>
-          <span className='col-[2] row-span-full'>of</span>
-          <span className='col-[3] row-span-full'>{endingPage}</span>
-        </div>
-      </Button> */}
       <Button
         variant={"outline"}
         className="size-6 p-0 disabled:opacity-25"
