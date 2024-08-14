@@ -8,6 +8,7 @@ import { TProduct } from "@/app/products/_lib/types";
 
 import { Button } from "../ui/button";
 import { useLocalStorage } from "../hooks/use_local_storage";
+import { useWishlistStore } from "@/app/products/_store/wishlist";
 
 type AddToWishlistButtonProps = {
   product: TProduct;
@@ -21,18 +22,21 @@ export function AddToWishlistButton({
   logoSize = 24,
 }: AddToWishlistButtonProps) {
   const [item, setItem] = useState("");
-  const [wishlist, setWishlist] = useLocalStorage<TProduct[]>("wishlist", []);
+  // const [wishlist, setWishlist] = useLocalStorage<TProduct[]>("wishlist", []);
+  const { wishlist, addItem, removeItem } = useWishlistStore();
+
+  const wishItem = wishlist.find(
+    (item: TProduct) => item.asin === product.asin,
+  );
 
   useEffect(() => {
-    const wishItem = wishlist.find(
-      (item: TProduct) => item.asin === product.asin,
-    );
     if (wishItem) {
-      setItem(wishItem.brand);
+      setItem(wishItem.asin);
     } else {
       setItem("");
     }
-  }, [wishlist.length, wishlist, product.asin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wishlist.length, wishItem?.asin, product.asin]);
 
   return (
     <Button
@@ -43,9 +47,7 @@ export function AddToWishlistButton({
         toast.custom(() => {
           if (item) {
             setItem("");
-            setWishlist((wishlist) =>
-              wishlist.filter((item) => item.asin !== product.asin),
-            );
+            removeItem(product.asin);
             return (
               <div className="flex items-center gap-4">
                 <Info className="text-blue-400" />
@@ -53,7 +55,7 @@ export function AddToWishlistButton({
               </div>
             );
           }
-          setWishlist((wishlist) => [...wishlist, product]);
+          addItem(product);
           return (
             <div className="flex items-center gap-4">
               <Heart className="text-green-400" />
