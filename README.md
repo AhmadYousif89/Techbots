@@ -128,6 +128,13 @@ We welcome contributions from the community! To contribute to TechBots:
 
 <br>
 
----
+## License
 
-Thank you for using TechBots! For any questions or feedback, please contact us through our [LinkedIn page](https://www.linkedin.com/in/dev-ahmadyousif/).
+This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
+
+<br>
+<br>
+
+### Thank you for using Techbots!
+
+For any questions or feedback, please contact us through our [LinkedIn page](https://www.linkedin.com/in/dev-ahmadyousif/).
