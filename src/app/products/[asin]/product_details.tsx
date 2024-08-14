@@ -92,7 +92,7 @@ export async function ProductDetails({
         <ProductCarousel {...product} />
       </div>
 
-      <div>
+      <div className="self-start pt-4 lg:pt-8">
         <CardHeader className="max-w-prose gap-4">
           <Badge variant="outline" className="w-fit">
             {capitalizeString(product.category)}

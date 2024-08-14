@@ -25,12 +25,9 @@ export function ProductCarousel(product: TProduct) {
 
   return (
     <ResizablePanelGroup direction="vertical" style={{ minHeight: "700px" }}>
-      <ResizablePanel
-        defaultSize={70}
-        className="mx-auto h-full w-full max-w-screen-sm"
-      >
+      <ResizablePanel defaultSize={70} className="mx-auto size-full max-w-lg">
         <Dialog>
-          <DialogTrigger className="relative h-full w-full">
+          <DialogTrigger className="relative size-full">
             <Image
               src={product.images[imageIndex].link}
               alt={product.title}
@@ -49,32 +46,31 @@ export function ProductCarousel(product: TProduct) {
         </Dialog>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={30}>
-        <Carousel
-          opts={{ dragFree: true, align: "start" }}
-          className="mx-auto max-w-screen-md px-4"
-        >
+      <ResizablePanel defaultSize={30} className="mx-auto max-w-screen-md">
+        <Carousel opts={{ dragFree: true, align: "start" }}>
           <CarouselContent className="py-4 pl-4">
-            {product.images.map((image: { link: string }, index: number) => (
-              <CarouselItem key={index} className="grid aspect-square basis-24">
-                <Button
-                  variant={"ghost"}
-                  className={cn(
-                    "size-full rounded p-2",
-                    imageIndex === index && "border shadow-sm",
-                  )}
-                  onClick={() => setImageIndex(index)}
-                >
-                  <Image
-                    src={image.link}
-                    alt={product.title}
-                    width={120}
-                    height={120}
-                    className="object-contain"
-                  />
-                </Button>
-              </CarouselItem>
-            ))}
+            {product.images
+              .slice(0, 12) // temp fix for overflow on layout
+              .map((image: { link: string }, index: number) => (
+                <CarouselItem key={index} className="basis-24">
+                  <Button
+                    variant={"ghost"}
+                    className={cn(
+                      "size-full p-2",
+                      imageIndex === index && "border shadow-sm",
+                    )}
+                    onClick={() => setImageIndex(index)}
+                  >
+                    <Image
+                      src={image.link}
+                      alt={product.title}
+                      width={100}
+                      height={100}
+                      className="object-contain"
+                    />
+                  </Button>
+                </CarouselItem>
+              ))}
           </CarouselContent>
           <CarouselPrevious className="absolute left-5 top-36 lg:top-40" />
           <CarouselNext className="absolute right-5 top-36 lg:right-1 lg:top-40" />
