@@ -1,14 +1,14 @@
 "use client";
 
 import { toast } from "sonner";
-import { useState, useTransition } from "react";
-import { cn } from "@/app/lib/utils";
+import { useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Ban, CheckSquare, Info, LoaderCircle, Trash2 } from "lucide-react";
+import { Ban, Info, Trash2, Loader, CheckSquare } from "lucide-react";
 
+import { cn } from "@/app/lib/utils";
 import { TProduct } from "@/app/products/_lib/types";
-import { useCartStore } from "../../app/cart/_store/cart";
+import { useCartStore } from "@/app/cart/_store/cart";
 
 import { Button } from "@/components/ui/button";
 import type { ButtonProps } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import { useIsMounted } from "@/components/hooks/use_isMounted";
 import {
   addServerCartItem,
   removeFromServerCart,
-} from "../../app/cart/_actions/actions";
+} from "@/app/cart/_actions/actions";
 
 type AddToCartButtonProps = {
   product: TProduct;
@@ -38,7 +38,6 @@ export function AddToCartButton({
   const params = useSearchParams();
   const sp = extractSearchParams(params.entries());
   const [isPending, startTransition] = useTransition();
-  const [loading, setLoading] = useState(false);
   const cart = useCartStore((s) => s.cart);
   const addToCart = useCartStore((s) => s.addToCart);
   const removeFromCart = useCartStore((s) => s.removeFromCart);
@@ -58,6 +57,17 @@ export function AddToCartButton({
 
   const cartItem = cart.find((item) => item.asin === product.asin);
 
+  const notification = () => (
+    <div className="flex items-center gap-4">
+      {cartItem ? (
+        <Info className="text-blue-400" />
+      ) : (
+        <CheckSquare className="text-green-400" />
+      )}
+      <p className="text-sm">Item {cartItem ? "removed" : "added"} to cart</p>
+    </div>
+  );
+
   if (useIsMounted() && cartItem)
     textContent = (
       <span title="Delete from cart" className="flex items-center gap-2">
@@ -72,49 +82,30 @@ export function AddToCartButton({
       });
     }
     try {
-      setLoading(true);
-      product.cartQuantity = 1;
-      addToCart(product);
-      if (userId) {
-        startTransition(() => {
+      startTransition(() => {
+        product.cartQuantity = 1;
+        addToCart(product);
+        if (userId) {
           addServerCartItem(userId, product.asin, product.price);
-          router.push(`${location.pathname}?q=1${ps}`);
-        });
-      }
+        }
+      });
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleRemoveFromCart = () => {
     try {
-      setLoading(true);
-      removeFromCart(product.asin);
-      if (userId) {
-        startTransition(() => {
+      startTransition(() => {
+        removeFromCart(product.asin);
+        if (userId) {
           removeFromServerCart(userId, product.asin, product.price);
-          router.push(`${location.pathname}?${newParams.toString()}`);
-        });
-      }
+        }
+      });
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
-
-  const notification = () => (
-    <div className="flex items-center gap-4">
-      {cartItem ? (
-        <Info className="text-blue-400" />
-      ) : (
-        <CheckSquare className="text-green-400" />
-      )}
-      <p className="text-sm">Item {cartItem ? "removed" : "added"} to cart</p>
-    </div>
-  );
 
   const handleOnClick = () => {
     if (cartItem) handleRemoveFromCart();
@@ -125,11 +116,11 @@ export function AddToCartButton({
 
   return (
     <>
-      {loading ? (
-        <LoaderCircle className="mr-2 animate-spin stroke-[3] text-muted-foreground" />
+      {isPending ? (
+        <Loader className="mr-2 animate-[spin_2s_linear_infinite] stroke-[3] text-muted-foreground" />
       ) : (
         <Button
-          disabled={loading}
+          disabled={isPending}
           onClick={handleOnClick}
           variant={variant ? variant : cartItem ? "ghost" : "default"}
           className={cn(
