@@ -24,10 +24,13 @@ export function ProductCarousel(product: TProduct) {
   const [imageIndex, setImageIndex] = useState(0);
 
   return (
-    <ResizablePanelGroup direction="vertical" style={{ minHeight: "700px" }}>
-      <ResizablePanel defaultSize={70} className="mx-auto size-full max-w-lg">
+    <ResizablePanelGroup
+      direction="vertical"
+      className="min-h-[600px] lg:min-h-[700px] lg:p-8"
+    >
+      <ResizablePanel defaultSize={70} className="size-full">
         <Dialog>
-          <DialogTrigger className="relative size-full">
+          <DialogTrigger className="relative flex size-full max-lg:pointer-events-none lg:mx-auto lg:max-w-lg">
             <Image
               src={product.images[imageIndex].link}
               alt={product.title}
