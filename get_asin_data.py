@@ -1,7 +1,12 @@
+from dotenv import load_dotenv
+from os import getenv
 import requests
 import json
 
-api_key = '86615A7E8B964DD78590F880BB0707E9'
+# Load environment variables
+load_dotenv()
+
+api_key = getenv('ASIN_API_KEY')
 base_url = 'https://api.asindataapi.com/request'
 
 # Parameters for the API request

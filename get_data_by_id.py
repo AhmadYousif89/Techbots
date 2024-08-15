@@ -1,7 +1,14 @@
+from dotenv import load_dotenv
 from random import randint
+from os import getenv
 import requests
 import json
 import os
+
+load_dotenv()
+
+api_key = getenv('ASIN_API_KEY')
+base_url = 'https://api.asindataapi.com/request'
 
 
 def load_json_file(file_path):
@@ -15,11 +22,7 @@ def load_json_file(file_path):
 
 
 productType = 'gaming_labtops'
-
 json_data = load_json_file(f'./data/list_{productType}.json')
-
-api_key = '86615A7E8B964DD78590F880BB0707E9'
-base_url = 'https://api.asindataapi.com/request'
 
 
 def fetch_product_details(asin):

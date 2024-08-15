@@ -1,11 +1,13 @@
+from os import getenv, makedirs, path
+from dotenv import load_dotenv
 import requests
 import json
-import os
 
-# Define your ASIN and API key
-asin = 'B0CP8D4SM2'
-api_key = 'D86C35C4BFD645119632B8061DD545D1'
+load_dotenv()
+
+api_key = getenv('ASIN_API_KEY')
 base_url = f'https://api.asindataapi.com/request/'
+asin = 'B0CP8D4SM2'
 
 # Parameters for the API request
 params = {
@@ -37,10 +39,10 @@ print(f"Found {len(result['reviews'])} reviews")
 
 # Define the directory and file path
 directory = f'./data/{asin}'
-file_path = os.path.join(directory, 'reviews.json')
+file_path = path.join(directory, 'reviews.json')
 
 # Create the directory if it doesn't exist
-os.makedirs(directory, exist_ok=True)
+makedirs(directory, exist_ok=True)
 
 # Write the reviews to a JSON file
 with open(file_path, 'w') as file:
