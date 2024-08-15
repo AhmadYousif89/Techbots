@@ -86,7 +86,7 @@ export async function ProductReviews({
     content = (
       <div className="group">
         <div className="flex items-center justify-between pb-8">
-          <h3 className="mb-auto text-xl font-medium">{headDesciption}</h3>
+          <h3 className="text-lg font-medium">{headDesciption}</h3>
           <ReviewsPaginationButtons
             asin={asin}
             searchParams={searchParams}
@@ -95,9 +95,11 @@ export async function ProductReviews({
             totalPages={totalPages}
           />
         </div>
-        {reviews.map((review) => (
-          <ReviewItem key={review.id} {...review} />
-        ))}
+        <div className="space-y-4 divide-y-[1px]">
+          {reviews.map((review) => (
+            <ReviewItem key={review.id} {...review} />
+          ))}
+        </div>
       </div>
     );
   }
