@@ -1,11 +1,11 @@
-# TechBots
+# Techbots
 
-- **Deployed Site:** [TechBots](https://techbots.vercel.app/)
+- **Deployed Site:** [Techbots](https://techbots.vercel.app/)
 - **Developer LinkedIn:** [Ahmad Yousif](https://www.linkedin.com/in/dev-ahmadyousif/)
 
 ## Introduction
 
-**TechBots** is an e-commerce platform dedicated to providing a comprehensive selection of computer and electronics parts. Users can browse products, read detailed reviews, manage their shopping cart, and place orders seamlessly.
+**Techbots** is an e-commerce platform dedicated to providing a comprehensive selection of computer and electronics parts. Users can browse products, read detailed reviews, manage their shopping cart, and place orders seamlessly.
 
 ## Add Environment Variables
 
@@ -13,7 +13,7 @@ Create a `.env` file in the root directory of the project and add the following 
 
 ## Installation
 
-To run TechBots locally, please follow these steps:
+To run Techbots locally, please follow these steps:
 
 1. **Clone the repository:**
 
@@ -86,7 +86,7 @@ To run TechBots locally, please follow these steps:
 
 ## Contributing
 
-We welcome contributions from the community! To contribute to TechBots:
+We welcome contributions from the community! To contribute to Techbots:
 
 1. **Fork the repository:**
 
