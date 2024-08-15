@@ -35,7 +35,7 @@ import { ClearCartButton } from "./clear_button";
 export function CartMenu() {
   const router = useRouter();
   const { isOpen, setIsOpen } = useCartMenuState();
-  const isNotMobile = useMediaQuery("(min-width: 639px");
+  const isNotMobile = useMediaQuery("(min-width: 639px)");
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
   const cartCount = useStore(useCartStore, (s) => s.getTotalCount()) ?? 0;
 

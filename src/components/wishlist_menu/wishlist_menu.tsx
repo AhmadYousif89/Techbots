@@ -35,7 +35,7 @@ import { useWishlistStore } from "@/app/products/_store/wishlist";
 
 export function WishListMenu() {
   const isMounted = useIsMounted();
-  const isNotMobile = useMediaQuery("(min-width: 639px");
+  const isNotMobile = useMediaQuery("(min-width: 639px)");
   const { isOpen, setIsOpen } = useWishlistMenuState();
   // const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
   const { wishlist } = useWishlistStore();
