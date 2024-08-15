@@ -68,7 +68,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
       data-pending={isPending ? "" : undefined}
       className={cn("flex items-center gap-2 *:flex-1", props.className)}
     >
-      {totalPages > 2 && (
+      {!asin && totalPages > 2 && (
         <Button
           variant={"outline"}
           className="size-6 p-0 disabled:opacity-25"
@@ -124,7 +124,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
       >
         <ChevronRight className="size-4" />
       </Button>
-      {totalPages > 2 && (
+      {!asin && totalPages > 2 && (
         <Button
           variant={"outline"}
           className="size-6 p-0 disabled:opacity-25"
