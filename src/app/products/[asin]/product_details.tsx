@@ -87,12 +87,13 @@ export async function ProductDetails({
   const productFeatures = parseProductDetails(product.featureBulletsFlat);
 
   return (
-    <Card className="grid items-center rounded-none pb-10 lg:grid-cols-2 lg:gap-10">
-      <div className="self-start lg:sticky lg:top-20 lg:p-8">
+    <Card className="group/details grid rounded-none pb-10 lg:grid-cols-2 lg:gap-10">
+      {/* add sticky only if one of the Card's childrens has aria-expanded i.e one of the Accordions */}
+      <div className="self-start lg:top-20 lg:group-has-[[aria-expanded='true']]/details:sticky">
         <ProductCarousel {...product} />
       </div>
 
-      <div className="self-start pt-4 lg:pt-8">
+      <div className="lg:pt-8">
         <CardHeader className="max-w-prose gap-4">
           <Badge variant="outline" className="w-fit">
             {capitalizeString(product.category)}
