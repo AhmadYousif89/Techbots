@@ -37,7 +37,7 @@ model Cart {
 
 model CartItem {
   cartId      String   @map("cart_id")
-  productAsin String   @map("product_asin")
+  productAsin String   @unique @map("product_asin")
   quantity    Int      @default(0)
   Cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   Product     Product  @relation(fields: [productAsin], references: [asin], onDelete: Cascade)
