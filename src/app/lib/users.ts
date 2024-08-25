@@ -1,4 +1,4 @@
-import prisma from "../../lib/db";
+import prisma from "./db";
 import { User } from "@prisma/client";
 
 export async function addUserToDB(data: User) {

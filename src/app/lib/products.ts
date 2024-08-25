@@ -1,5 +1,5 @@
-import prisma from "../../lib/db";
-import { cache } from "../../lib/cache";
+import prisma from "./db";
+import { cache } from "./cache";
 
 const day = 60 * 60 * 24;
 
