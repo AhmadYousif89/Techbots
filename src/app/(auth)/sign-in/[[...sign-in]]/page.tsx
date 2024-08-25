@@ -1,13 +1,13 @@
-import { SignIn } from '@clerk/nextjs';
+import { SignIn } from "@clerk/nextjs";
 
 export const metadata = {
-  title: 'Sign In',
-  description: 'Sign in to your account.',
+  title: "Sign In",
+  description: "Sign in to your account.",
 };
 
 export default function Page() {
   return (
-    <main className='my-52 grid place-content-center'>
+    <main className="my-20 grid place-content-center">
       <SignIn />;
     </main>
   );
