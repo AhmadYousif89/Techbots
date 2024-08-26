@@ -17,7 +17,7 @@ type CartViewsProps = {
 };
 
 export function CartViews({ getServerCart }: CartViewsProps) {
-  const { userId, isSignedIn } = useAuth();
+  const { userId } = useAuth();
   const cartItems = useCartStore((s) => s.cart);
   const shippingFormState = useShippingStore((s) => s.formState());
   const isMounted = useIsMounted();
@@ -28,14 +28,6 @@ export function CartViews({ getServerCart }: CartViewsProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  if (!isSignedIn || !userId)
-    return (
-      <RedirectToSignIn
-        signInForceRedirectUrl={"/cart"}
-        signUpForceRedirectUrl={"/cart"}
-      />
-    );
 
   return (
     <Tabs defaultValue="cart" className="bg-muted pb-1 pt-10">
