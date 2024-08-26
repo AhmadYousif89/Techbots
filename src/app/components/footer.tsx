@@ -15,7 +15,7 @@ export function Footer() {
           <Logo className="mb-2 place-self-start text-2xl text-primary" />
           <Separator />
           <p className="text-balance pt-2 text-sm font-medium text-muted-foreground">
-            TechBots is a leading online shop for computers equipments and
+            Techbots is a leading online shop for computers equipments and
             electronic gadgets. We provide a wide range of products at
             affordable prices and a highly detailed product specifications.
           </p>
@@ -127,7 +127,7 @@ export function Footer() {
         </section>
 
         <p className="col-[1] mt-8 flex items-center gap-1 text-xs font-semibold text-muted-foreground lg:mt-16">
-          Copyright <Copyright size={14} /> 2024 - <strong>TechBots</strong>
+          Copyright <Copyright size={14} /> 2024 - Techbots
         </p>
       </div>
     </footer>

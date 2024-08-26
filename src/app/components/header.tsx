@@ -3,10 +3,10 @@ import { auth } from "@clerk/nextjs/server";
 import { Logo } from "./logo";
 import { MainNav } from "./main_nav";
 import { SideMenu } from "./side_menu";
-import { CartMenu } from "./cart_menu/cart_menu";
+import { CartMenu } from "./cart/cart_menu";
 import { getServerCart } from "@/app/(protected)/cart/page";
 import { UserProfileButton } from "./user_profile_button";
-import { WishListMenu } from "./wishlist_menu/wishlist_menu";
+import { WishListMenu } from "./wishlist/wishlist_menu";
 
 export function Header() {
   const { userId } = auth();
