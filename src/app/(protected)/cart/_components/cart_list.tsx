@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { Fragment, use, useState } from "react";
 import { ShoppingCart, Slash } from "lucide-react";
 
-import Loading from "../loading";
 import { TServerCart } from "../page";
 import { CartItem } from "./cart_item";
 import { useCartStore } from "../_store/cart";
@@ -26,18 +25,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-
 import useStore from "@/app/components/hooks/use-store";
-import { useIsMounted } from "@/app/components/hooks/use_isMounted";
 
 type CartListViewProps = {
   getServerCart: Promise<TServerCart>;
 };
 
 export function CartListView({ getServerCart }: CartListViewProps) {
-  const serverCart = use(getServerCart);
   const router = useRouter();
-  const isMounted = useIsMounted();
+  const serverCart = use(getServerCart);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [localCouponValue, setLocalCouponValue] = useState("");
 
@@ -59,8 +55,6 @@ export function CartListView({ getServerCart }: CartListViewProps) {
 
   let content;
   const serverCartItems = serverCart?.cartItems || [];
-
-  if (!isMounted()) return <Loading />;
 
   if (cartCount === 0) {
     content = (
