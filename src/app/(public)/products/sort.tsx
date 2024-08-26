@@ -10,13 +10,13 @@ import {
   SelectContent,
   SelectSeparator,
 } from "@/components/ui/select";
-import { SearchParams, SortValue } from "@/app/lib/types";
 import { extractSearchParams } from "@/app/lib/utils";
+import { SearchParams, SortValue } from "@/app/lib/types";
 import { LoaderButton } from "./_components/skeletons/loader_btn";
 
 const sortList = [
-  { value: "popular", label: "Most popular" },
   { value: "newest", label: "Newest" },
+  { value: "popular", label: "Most popular" },
   { value: "lowest-price", label: "Lowest Price" },
   { value: "highest-price", label: "Highest Price" },
 ];
@@ -52,7 +52,6 @@ export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
         <LoaderButton />
       ) : (
         <SelectTrigger
-          // data-pending={isPending ? '' : undefined}
           className={`w-28 gap-1 rounded border-0 px-1 pl-2 text-xs font-medium hover:bg-muted hover:ring-1 hover:ring-input`}
         >
           <SelectValue placeholder="Sort By">
