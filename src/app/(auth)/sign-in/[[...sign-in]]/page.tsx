@@ -7,8 +7,8 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <main className="my-20 grid place-content-center">
-      <SignIn />;
-    </main>
+    <div className="flex h-full items-center justify-center">
+      <SignIn />
+    </div>
   );
 }
