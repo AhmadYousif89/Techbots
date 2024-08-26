@@ -2,8 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Header } from "./components/header";
-import { Footer } from "./components/footer";
 import { Toaster } from "../components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -30,9 +28,7 @@ export default function RootLayout({
         <body
           className={`${inter.className} bg-[url('/images/bg.png')] bg-cover bg-no-repeat`}
         >
-          <Header />
           {children}
-          {/* <Footer /> */}
           <Toaster
             toastOptions={{
               unstyled: true,

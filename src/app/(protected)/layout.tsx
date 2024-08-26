@@ -1,7 +1,14 @@
-export default async function AuthLayout({
+import { Header } from "../components/header";
+
+export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+  return (
+    <>
+      <Header />
+      <main>{children}</main>
+    </>
+  );
 }

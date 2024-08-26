@@ -1,15 +1,14 @@
-import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-
-const inter = Inter({
-  subsets: ["latin"],
-  style: "normal",
-});
+import { Logo } from "../components/logo";
 
 export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="">{children}</div>;
+  return (
+    <main className="max-view mx-auto min-h-svh bg-background pb-8">
+      <Logo className="p-8 text-primary" />
+      {children}
+    </main>
+  );
 }

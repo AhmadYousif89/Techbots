@@ -1,14 +1,18 @@
+import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 
-export default async function AuthLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      {children}
-      <Footer />
-    </div>
+    <>
+      <Header />
+      <main>
+        {children}
+        <Footer />
+      </main>
+    </>
   );
 }
