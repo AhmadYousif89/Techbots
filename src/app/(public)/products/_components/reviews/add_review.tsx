@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { SignUpButton, useAuth } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 
 export function AddReview({ asin }: { asin: string }) {
   const { userId } = useAuth();
@@ -27,9 +27,9 @@ export function AddReview({ asin }: { asin: string }) {
   if (!userId) {
     return (
       <Button asChild>
-        <SignUpButton mode="redirect" fallbackRedirectUrl={`/products/${asin}`}>
-          Write a review
-        </SignUpButton>
+        <SignInButton mode="modal" fallbackRedirectUrl={`/products/${asin}`}>
+          Sign in to write a review
+        </SignInButton>
       </Button>
     );
   }
