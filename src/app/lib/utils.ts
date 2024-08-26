@@ -15,7 +15,7 @@ export function capitalizeString(str: string, removeHyphen = true) {
 import { Category, SearchParams, SortValue } from "./types";
 
 export function extractSearchParams(
-  searchParams: SearchParams | IterableIterator<[string, string]>,
+  searchParams: SearchParams | IterableIterator<[string, string]> | undefined,
 ) {
   let params: { [key: string]: any } = {};
 
@@ -26,7 +26,7 @@ export function extractSearchParams(
       params[key] = value;
     }
   } else {
-    params = searchParams;
+    params = searchParams ?? {};
   }
 
   const result = {

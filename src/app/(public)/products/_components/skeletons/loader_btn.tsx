@@ -10,7 +10,7 @@ export function LoaderButton({ className }: { className?: string }) {
         className,
       )}
     >
-      <Loader2 className="animate-spin text-muted-foreground" />
+      <Loader2 className="size-5 animate-spin text-muted-foreground" />
     </Skeleton>
   );
 }

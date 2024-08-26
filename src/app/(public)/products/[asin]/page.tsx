@@ -36,7 +36,7 @@ export const generateMetadata = async ({
 
 export const getProductDetails = async (
   asin: string,
-  searchParams: SearchParams,
+  searchParams?: SearchParams,
   limit = 8,
 ) => {
   const { page, selectedRating } = extractSearchParams(searchParams);
