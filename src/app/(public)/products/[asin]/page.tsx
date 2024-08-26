@@ -69,9 +69,18 @@ export const getProductDetails = async (
   return { product, reviewsCount };
 };
 
-export const checkItemInServerCart = async (asin: string) => {
+export const checkItemInServerCart = async (
+  asin: string,
+  cuid: string | null,
+) => {
+  if (!cuid) return null;
   const item = await prisma.cartItem.findUnique({
-    where: { productAsin: asin },
+    where: {
+      cartItemId: {
+        cartId: cuid,
+        productAsin: asin,
+      },
+    },
     select: { quantity: true },
   });
 

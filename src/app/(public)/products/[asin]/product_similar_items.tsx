@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import prisma from "@/app/lib/db";
 import { cache } from "@/app/lib/cache";
-import { RatingStars } from "../_components/reviews/rating_stars";
+import { auth } from "@clerk/nextjs/server";
 
 import {
   Carousel,
@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CartIndicator } from "./item_indicators/cart_indicator";
 import { WishlistIndicator } from "./item_indicators/wishlist_indicator";
+import { RatingStars } from "../_components/reviews/rating_stars";
 import { TItemInServerCart, getProductCategory } from "./page";
 
 const getSimilarProducts = cache(
@@ -31,19 +32,34 @@ const getSimilarProducts = cache(
 
 type SimilarProductsProps = {
   asin: string;
-  checkItemInServerCart: (asin: string) => Promise<TItemInServerCart>;
+  checkItemInServerCart: (
+    asin: string,
+    cuid: string | null,
+  ) => Promise<TItemInServerCart>;
 };
 
 export async function SimilarProducts({
   asin,
   checkItemInServerCart,
 }: SimilarProductsProps) {
+  const { userId } = auth();
   const products = await getSimilarProducts(asin);
 
   return (
-    <Card id="similar_products" className="rounded-none py-10 sm:px-4 xl:px-8">
+    <section
+      id="similar_products"
+      className="bg-background py-10 sm:px-4 xl:px-8"
+    >
       <CardHeader>
-        <h2 className="text-2xl font-medium">Customers also viewed</h2>
+        <div className="flex items-center gap-8">
+          <h2 className="text-2xl font-medium">Related products</h2>
+          <Link
+            className="text-sm text-muted-foreground hover:underline hover:underline-offset-4"
+            href={`/products?category=${products[0].category}`}
+          >
+            View all
+          </Link>
+        </div>
       </CardHeader>
       <CardContent className="mb-6 p-6">
         <Carousel
@@ -51,58 +67,56 @@ export async function SimilarProducts({
           opts={{ dragFree: true, skipSnaps: true, align: "start" }}
         >
           <CarouselContent>
-            {products.map(async (product) => {
-              // const inCart = await checkServerCartItem(product.asin);
-              return (
-                <CarouselItem key={product.id} className="basis-44 pb-4">
-                  <Card className="relative flex flex-col justify-center gap-2 p-2 py-4">
-                    <div className="absolute left-0 top-2 flex w-full items-center justify-between px-2">
-                      <CartIndicator
-                        asin={product.asin}
-                        checkItemInServerCart={checkItemInServerCart(
-                          product.asin,
-                        )}
-                      />
-                      <div className="ml-auto">
-                        <WishlistIndicator asin={product.asin} />
-                      </div>
+            {products.map((product) => (
+              <CarouselItem key={product.id} className="grid basis-44 pb-4">
+                <Card className="relative gap-2 p-2 py-4">
+                  <div className="absolute left-0 top-2 flex w-full items-center justify-between px-2">
+                    <CartIndicator
+                      asin={product.asin}
+                      checkItemInServerCart={checkItemInServerCart(
+                        product.asin,
+                        userId,
+                      )}
+                    />
+                    <div className="ml-auto">
+                      <WishlistIndicator asin={product.asin} />
                     </div>
-                    <Link
-                      href={`/products/${product.asin}`}
-                      className="flex flex-col justify-between"
-                    >
-                      <Image
-                        src={product.mainImage}
-                        alt={product.title}
-                        width={100}
-                        height={100}
-                        className="size-32 object-contain p-4"
-                      />
-                      <CardContent className="mt-auto px-0 py-0">
-                        <p className="mb-1 text-xs font-medium">
-                          {product.title.split(" ").slice(0, 3).join(" ")}
+                  </div>
+                  <Link
+                    href={`/products/${product.asin}`}
+                    className="flex flex-col justify-between"
+                  >
+                    <Image
+                      src={product.mainImage}
+                      alt={product.title}
+                      width={100}
+                      height={100}
+                      className="size-32 object-contain p-4"
+                    />
+                    <CardContent className="mt-auto px-0 py-0">
+                      <p className="mb-1 text-xs font-medium">
+                        {product.title.split(" ").slice(0, 3).join(" ")}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground">
+                          ${product.price.toFixed(2)}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground">
-                            ${product.price.toFixed(2)}
-                          </p>
-                          <RatingStars
-                            productRating={product.rating}
-                            showTotalReviews={false}
-                            size="xs"
-                          />
-                        </div>
-                      </CardContent>
-                    </Link>
-                  </Card>
-                </CarouselItem>
-              );
-            })}
+                        <RatingStars
+                          productRating={product.rating}
+                          showTotalReviews={false}
+                          size="xs"
+                        />
+                      </div>
+                    </CardContent>
+                  </Link>
+                </Card>
+              </CarouselItem>
+            ))}
           </CarouselContent>
           <CarouselPrevious className="left-0 top-full translate-y-1/2" />
           <CarouselNext className="right-0 top-full translate-y-1/2" />
         </Carousel>
       </CardContent>
-    </Card>
+    </section>
   );
 }

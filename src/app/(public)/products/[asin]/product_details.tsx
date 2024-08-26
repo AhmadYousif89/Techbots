@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
-import { capitalizeString } from "@/app/lib/utils";
-import { cn } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 
-import { SearchParams, TProduct } from "@/app/lib/types";
+import { cn } from "@/lib/utils";
+import { SearchParams } from "@/app/lib/types";
+import { capitalizeString } from "@/app/lib/utils";
 import { RatingStars } from "../_components/reviews/rating_stars";
 import {
   Card,
@@ -22,14 +23,17 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ViewInCartButton } from "./in_cart_buttons";
-import { AddToCartButton } from "@/app/components/cart_menu/add_button";
-import { AddToWishlistButton } from "@/app/components/wishlist_menu/add_button";
+import { AddToCartButton } from "@/app/components/cart/add_button";
+import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { TItemInServerCart, getProductDetails } from "./page";
 
 type ProductDetailsProps = {
   asin: string;
   searchParams: SearchParams;
-  checkItemInServerCart: (asin: string) => Promise<TItemInServerCart>;
+  checkItemInServerCart: (
+    asin: string,
+    cuid: string | null,
+  ) => Promise<TItemInServerCart>;
 };
 
 export async function ProductDetails({
@@ -37,6 +41,7 @@ export async function ProductDetails({
   searchParams,
   checkItemInServerCart,
 }: ProductDetailsProps) {
+  const { userId } = auth();
   const { product } = await getProductDetails(asin, searchParams);
 
   if (!product) {
@@ -109,14 +114,20 @@ export async function ProductDetails({
                 </Badge>
                 <ViewInCartButton
                   asin={product.asin}
-                  checkItemInServerCart={checkItemInServerCart(product.asin)}
+                  checkItemInServerCart={checkItemInServerCart(
+                    product.asin,
+                    userId,
+                  )}
                 />
               </div>
               <div className="flex items-center gap-4 lg:gap-8">
                 <AddToCartButton
                   action="addToCart"
                   product={product}
-                  checkItemInServerCart={checkItemInServerCart(product.asin)}
+                  checkItemInServerCart={checkItemInServerCart(
+                    product.asin,
+                    userId,
+                  )}
                 />
                 <AddToWishlistButton logoSize={20} product={product} />
               </div>
