@@ -29,8 +29,10 @@ import { TItemInServerCart, getProductDetails } from "./page";
 
 type ProductDetailsProps = {
   asin: string;
-  searchParams: SearchParams;
-  checkItemInServerCart: (
+  className?: string;
+  topOffset?: string;
+  searchParams?: SearchParams;
+  checkItemInServerCart?: (
     asin: string,
     cuid: string | null,
   ) => Promise<TItemInServerCart>;
@@ -38,6 +40,8 @@ type ProductDetailsProps = {
 
 export async function ProductDetails({
   asin,
+  className,
+  topOffset,
   searchParams,
   checkItemInServerCart,
 }: ProductDetailsProps) {
@@ -52,9 +56,19 @@ export async function ProductDetails({
   const productFeatures = parseProductDetails(product.featureBulletsFlat);
 
   return (
-    <Card className="group/details grid rounded-none pb-10 lg:grid-cols-2 lg:gap-10">
+    <section
+      className={cn(
+        "group/details grid bg-background pb-10 lg:grid-cols-2 lg:gap-10",
+        className,
+      )}
+    >
       {/* add sticky only if one of the Card's childrens has aria-expanded e.g. one of the Accordions */}
-      <div className="self-start lg:top-20 lg:group-has-[[aria-expanded='true']]/details:sticky">
+      <div
+        className={cn(
+          "top-20 self-start lg:group-has-[[aria-expanded='true']]/details:sticky",
+          topOffset,
+        )}
+      >
         <ProductCarousel {...product} />
       </div>
 
@@ -114,7 +128,7 @@ export async function ProductDetails({
                 </Badge>
                 <ViewInCartButton
                   asin={product.asin}
-                  checkItemInServerCart={checkItemInServerCart(
+                  checkItemInServerCart={checkItemInServerCart?.(
                     product.asin,
                     userId,
                   )}
@@ -124,7 +138,7 @@ export async function ProductDetails({
                 <AddToCartButton
                   action="addToCart"
                   product={product}
-                  checkItemInServerCart={checkItemInServerCart(
+                  checkItemInServerCart={checkItemInServerCart?.(
                     product.asin,
                     userId,
                   )}
@@ -143,7 +157,7 @@ export async function ProductDetails({
           )}
         </CardFooter>
       </div>
-    </Card>
+    </section>
   );
 }
 
