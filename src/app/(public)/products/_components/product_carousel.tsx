@@ -28,21 +28,21 @@ export function ProductCarousel(product: TProduct) {
       direction="vertical"
       className="min-h-[600px] lg:min-h-[700px] lg:p-8"
     >
-      <ResizablePanel defaultSize={70} className="size-full">
+      <ResizablePanel defaultSize={70} minSize={70} className="size-full">
         <Dialog>
           <DialogTrigger className="relative flex size-full max-lg:pointer-events-none lg:mx-auto lg:max-w-lg">
             <Image
-              src={product.images[imageIndex].link}
-              alt={product.title}
               fill
+              alt={product.title}
+              src={product.images[imageIndex].link}
               className="object-contain p-8"
             />
           </DialogTrigger>
           <DialogContent className="h-[calc(100%-15vh)] max-w-[calc(100%-15vw)]">
             <Image
-              src={product.images[imageIndex].link}
-              alt={product.title}
               fill
+              alt={product.title}
+              src={product.images[imageIndex].link}
               className="object-contain p-8"
             />
           </DialogContent>
