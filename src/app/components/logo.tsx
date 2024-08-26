@@ -11,7 +11,7 @@ export function Logo({ className }: { className?: string }) {
         className,
       ])}
     >
-      <Computer size={20} /> TechBots
+      <Computer size={20} /> Techbots
     </Link>
   );
 }
