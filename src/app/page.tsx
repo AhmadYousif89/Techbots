@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { Header } from "./components/header";
 import { HomeSlider } from "@/app/components/slider";
 import { LatestBlogs } from "./components/featured_blogs";
 import { HotProducts } from "./components/hot_products";
@@ -11,6 +12,7 @@ import { Footer } from "./components/footer";
 export default function Home() {
   return (
     <>
+      <Header />
       <main className="max-view mx-auto min-h-svh">
         <HomeSlider />
         <HotProducts />
