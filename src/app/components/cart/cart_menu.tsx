@@ -4,8 +4,6 @@ import { use } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingBag, ShoppingCart, Slash } from "lucide-react";
 import { useCartMenuState } from "@/app/lib/store";
-import useStore from "@/app/components/hooks/use-store";
-import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 
 import {
   Drawer,
@@ -29,12 +27,12 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ClearCartButton } from "./clear_button";
+import useStore from "@/app/components/hooks/use-store";
+import { TServerCart } from "@/app/(protected)/cart/page";
+import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { useMediaQuery } from "@/app/components/hooks/use_media_query";
 import { ProductThumbnail } from "@/app/(public)/products/_components/product_thumpnail";
-import { TServerCart } from "@/app/(protected)/cart/page";
-import { useIsMounted } from "../hooks/use_isMounted";
-import { ClearCartButton } from "./clear_button";
-import { Skeleton } from "../../../components/ui/skeleton";
 
 type CartMenuProps = {
   getServerCart: Promise<TServerCart>;
@@ -42,7 +40,6 @@ type CartMenuProps = {
 
 export function CartMenu({ getServerCart }: CartMenuProps) {
   const router = useRouter();
-  const isMounted = useIsMounted();
   const serverCart = use(getServerCart);
   const { isOpen, setIsOpen } = useCartMenuState();
   const isNotMobile = useMediaQuery("(min-width: 639px)");
@@ -50,14 +47,9 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
   const cartCount =
     useStore(useCartStore, (s) => s.getTotalCount()) ?? serverCart?.count ?? 0;
   const serverCartItem = serverCart?.cartItems || [];
-  const data = serverCartItem.map((i) => i.product) || cart;
-
-  if (!isMounted())
-    return (
-      <Skeleton className="relative size-7">
-        <Skeleton className="absolute -left-3 -top-3 size-5 rounded-full" />
-      </Skeleton>
-    );
+  const data = serverCartItem.length
+    ? serverCartItem.map((i) => i.product)
+    : cart;
 
   const cartButton = (
     <Button className="relative size-7 p-0 ring-2 ring-input transition-all hover:bg-background hover:ring-primary">

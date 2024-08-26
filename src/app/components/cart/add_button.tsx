@@ -2,13 +2,12 @@
 
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { use, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Ban, Info, Trash2, Loader, CheckSquare } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { TProduct } from "@/app/lib/types";
-import { extractSearchParams } from "@/app/lib/utils";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { TItemInServerCart } from "@/app/(public)/products/[asin]/page";
 
@@ -38,8 +37,6 @@ export function AddToCartButton({
   const router = useRouter();
   const { userId } = useAuth();
   const serverItem = use(checkItemInServerCart);
-  const params = useSearchParams();
-  const sp = extractSearchParams(params.entries());
   const [isPending, startTransition] = useTransition();
   const cart = useCartStore((s) => s.cart);
   const addToCart = useCartStore((s) => s.addToCart);
@@ -48,15 +45,6 @@ export function AddToCartButton({
   let textContent: React.ReactNode =
     action === "addToCart" ? "Add to cart" : "Buy now";
 
-  const newParams = new URLSearchParams({
-    ...(sp.page && { page: sp.page }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.min }),
-    ...(sp.grid && { grid: sp.grid }),
-  });
-  const ps = newParams.toString() ? `&${newParams.toString()}` : "";
   const cartItem =
     serverItem || cart.find((item) => item.asin === product.asin);
 
@@ -113,7 +101,7 @@ export function AddToCartButton({
   const handleOnClick = () => {
     if (cartItem) handleRemoveFromCart();
     else handleAddToCart();
-    if (forceRedirect && !cartItem) router.push(`/cart?${ps}`);
+    if (forceRedirect && !cartItem) router.push(`/cart`);
     toast.custom(notification);
   };
 

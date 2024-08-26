@@ -1,9 +1,7 @@
 "use client";
 
 import { Heart, HeartCrack } from "lucide-react";
-// import { TProduct } from "@/app/lib/types";
 import { useWishlistMenuState } from "@/app/lib/store";
-import { ProductThumbnail } from "@/app/(public)/products/_components/product_thumpnail";
 
 import {
   Drawer,
@@ -14,7 +12,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "../../../components/ui/drawer";
+} from "@/components/ui/drawer";
 import {
   Sheet,
   SheetTrigger,
@@ -24,38 +22,25 @@ import {
   SheetDescription,
   SheetFooter,
   SheetClose,
-} from "../../../components/ui/sheet";
-import { Badge } from "../../../components/ui/badge";
-import { Button } from "../../../components/ui/button";
-import { useIsMounted } from "../hooks/use_isMounted";
+} from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ClearWishlistButton } from "./clear_button";
 import { useMediaQuery } from "../hooks/use_media_query";
-// import { useLocalStorage } from "../hooks/use_local_storage";
 import { useWishlistStore } from "@/app/(public)/products/_store/wishlist";
-import { Skeleton } from "../../../components/ui/skeleton";
+import { ProductThumbnail } from "@/app/(public)/products/_components/product_thumpnail";
+import useStore from "../hooks/use-store";
 
 export function WishListMenu() {
-  const isMounted = useIsMounted();
   const isNotMobile = useMediaQuery("(min-width: 639px)");
   const { isOpen, setIsOpen } = useWishlistMenuState();
-  // const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
-  const { wishlist } = useWishlistStore();
-
-  if (!isMounted())
-    return (
-      <Skeleton className="relative size-7">
-        <Skeleton className="absolute -left-3 -top-3 size-5 rounded-full" />
-      </Skeleton>
-    );
-
-  let wishlistCount = 0;
-  if (isMounted()) wishlistCount = wishlist.length;
+  const count = useStore(useWishlistStore, (s) => s.getTotalCount()) ?? 0;
 
   const WishListButton = (
     <Button className="relative size-7 p-1 ring-2 ring-input transition-all hover:bg-background hover:ring-primary">
       <Heart className="fill-background stroke-primary" />
       <span className="absolute -left-3 -top-3 grid aspect-square size-5 place-content-center rounded-full bg-destructive text-[9px] font-semibold text-secondary ring-1 ring-background">
-        {wishlistCount > 99 ? "99+" : wishlistCount}
+        {count > 99 ? "99+" : count}
       </span>
     </Button>
   );
@@ -67,9 +52,9 @@ export function WishListMenu() {
         variant={"outline"}
         className="mx-1 size-8 justify-center text-sm shadow-sm"
       >
-        {wishlistCount > 99 ? "99+" : wishlistCount}
+        {count > 99 ? "99+" : count}
       </Badge>
-      item{wishlistCount !== 1 ? "s" : ""} in your wishlist
+      item{count !== 1 ? "s" : ""} in your wishlist
     </>
   );
 
@@ -85,9 +70,9 @@ export function WishListMenu() {
             <SheetDescription className="text-center">
               {wishlistDescription}
             </SheetDescription>
-            {wishlistCount > 0 && <ClearWishlistButton />}
+            {count > 0 && <ClearWishlistButton />}
           </SheetHeader>
-          {wishlistCount === 0 ? (
+          {count === 0 ? (
             <section className="grid items-center justify-center">
               <HeartCrack
                 strokeWidth={1}
@@ -120,9 +105,9 @@ export function WishListMenu() {
           <DrawerDescription className="mb-2">
             {wishlistDescription}
           </DrawerDescription>
-          {wishlistCount > 0 && <ClearWishlistButton />}
+          {count > 0 && <ClearWishlistButton />}
         </DrawerHeader>
-        {wishlistCount === 0 ? (
+        {count === 0 ? (
           <section className="grid justify-center">
             <HeartCrack
               strokeWidth={1}
