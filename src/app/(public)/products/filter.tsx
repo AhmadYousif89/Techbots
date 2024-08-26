@@ -27,7 +27,7 @@ export function FilterProducts({ searchParams, open }: FilterProductsProps) {
       type="single"
       collapsible
       defaultValue={open}
-      className="flex-grow"
+      className="min-w-[300px] flex-grow"
     >
       <AccordionItem
         value="filter"
@@ -44,10 +44,10 @@ export function FilterProducts({ searchParams, open }: FilterProductsProps) {
         <Separator className="xl:hidden" />
         <AccordionContent className="p-6 xl:pr-0">
           <div className="grid gap-y-8 md:grid-cols-[60%,40%] xl:max-w-xs xl:grid-cols-1">
-            <section className="space-y-8">
+            <div className="space-y-8">
               <FilterContentBrands data={brands} />
               <Separator className="md:hidden" />
-            </section>
+            </div>
             <section className="md:flex md:flex-row-reverse md:gap-8 xl:flex-col-reverse">
               <FilterContentPrice />
               <Separator className="hidden md:block md:h-auto md:w-px xl:h-px xl:w-full" />
