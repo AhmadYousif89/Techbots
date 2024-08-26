@@ -22,7 +22,7 @@ type AddToCartButtonProps = {
   product: TProduct;
   forceRedirect?: boolean;
   action?: "addToCart" | "BuyNow";
-  checkItemInServerCart: Promise<TItemInServerCart>;
+  checkItemInServerCart?: Promise<TItemInServerCart>;
 } & ButtonProps;
 
 export function AddToCartButton({
@@ -36,7 +36,9 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const router = useRouter();
   const { userId } = useAuth();
-  const serverItem = use(checkItemInServerCart);
+  const serverItem = checkItemInServerCart
+    ? use(checkItemInServerCart)
+    : ({} as TItemInServerCart);
   const [isPending, startTransition] = useTransition();
   const cart = useCartStore((s) => s.cart);
   const addToCart = useCartStore((s) => s.addToCart);
@@ -46,7 +48,9 @@ export function AddToCartButton({
     action === "addToCart" ? "Add to cart" : "Buy now";
 
   const cartItem =
-    serverItem || cart.find((item) => item.asin === product.asin);
+    serverItem && Object.keys(serverItem).length
+      ? serverItem
+      : cart.find((item) => item.asin === product.asin);
 
   const notification = () => (
     <div className="flex items-center gap-4">

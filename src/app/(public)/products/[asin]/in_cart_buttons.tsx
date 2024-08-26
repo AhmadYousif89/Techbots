@@ -9,13 +9,18 @@ import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 
 type Props = {
   asin: string;
-  checkItemInServerCart: Promise<TItemInServerCart>;
+  checkItemInServerCart?: Promise<TItemInServerCart>;
 };
 
 export function ViewInCartButton({ asin, checkItemInServerCart }: Props) {
   const cart = useCartStore((s) => s.cart) ?? [];
-  const serverItem = use(checkItemInServerCart);
-  const inCart = serverItem || cart.find((item) => item.asin === asin);
+  const serverItem = checkItemInServerCart
+    ? use(checkItemInServerCart)
+    : ({} as TItemInServerCart);
+  const inCart =
+    serverItem && Object.keys(serverItem).length
+      ? serverItem
+      : cart.find((item) => item.asin === asin);
 
   return (
     <>
