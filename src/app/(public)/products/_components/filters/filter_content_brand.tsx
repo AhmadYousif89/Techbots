@@ -1,11 +1,13 @@
 "use client";
 import { ChevronLeft, Loader2 } from "lucide-react";
-import { use, useOptimistic, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { extractSearchParams, capitalizeString } from "@/app/lib/utils";
+import { use, useOptimistic, useState, useTransition } from "react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { extractSearchParams, capitalizeString } from "@/app/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -17,7 +19,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Separator } from "@/components/ui/separator";
 
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
@@ -89,7 +90,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
+      <section className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <h3 className="flex items-center gap-2 font-medium text-muted-foreground">
             Brands
@@ -146,8 +147,9 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
             </Button>
           </div>
         )}
-      </div>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 pl-4 xl:grid-cols-[minmax(120px,auto),auto] xl:gap-x-0">
+      </section>
+
+      <section className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 pl-4 xl:grid-cols-2 xl:gap-x-0">
         {filteredBrands.length > 0 ? (
           <>
             {list.map(renderBrandItem)}
@@ -155,7 +157,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
               <Accordion type="single" collapsible className="col-span-full">
                 <AccordionItem value="cats-2" className="border-b-0">
                   <AccordionContent>
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 xl:grid-cols-[1fr,.95fr] xl:gap-x-0">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 xl:grid-cols-2 xl:gap-x-0">
                       {filteredBrands.slice(end).map(renderBrandItem)}
                     </div>
                   </AccordionContent>
@@ -174,7 +176,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
             No brands match your search.
           </p>
         )}
-      </div>
+      </section>
     </>
   );
 }
