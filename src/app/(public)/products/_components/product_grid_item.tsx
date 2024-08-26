@@ -1,14 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 import { extractSearchParams } from "@/app/lib/utils";
 import { TProduct, SearchParams } from "@/app/lib/types";
 
 import { checkItemInServerCart } from "../[asin]/page";
 import { RatingStars } from "./reviews/rating_stars";
 import { Separator } from "@/components/ui/separator";
-import { AddToCartButton } from "@/app/components/cart_menu/add_button";
-import { AddToWishlistButton } from "@/app/components/wishlist_menu/add_button";
+import { AddToCartButton } from "@/app/components/cart/add_button";
+import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Props = {
@@ -17,12 +18,13 @@ type Props = {
 };
 
 export async function ProductGridItem({ product, searchParams }: Props) {
+  const { userId } = auth();
   const { asin, rating, mainImage, title, price } = product;
   const { grid } = extractSearchParams(searchParams);
   const prodUrl = `/products/${asin}`;
 
   return (
-    <Card className="grid max-w-xs auto-rows-[150px_3px_1fr_3px_auto] justify-self-center rounded border-0 px-4 py-2 shadow-none ring-offset-4 hover:ring-1 hover:ring-muted md:auto-rows-[200px_3px_1fr_3px_auto]">
+    <Card className="relative grid max-w-xs auto-rows-[150px_3px_1fr_3px_auto] justify-self-center rounded border-0 px-4 py-2 shadow-none ring-offset-4 hover:ring-1 hover:ring-muted md:auto-rows-[200px_3px_1fr_3px_auto]">
       <Link href={prodUrl} className="place-self-center rounded">
         <Image
           src={mainImage}
@@ -64,7 +66,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           action="BuyNow"
           product={product}
           forceRedirect={true}
-          checkItemInServerCart={checkItemInServerCart(asin)}
+          checkItemInServerCart={checkItemInServerCart(asin, userId)}
         />
         <AddToWishlistButton logoSize={18} product={product} />
       </CardFooter>
