@@ -7,7 +7,7 @@ export default async function AuthLayout({
 }) {
   return (
     <main className="max-view mx-auto min-h-svh bg-background pb-8">
-      <Logo className="p-8 text-primary" />
+      <Logo className="h-20 w-fit px-8 text-primary" />
       {children}
     </main>
   );
