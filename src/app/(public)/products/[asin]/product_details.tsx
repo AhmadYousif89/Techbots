@@ -78,7 +78,7 @@ export async function ProductDetails({
             {capitalizeString(product.category)}
           </Badge>
           <div className="space-y-6">
-            <CardTitle className="text-balance text-sm font-medium lg:text-lg">
+            <CardTitle className="text-lg font-medium text-muted-foreground">
               {product.title}
             </CardTitle>
             <RatingStars

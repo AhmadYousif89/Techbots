@@ -51,7 +51,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           </button>
         </DialogTrigger>
         <DialogContent className="max-w-[1200px] p-0">
-          <ProductQuickView asin={product.asin} />
+          <ProductQuickView product={product} />
         </DialogContent>
       </Dialog>
       <div className="grid size-full max-h-[120px] self-end sm:max-h-[170px]">
