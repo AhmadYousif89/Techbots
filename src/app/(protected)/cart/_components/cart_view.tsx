@@ -1,33 +1,26 @@
 "use client";
-import { useEffect, useId } from "react";
-import { RedirectToSignIn, useAuth } from "@clerk/nextjs";
 
-import { TServerCart } from "../page";
-import { CartListView } from "./cart_list";
+import { useAuth } from "@clerk/nextjs";
+import { PropsWithChildren, useEffect } from "react";
+
 import { useCartStore } from "../_store/cart";
 import { syncCart } from "../_actions/actions";
-import { CartPaymentView } from "./cart_payment";
-import { CartShippingView } from "./cart_shipping";
 import { useShippingStore } from "../_store/shipping_form";
-import { useIsMounted } from "@/app/components/hooks/use_isMounted";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type CartViewsProps = {
-  getServerCart: Promise<TServerCart>;
-};
+type CartViewsProps = PropsWithChildren;
 
-export function CartViews({ getServerCart }: CartViewsProps) {
+export function CartViews({ children }: CartViewsProps) {
   const { userId } = useAuth();
   const cartItems = useCartStore((s) => s.cart);
   const shippingFormState = useShippingStore((s) => s.formState());
-  const isMounted = useIsMounted();
 
   useEffect(() => {
-    if (userId && !isMounted()) {
+    if (userId && cartItems.length) {
       syncCart(userId, cartItems);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId, cartItems.length]);
 
   return (
     <Tabs defaultValue="cart" className="bg-muted pb-1 pt-10">
@@ -59,17 +52,7 @@ export function CartViews({ getServerCart }: CartViewsProps) {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="cart" className="max-view mx-auto mb-1 mt-0">
-        <CartListView getServerCart={getServerCart} />
-      </TabsContent>
-
-      <TabsContent value="details" className="max-view mx-auto mb-1 mt-0">
-        <CartShippingView />
-      </TabsContent>
-
-      <TabsContent value="payment" className="max-view mx-auto mb-1 mt-0">
-        <CartPaymentView />
-      </TabsContent>
+      {children}
     </Tabs>
   );
 }

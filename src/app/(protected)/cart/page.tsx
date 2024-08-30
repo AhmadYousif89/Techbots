@@ -1,6 +1,10 @@
 import prisma from "@/app/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { CartViews } from "./_components/cart_view";
+import { TabsContent } from "@/components/ui/tabs";
+import { CartListView } from "./_components/cart_list";
+import { CartPaymentView } from "./_components/cart_payment";
+import { CartShippingView } from "./_components/cart_shipping";
 
 export const metadata = {
   title: "Cart",
@@ -94,7 +98,19 @@ export default function CartPage() {
 
   return (
     <main className="min-h-svh">
-      <CartViews getServerCart={serverCartPromise} />
+      <CartViews>
+        <TabsContent value="cart" className="max-view mx-auto mb-1 mt-0">
+          <CartListView getServerCart={serverCartPromise} />
+        </TabsContent>
+
+        <TabsContent value="details" className="max-view mx-auto mb-1 mt-0">
+          <CartShippingView />
+        </TabsContent>
+
+        <TabsContent value="payment" className="max-view mx-auto mb-1 mt-0">
+          <CartPaymentView />
+        </TabsContent>
+      </CartViews>
     </main>
   );
 }
