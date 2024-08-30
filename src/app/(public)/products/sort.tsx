@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { extractSearchParams } from "@/app/lib/utils";
 import { SearchParams, SortValue } from "@/app/lib/types";
-import { LoaderButton } from "./_components/skeletons/loader_btn";
+import { LoadingSkeleton } from "./_components/skeletons/loading_btn";
 
 const sortList = [
   { value: "newest", label: "Newest" },
@@ -49,7 +49,7 @@ export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
   return (
     <Select name="sort" value={optimisticSort} onValueChange={handleOnChange}>
       {isPending && optimisticSort === "reset" ? (
-        <LoaderButton />
+        <LoadingSkeleton className="w-28" />
       ) : (
         <SelectTrigger
           className={`w-28 gap-1 rounded border-0 px-1 pl-2 text-xs font-medium hover:bg-muted hover:ring-1 hover:ring-input`}
