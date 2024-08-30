@@ -1,12 +1,14 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, RefObject } from "react";
 
-export function useClampCheck<T extends HTMLElement>(body: string) {
+export function useClampCheck<T extends HTMLElement = HTMLElement>(
+  ref: RefObject<T>,
+  body: string,
+) {
   const [isClamped, setIsClamped] = useState(false);
-  const contentRef = useRef<T | null>(null);
 
   const checkClamping = () => {
-    if (!contentRef.current) return;
-    if (contentRef.current.scrollHeight > contentRef.current.clientHeight) {
+    if (!ref.current) return;
+    if (ref.current.scrollHeight > ref.current.clientHeight) {
       setIsClamped(true);
     } else {
       setIsClamped(false);
@@ -22,5 +24,5 @@ export function useClampCheck<T extends HTMLElement>(body: string) {
     };
   }, [body]);
 
-  return { isClamped, contentRef };
+  return { isClamped };
 }
