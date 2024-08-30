@@ -170,7 +170,10 @@ const getProducts = cache(
 
     let products: TProduct[] = [];
     try {
-      products = (await prisma.product.findMany(args)) as TProduct[];
+      products = (await prisma.product.findMany({
+        ...args,
+        include: { images: true },
+      })) as TProduct[];
     } catch (error) {
       console.error("Error fetching products:", error);
     }
