@@ -4,9 +4,9 @@ import { RatingBreakdown, RatingDetails, SearchParams } from "@/app/lib/types";
 
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,11 @@ export function ReviewsRatingBars({
         const ratingPercentage = ratingDetail.percentage;
 
         return (
-          <TooltipProvider key={starIndex}>
+          <TooltipProvider
+            disableHoverableContent
+            delayDuration={300}
+            key={starIndex}
+          >
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -72,7 +76,7 @@ export function ReviewsRatingBars({
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="text-xs">
+                <p className="text-xs text-muted-foreground">
                   <span className="font-bold">{ratingCount} </span>
                   <span>review{ratingCount !== 1 ? "s" : ""} represents </span>
                   <span className="font-bold">{ratingPercentage}% </span>of the
