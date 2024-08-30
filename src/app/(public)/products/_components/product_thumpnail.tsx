@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
-import { Info, Trash2 } from "lucide-react";
+import { Info, Loader, Loader2, Trash2 } from "lucide-react";
 import { capitalizeString } from "@/app/lib/utils";
 import { useCartMenuState, useWishlistMenuState } from "@/app/lib/store";
 
@@ -14,6 +14,7 @@ import { TCartProduct } from "@/app/(protected)/cart/page";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { removeFromServerCart } from "@/app/(protected)/cart/_actions/actions";
 import { useWishlistStore } from "../_store/wishlist";
+import { useTransition } from "react";
 
 type ProductThumbnailProps = {
   product: TProduct | TCartProduct;
@@ -70,42 +71,45 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
 function DeleteThumbnailButton({ product, type }: ProductThumbnailProps) {
   const { userId } = useAuth();
   const { removeFromCart } = useCartStore();
-  // const { setValue } = useLocalStorage<TProduct[]>("wishlist", []);
   const { removeItem: removeWishlistItem } = useWishlistStore();
+  const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
-    if (type === "cart") {
-      removeFromCart(product.asin);
-      if (userId) {
-        removeFromServerCart(userId, product.asin, product.price);
+    startTransition(async () => {
+      if (type === "cart") {
+        removeFromCart(product.asin);
+        if (userId) {
+          await removeFromServerCart(userId, product.asin, product.price);
+        }
+      } else {
+        removeWishlistItem(product.asin);
       }
-    } else {
-      // setStoredItems((items) =>
-      //   items.filter((item) => item.asin !== product.asin),
-      // );
-      removeWishlistItem(product.asin);
-    }
-
-    toast.custom(() => {
-      return (
-        <div className="flex items-center gap-4">
-          <Info className="text-blue-500" />
-          <p className="text-sm">
-            Item removed from {type === "cart" ? "cart" : "wishlist"}
-          </p>
-        </div>
-      );
+      toast.custom(() => {
+        return (
+          <div className="flex items-center gap-4">
+            <Info className="text-blue-500" />
+            <p className="text-sm">
+              Item removed from {type === "cart" ? "cart" : "wishlist"}
+            </p>
+          </div>
+        );
+      });
     });
   };
 
   return (
     <Button
       variant={"destructive"}
+      disabled={isPending}
       title={type === "cart" ? "Remove from cart" : "Remove from wishlist"}
       className="size-6 bg-transparent p-1 hover:bg-destructive/20"
       onClick={() => handleDelete()}
     >
-      <Trash2 className="text-destructive" />
+      {isPending ? (
+        <Loader className="animate-[spin_2s_linear_infinite] text-muted-foreground" />
+      ) : (
+        <Trash2 className="text-destructive" />
+      )}
     </Button>
   );
 }
