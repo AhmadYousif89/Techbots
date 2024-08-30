@@ -90,63 +90,64 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
 
   return (
     <>
-      <section className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      <section className="flex max-w-screen-md flex-col justify-between gap-4 pr-8 xl:pr-0">
+        <div className="flex items-center justify-between gap-2">
           <h3 className="flex items-center gap-2 font-medium text-muted-foreground">
             Brands
           </h3>
-          <Label htmlFor="brand-search" className="p-0 xl:max-w-28">
-            <Input
-              type="search"
-              id="brand-search"
-              placeholder="Filter..."
-              className="h-7 py-0 sm:placeholder:text-xs"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-          </Label>
+          {hasFilterBrand && (
+            <div className="flex gap-2">
+              <HoverCard openDelay={300}>
+                <HoverCardTrigger className="cursor-pointer">
+                  <small className="inline-grid aspect-square size-5 place-content-center rounded-full font-semibold text-primary shadow ring-1 ring-input hover:underline">
+                    {isPending ? (
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    ) : (
+                      optimisticBrands.length
+                    )}
+                  </small>
+                </HoverCardTrigger>
+                <HoverCardContent className="min-w-72">
+                  <h4 className="text-xs font-bold text-muted-foreground">
+                    Selected Brands:
+                  </h4>
+                  <Separator className="my-2" />
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(90px,1fr))] gap-2">
+                    {optimisticBrands.map((brand, index) => (
+                      <p
+                        key={index}
+                        className="text-xs font-medium text-muted-foreground"
+                      >
+                        #{" "}
+                        {brand.startsWith("Philips")
+                          ? "Philips"
+                          : capitalizeString(brand, false)}
+                      </p>
+                    ))}
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+              <Button
+                variant={"link"}
+                onClick={() => router.push(url())}
+                className="h-auto gap-1 p-0 text-xs font-medium text-muted-foreground hover:text-destructive md:pr-4"
+              >
+                <ChevronLeft className="size-3" /> Clear
+              </Button>
+            </div>
+          )}
         </div>
-        {hasFilterBrand && (
-          <div className="flex gap-2">
-            <HoverCard openDelay={300}>
-              <HoverCardTrigger className="cursor-pointer">
-                <small className="inline-grid aspect-square size-5 place-content-center rounded-full font-semibold text-primary shadow ring-1 ring-input hover:underline">
-                  {isPending ? (
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                  ) : (
-                    optimisticBrands.length
-                  )}
-                </small>
-              </HoverCardTrigger>
-              <HoverCardContent className="min-w-72">
-                <h4 className="text-xs font-bold text-muted-foreground">
-                  Selected Brands:
-                </h4>
-                <Separator className="my-2" />
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(90px,1fr))] gap-2">
-                  {optimisticBrands.map((brand, index) => (
-                    <p
-                      key={index}
-                      className="text-xs font-medium text-muted-foreground"
-                    >
-                      #{" "}
-                      {brand.startsWith("Philips")
-                        ? "Philips"
-                        : capitalizeString(brand, false)}
-                    </p>
-                  ))}
-                </div>
-              </HoverCardContent>
-            </HoverCard>
-            <Button
-              variant={"link"}
-              onClick={() => router.push(url())}
-              className="h-auto gap-1 p-0 text-xs font-medium text-muted-foreground hover:text-destructive md:pr-4"
-            >
-              <ChevronLeft className="size-3" /> Clear
-            </Button>
-          </div>
-        )}
+
+        <Label htmlFor="brand-search" className="w-full pr-4">
+          <Input
+            type="search"
+            id="brand-search"
+            placeholder="Filter by brand..."
+            className="h-7 py-0 focus-visible:rounded-none sm:placeholder:text-xs"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        </Label>
       </section>
 
       <section className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 pl-4 xl:grid-cols-2 xl:gap-x-0">
