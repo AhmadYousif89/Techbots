@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { toast } from "sonner";
 import { Info, Trash2 } from "lucide-react";
 
@@ -6,14 +7,23 @@ import {
   AccordionItem,
   AccordionContent,
   AccordionTrigger,
-} from "../../../components/ui/accordion";
-import { Button } from "../../../components/ui/button";
-import { useLocalStorage } from "../hooks/use_local_storage";
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { useWishlistStore } from "@/app/(public)/products/_store/wishlist";
+import { useOnClickOutside } from "../hooks/use_onClick_outside";
 
 export function ClearWishlistButton() {
-  // const [, , clearWishlist] = useLocalStorage('wishlist', []);
   const { clearList } = useWishlistStore();
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = () => {
+    if (ref.current) {
+      const trigger = ref.current.querySelector('[aria-expanded="true"]');
+      if (trigger) (trigger as HTMLButtonElement).click();
+    }
+  };
+
+  useOnClickOutside(ref, handleClickOutside);
 
   return (
     <Accordion
@@ -21,11 +31,12 @@ export function ClearWishlistButton() {
       collapsible
       className="overflow-hidden rounded bg-muted"
     >
-      <AccordionItem value="delete-wish" className="border-b-0">
+      <AccordionItem ref={ref} value="delete-wish" className="border-b-0">
         <AccordionTrigger className="py-0 hover:no-underline [&>svg]:hidden">
           <Button
             asChild
-            className="w-full rounded-none border-0 px-3 py-2 hover:bg-primary hover:text-destructive"
+            variant={"destructive"}
+            className="w-full rounded-b-none border-0 px-3 py-2"
           >
             <span>Clear Wishlist</span>
           </Button>
