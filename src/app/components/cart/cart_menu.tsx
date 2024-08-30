@@ -46,9 +46,8 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
   const cartCount =
     useStore(useCartStore, (s) => s.getTotalCount()) ?? serverCart?.count ?? 0;
-  const serverCartItem = serverCart?.cartItems || [];
-  const data = serverCartItem.length
-    ? serverCartItem.map((i) => i.product)
+  const data = serverCart?.cartItems.length
+    ? serverCart?.cartItems.map((i) => i.product)
     : cart;
 
   const cartButton = (
@@ -62,13 +61,12 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
 
   const cartMenuButton = (
     <Button
-      variant="outline"
       onClick={() => {
         if (cartCount) router.push("/cart");
         setIsOpen(false);
       }}
     >
-      {cartCount == 0 ? "Close" : "View My Cart"}
+      {cartCount === 0 ? "Close" : "View My Cart"}
     </Button>
   );
 
@@ -97,7 +95,6 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
             <SheetDescription className="text-center">
               {cartDescription}
             </SheetDescription>
-            {cartCount > 0 && <ClearCartButton />}
           </SheetHeader>
           {cartCount === 0 ? (
             <section className="grid items-center justify-center">
@@ -116,6 +113,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
             </section>
           )}
           <SheetFooter className="flex gap-4 sm:flex-col sm:space-x-0">
+            {cartCount > 0 && <ClearCartButton />}
             <SheetClose asChild>{cartMenuButton}</SheetClose>
           </SheetFooter>
         </SheetContent>
@@ -134,7 +132,6 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
           <DrawerDescription className="mb-2">
             {cartDescription}
           </DrawerDescription>
-          {cartCount > 0 && <ClearCartButton />}
         </DrawerHeader>
         {cartCount === 0 ? (
           <section className="grid justify-center">
@@ -150,6 +147,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
           </section>
         )}
         <DrawerFooter>
+          {cartCount > 0 && <ClearCartButton />}
           <DrawerClose asChild>{cartMenuButton}</DrawerClose>
         </DrawerFooter>
       </DrawerContent>

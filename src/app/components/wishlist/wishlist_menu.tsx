@@ -70,7 +70,6 @@ export function WishListMenu() {
             <SheetDescription className="text-center">
               {wishlistDescription}
             </SheetDescription>
-            {count > 0 && <ClearWishlistButton />}
           </SheetHeader>
           {count === 0 ? (
             <section className="grid items-center justify-center">
@@ -82,11 +81,10 @@ export function WishListMenu() {
           ) : (
             <WishlistItems />
           )}
-          <SheetFooter className="mt-auto">
+          <SheetFooter className="gap-4 sm:flex-col sm:space-x-0">
+            {count > 0 && <ClearWishlistButton />}
             <SheetClose asChild>
-              <Button variant={"outline"} className="w-full">
-                Close
-              </Button>
+              <Button>Close</Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>
@@ -105,7 +103,6 @@ export function WishListMenu() {
           <DrawerDescription className="mb-2">
             {wishlistDescription}
           </DrawerDescription>
-          {count > 0 && <ClearWishlistButton />}
         </DrawerHeader>
         {count === 0 ? (
           <section className="grid justify-center">
@@ -119,8 +116,9 @@ export function WishListMenu() {
         )}
 
         <DrawerFooter>
+          {count > 0 && <ClearWishlistButton />}
           <DrawerClose asChild>
-            <Button variant="outline">Close</Button>
+            <Button>Close</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
@@ -129,7 +127,6 @@ export function WishListMenu() {
 }
 
 function WishlistItems() {
-  // const [wishlistItems] = useLocalStorage<TProduct[]>("wishlist", []);
   const { wishlist } = useWishlistStore();
 
   return (
