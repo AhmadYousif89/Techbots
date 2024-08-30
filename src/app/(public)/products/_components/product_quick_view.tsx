@@ -1,14 +1,56 @@
+import Link from "next/link";
 import { TProduct } from "@/app/lib/types";
-import { ProductDetails } from "../[asin]/product_details";
+import { capitalizeString } from "@/app/lib/utils";
+
+import { ProductCarousel } from "./product_carousel";
+import { RatingStars } from "./reviews/rating_stars";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowRightSquare } from "lucide-react";
 
 type ProductQuickViewProps = {
-  asin: string;
+  product: TProduct;
 };
 
-export function ProductQuickView({ asin }: ProductQuickViewProps) {
+export function ProductQuickView({ product }: ProductQuickViewProps) {
   return (
     <div className="max-h-[600px] overflow-y-auto lg:max-h-[700px]">
-      <ProductDetails className="p-0" topOffset="top-0" asin={asin} />
+      <section className="grid gap-4 md:grid-cols-2">
+        <ProductCarousel {...product} />
+
+        <div className="self-center p-4 pb-8 lg:p-8">
+          <div className="mb-6 flex items-center justify-between gap-4 *:text-muted-foreground">
+            <Badge variant="outline" className="w-fit">
+              {capitalizeString(product.category)}
+            </Badge>
+            <Badge variant={"outline"} className="shadow-sm">
+              {product.color}
+            </Badge>
+          </div>
+          <div className="mb-6 space-y-6">
+            <p className="font-medium text-muted-foreground max-md:text-sm">
+              {product.title}
+            </p>
+
+            <RatingStars
+              className="pointer-events-none"
+              productRating={product.rating}
+              reviewsCount={product.ratingsTotal.toLocaleString()}
+            />
+          </div>
+
+          <Button variant={"outline"} className="text-muted-foreground">
+            <Link
+              href={`/products/${product.asin}`}
+              className="flex items-center gap-2"
+            >
+              Product Details
+              <ArrowRightSquare className="size-5" />
+            </Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
