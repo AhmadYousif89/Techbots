@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, RefObject } from "react";
+import { useEffect, useState, RefObject } from "react";
 
 export function useClampCheck<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T>,
@@ -22,6 +22,7 @@ export function useClampCheck<T extends HTMLElement = HTMLElement>(
     return () => {
       window.removeEventListener("resize", checkClamping);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [body]);
 
   return { isClamped };
