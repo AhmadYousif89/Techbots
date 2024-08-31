@@ -41,8 +41,10 @@ export function AddToCartButton({
     : ({} as TItemInServerCart);
   const [isPending, startTransition] = useTransition();
   const cart = useCartStore((s) => s.cart);
-  const addToCart = useCartStore((s) => s.addToCart);
-  const removeFromCart = useCartStore((s) => s.removeFromCart);
+  const [addToCart, removeFromCart] = useCartStore((s) => [
+    s.addToCart,
+    s.removeFromCart,
+  ]);
 
   let textContent: React.ReactNode =
     action === "addToCart" ? "Add to cart" : "Buy now";
@@ -76,30 +78,30 @@ export function AddToCartButton({
         icon: <Ban className="text-red-400" />,
       });
     }
-    try {
-      startTransition(() => {
-        product.cartQuantity = 1;
-        addToCart(product);
-        if (userId) {
-          addServerCartItem(userId, product.asin, product.price);
+    startTransition(async () => {
+      product.cartQuantity = 1;
+      addToCart(product);
+      if (userId) {
+        try {
+          await addServerCartItem(userId, product.asin, product.price);
+        } catch (error) {
+          console.error(error);
         }
-      });
-    } catch (error) {
-      console.error(error);
-    }
+      }
+    });
   };
 
   const handleRemoveFromCart = () => {
-    try {
-      startTransition(() => {
-        removeFromCart(product.asin);
-        if (userId) {
-          removeFromServerCart(userId, product.asin, product.price);
+    startTransition(async () => {
+      removeFromCart(product.asin);
+      if (userId) {
+        try {
+          await removeFromServerCart(userId, product.asin, product.price);
+        } catch (error) {
+          console.error(error);
         }
-      });
-    } catch (error) {
-      console.error(error);
-    }
+      }
+    });
   };
 
   const handleOnClick = () => {
@@ -115,6 +117,7 @@ export function AddToCartButton({
         <Loader className="mr-2 animate-[spin_2s_linear_infinite] stroke-[3] text-muted-foreground" />
       ) : (
         <Button
+          data-pending={isPending ? isPending : undefined}
           disabled={isPending}
           onClick={handleOnClick}
           variant={variant ? variant : cartItem ? "ghost" : "default"}
