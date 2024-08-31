@@ -44,7 +44,7 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
   const ps = newParams.toString() ? `&${newParams.toString()}` : "";
 
   return (
-    <div>
+    <div id="products-grid" className="scroll-mt-10 lg:scroll-mt-24">
       <div className="flex h-16 items-center px-8">
         {totalCount > 0 && <ProductGridSize />}
         {totalPages > 0 && (
