@@ -46,11 +46,8 @@ export async function SimilarProducts({
   const products = await getSimilarProducts(asin);
 
   return (
-    <section
-      id="similar_products"
-      className="bg-background py-10 sm:px-4 xl:px-8"
-    >
-      <CardHeader>
+    <section className="bg-background py-10 sm:px-4 xl:px-8">
+      <CardHeader className="pb-8 pt-0">
         <div className="flex items-center gap-8">
           <h2 className="text-2xl font-medium">Related products</h2>
           <Link
