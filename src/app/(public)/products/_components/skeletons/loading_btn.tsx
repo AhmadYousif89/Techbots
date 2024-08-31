@@ -1,26 +1,28 @@
-import { PropsWithChildren } from "react";
+import React, { ComponentProps } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { Skeleton } from "@/components/ui/skeleton";
+type LoadingButtonProps = {
+  isLoading?: boolean;
+} & ComponentProps<"div">;
 
-type LoadingButtonProps = PropsWithChildren<{
-  className?: string;
-}>;
-
-export function LoadingSkeleton({ className, children }: LoadingButtonProps) {
+export function LoadingButton({
+  className,
+  children,
+  isLoading,
+  ...props
+}: LoadingButtonProps) {
   return (
-    <Skeleton
-      className={cn(
-        "flex h-10 items-center justify-center rounded-md bg-muted",
-        className,
+    <div className={cn("relative rounded-md bg-muted", className)} {...props}>
+      {isLoading && (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+        </span>
       )}
-    >
-      {children ? (
-        children
-      ) : (
-        <Loader2 className="size-5 animate-spin text-muted-foreground" />
-      )}
-    </Skeleton>
+
+      <div className={isLoading ? "pointer-events-none invisible" : ""}>
+        {children}
+      </div>
+    </div>
   );
 }
