@@ -79,7 +79,11 @@ function DeleteThumbnailButton({ product, type }: ProductThumbnailProps) {
       if (type === "cart") {
         removeFromCart(product.asin);
         if (userId) {
-          await removeFromServerCart(userId, product.asin, product.price);
+          try {
+            await removeFromServerCart(userId, product.asin, product.price);
+          } catch (error) {
+            console.log(error);
+          }
         }
       } else {
         removeWishlistItem(product.asin);
