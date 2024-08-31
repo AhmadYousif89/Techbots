@@ -15,6 +15,7 @@ import { BreadcrumbSection } from "../_components/product_breadcrumb";
 import { SimilarItemSkeleton } from "./skeletons/similar_items";
 import { ProductDetailSkeleton } from "./skeletons/product_view";
 import { ReviewSkeleton } from "./skeletons/reviews";
+import { Separator } from "@/components/ui/separator";
 
 export const generateMetadata = async ({
   params,
@@ -105,10 +106,7 @@ type PageProps = {
   searchParams: SearchParams;
 };
 
-export default async function SingleProductPage({
-  params,
-  searchParams,
-}: PageProps) {
+export default function SingleProductPage({ params, searchParams }: PageProps) {
   const { asin } = params;
 
   return (
@@ -125,6 +123,7 @@ export default async function SingleProductPage({
         />
       </Suspense>
 
+      <Separator />
       <Suspense fallback={<SimilarItemSkeleton />}>
         <SimilarProducts
           asin={asin}
