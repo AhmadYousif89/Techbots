@@ -27,9 +27,14 @@ export function ViewInCartButton({ asin, checkItemInServerCart }: Props) {
       {inCart && (
         <Button
           size={"sm"}
-          className="h-auto rounded-full bg-gradient-to-tl from-primary to-primary/70 py-1 text-xs font-semibold shadow-sm hover:bg-transparent active:translate-y-px"
+          className="h-auto rounded-full bg-gradient-to-tl from-primary to-primary/70 py-1 text-xs font-semibold shadow-sm hover:bg-transparent active:translate-y-px group-has-[[data-pending]]/actions:animate-pulse"
         >
-          <Link href={`/cart`}>View in cart</Link>
+          <Link
+            href={`/cart`}
+            className="group-has-[[data-pending]]/actions:invisible"
+          >
+            View in cart
+          </Link>
         </Button>
       )}
     </>
