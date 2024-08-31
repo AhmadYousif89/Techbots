@@ -19,7 +19,7 @@ export function AuthButtons() {
             onClick={() => setIsOpen(false)}
             className="flex h-9 w-28 items-center justify-center rounded border bg-muted text-sm *:w-full *:px-6 *:py-2 hover:bg-foreground/10"
           >
-            <SignInButton fallbackRedirectUrl={"/products"} mode="modal">
+            <SignInButton fallbackRedirectUrl={location.pathname} mode="modal">
               Login
             </SignInButton>
           </div>
@@ -27,7 +27,7 @@ export function AuthButtons() {
             onClick={() => setIsOpen(false)}
             className="flex h-9 w-28 items-center justify-center rounded bg-foreground text-sm text-background *:w-full *:px-6 *:py-2 hover:bg-primary/80"
           >
-            <SignUpButton fallbackRedirectUrl={"/products"} mode="modal">
+            <SignUpButton fallbackRedirectUrl={location.pathname} mode="modal">
               Sign up
             </SignUpButton>
           </div>
