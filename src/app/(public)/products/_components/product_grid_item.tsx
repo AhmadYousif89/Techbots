@@ -1,26 +1,24 @@
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
 import { EyeIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
+
+import { cn } from "@/lib/utils";
 import { extractSearchParams } from "@/app/lib/utils";
 import { TProduct, SearchParams } from "@/app/lib/types";
-
 import { checkItemInServerCart } from "../[asin]/page";
+
 import { RatingStars } from "./reviews/rating_stars";
 import { Separator } from "@/components/ui/separator";
 import { AddToCartButton } from "@/app/components/cart/add_button";
 import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { ProductQuickView } from "./product_quick_view";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+const ProductQuickView = dynamic(() =>
+  import("./product_quick_view").then((mod) => mod.ProductQuickView),
+);
 
 type Props = {
   product: TProduct;
@@ -35,12 +33,6 @@ export async function ProductGridItem({ product, searchParams }: Props) {
 
   return (
     <Card className="group/item relative grid max-w-xs auto-rows-[150px_3px_1fr_3px_auto] justify-self-center overflow-hidden rounded border-0 px-4 py-2 shadow-none ring-offset-4 hover:ring-1 hover:ring-muted md:auto-rows-[200px_3px_1fr_3px_auto]">
-      <button className="absolute left-0 top-0 flex h-8 w-full translate-y-0 select-none items-center justify-center gap-2 rounded bg-muted transition-transform duration-200 active:bg-input group-hover/item:visible group-hover/item:-translate-y-0 group-hover/item:opacity-100 lg:-translate-y-16">
-        <EyeIcon className="size-4 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">
-          Quick view
-        </span>
-      </button>
       <Dialog>
         <DialogTrigger asChild>
           <button className="absolute left-0 top-0 flex h-8 w-full translate-y-0 select-none items-center justify-center gap-2 rounded bg-muted transition-transform duration-200 active:bg-input group-hover/item:visible group-hover/item:-translate-y-0 group-hover/item:opacity-100 lg:-translate-y-16">
