@@ -25,6 +25,18 @@ export function ClearWishlistButton() {
 
   useOnClickOutside(ref, handleClickOutside);
 
+  const handleClearList = () => {
+    clearList();
+    toast.custom(() => {
+      return (
+        <div className="flex items-center gap-4">
+          <Info className="text-blue-500" />
+          <p className="text-sm">Your wishlist is now empty.</p>
+        </div>
+      );
+    });
+  };
+
   return (
     <Accordion
       type="single"
@@ -35,8 +47,7 @@ export function ClearWishlistButton() {
         <AccordionTrigger className="py-0 hover:no-underline [&>svg]:hidden">
           <Button
             asChild
-            variant={"destructive"}
-            className="w-full rounded-b-none border-0 px-3 py-2"
+            className="w-full rounded-b-none border-0 bg-input px-3 py-2 font-semibold text-muted-foreground hover:bg-input/50"
           >
             <span>Clear Wishlist</span>
           </Button>
@@ -50,21 +61,11 @@ export function ClearWishlistButton() {
             <Button
               size={"sm"}
               variant={"destructive"}
-              className="gap-1 bg-transparent p-0 px-4 text-xs text-destructive hover:bg-destructive/20"
-              onClick={() => {
-                clearList();
-                toast.custom(() => {
-                  return (
-                    <div className="flex items-center gap-4">
-                      <Info className="text-blue-500" />
-                      <p className="text-sm">Your wishlist is now empty.</p>
-                    </div>
-                  );
-                });
-              }}
+              className="gap-1 bg-destructive p-0 px-4 text-xs text-muted"
+              onClick={handleClearList}
             >
               <span>Procced</span>
-              <Trash2 className="size-4 text-destructive" />
+              <Trash2 className="size-4" />
             </Button>
           </div>
         </AccordionContent>
