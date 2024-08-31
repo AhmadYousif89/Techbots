@@ -10,19 +10,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { Separator } from "../../components/ui/separator";
+} from "@/components/ui/dropdown-menu";
 import {
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useIsMounted } from "./hooks/use_isMounted";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function UserProfileButton() {
   const { userId } = useAuth();
+  const isMounted = useIsMounted();
 
-  if (userId) {
+  if (!isMounted())
+    return <Skeleton className="hidden size-7 rounded-full lg:block" />;
+
+  if (userId && isMounted()) {
     return (
       <div className="hidden size-7 place-content-center rounded-full bg-muted-foreground ring-1 ring-input ring-offset-1 lg:grid">
         <UserButton
@@ -68,10 +74,15 @@ export function UserProfileButton() {
         <Separator />
         <DropdownMenuRadioGroup className="divide-y *:p-4">
           <DropdownMenuItem className="*:text-xs *:font-medium hover:bg-muted">
-            <SignInButton mode="modal">Login</SignInButton>
+            <SignInButton fallbackRedirectUrl={location.pathname} mode="modal">
+              Login
+            </SignInButton>
           </DropdownMenuItem>
           <DropdownMenuItem className="*:text-xs *:font-medium hover:bg-muted">
-            <SignUpButton mode="modal" />
+            <SignUpButton
+              fallbackRedirectUrl={location.pathname}
+              mode="modal"
+            />
           </DropdownMenuItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
