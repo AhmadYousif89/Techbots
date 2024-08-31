@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 import { Heart, Info } from "lucide-react";
 import { TProduct } from "@/app/lib/types";
 
-import { Button } from "../../../components/ui/button";
-import { useLocalStorage } from "../hooks/use_local_storage";
+import { Button } from "@/components/ui/button";
 import { useWishlistStore } from "@/app/(public)/products/_store/wishlist";
 
 type AddToWishlistButtonProps = {
@@ -22,7 +21,6 @@ export function AddToWishlistButton({
   logoSize = 24,
 }: AddToWishlistButtonProps) {
   const [item, setItem] = useState("");
-  // const [wishlist, setWishlist] = useLocalStorage<TProduct[]>("wishlist", []);
   const { wishlist, addItem, removeItem } = useWishlistStore();
 
   const wishItem = wishlist.find(
