@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { Info, Trash2 } from "lucide-react";
@@ -16,8 +16,9 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { clearServerCart, removeFromServerCart } from "../_actions/actions";
+import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
 
 type DeleteAction = "deleteOne" | "deleteAll";
 
@@ -30,35 +31,46 @@ type DeleteCartItemProps = {
 export function DeleteCartItems({ asin, price, action }: DeleteCartItemProps) {
   const { userId } = useAuth();
   const [dialogIsOpen, setDialogState] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [removeFromCart, clearCart] = useCartStore((s) => [
     s.removeFromCart,
     s.clearCart,
   ]);
 
   const handleDelete = () => {
-    if (action === "deleteOne") {
-      if (asin) removeFromCart(asin);
-      if (userId && asin && price) {
-        removeFromServerCart(userId, asin, price);
+    startTransition(async () => {
+      if (action === "deleteOne") {
+        if (asin) removeFromCart(asin);
+        if (userId && asin && price) {
+          try {
+            await removeFromServerCart(userId, asin, price);
+          } catch (error) {
+            console.error(error);
+          }
+        }
       }
-    }
-    if (action === "deleteAll") {
-      clearCart();
-      if (userId) {
-        clearServerCart(userId);
+      if (action === "deleteAll") {
+        clearCart();
+        if (userId) {
+          try {
+            await clearServerCart(userId);
+          } catch (error) {
+            console.error(error);
+          }
+        }
       }
-    }
-    toast.custom(() => (
-      <div className="flex items-center gap-4">
-        <Info className="text-blue-500" />
-        {action == "deleteOne" && (
-          <span className="text-sm">Item deleted from cart</span>
-        )}
-        {action == "deleteAll" && (
-          <span className="text-sm">Cart cleared successfully</span>
-        )}
-      </div>
-    ));
+      toast.custom(() => (
+        <div className="flex items-center gap-4">
+          <Info className="text-blue-500" />
+          {action == "deleteOne" && (
+            <span className="text-sm">Item deleted from cart</span>
+          )}
+          {action == "deleteAll" && (
+            <span className="text-sm">Cart cleared successfully</span>
+          )}
+        </div>
+      ));
+    });
   };
 
   return (
@@ -95,16 +107,19 @@ export function DeleteCartItems({ asin, price, action }: DeleteCartItemProps) {
           >
             Cancel
           </Button>
-          <Button
-            size={"sm"}
-            className="bg-destructive text-xs hover:bg-destructive/90"
-            onClick={() => {
-              handleDelete();
-              setDialogState(false);
-            }}
-          >
-            Procced
-          </Button>
+          <LoadingButton className="bg-input" isLoading={isPending}>
+            <Button
+              size={"sm"}
+              className="bg-destructive text-xs hover:bg-destructive/90"
+              onClick={() => {
+                handleDelete();
+                setDialogState(false);
+              }}
+              disabled={isPending}
+            >
+              Procced
+            </Button>
+          </LoadingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>
