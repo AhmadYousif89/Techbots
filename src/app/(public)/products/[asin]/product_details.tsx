@@ -26,22 +26,46 @@ import { ViewInCartButton } from "./in_cart_buttons";
 import { AddToCartButton } from "@/app/components/cart/add_button";
 import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { TItemInServerCart, getProductDetails } from "./page";
+import { ProductDetailsTable } from "./product_feats_specs";
+import { PropsWithChildren } from "react";
 
-type ProductDetailsProps = {
+function parseProductDetails(data: string | null) {
+  const obj: { [key: string]: string } = {};
+  if (!data) return obj;
+  const parts = data.split(". ");
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i].trim();
+    // Check if this part contains a colon and is not the last part
+    if (part.includes(":") && i < parts.length - 1) {
+      const item = part.split(":").map((item) => item.trim());
+      let key = item[0];
+      const value = item[1];
+      // Remove brackets from keys if present
+      if (key.startsWith("[") && key.endsWith("]")) {
+        key = key.slice(1, -1);
+      }
+
+      obj[key] = value;
+    }
+  }
+
+  return obj;
+}
+
+type ProductDetailsProps = PropsWithChildren<{
   asin: string;
   className?: string;
-  topOffset?: string;
   searchParams?: SearchParams;
   checkItemInServerCart?: (
     asin: string,
     cuid: string | null,
   ) => Promise<TItemInServerCart>;
-};
+}>;
 
 export async function ProductDetails({
   asin,
   className,
-  topOffset,
   searchParams,
   checkItemInServerCart,
 }: ProductDetailsProps) {
@@ -63,22 +87,17 @@ export async function ProductDetails({
       )}
     >
       {/* add sticky only if one of the Card's childrens has aria-expanded e.g. one of the Accordions */}
-      <div
-        className={cn(
-          "top-20 self-start lg:group-has-[[aria-expanded='true']]/details:sticky",
-          topOffset,
-        )}
-      >
+      <div className="top-20 self-start lg:group-has-[[aria-expanded='true']]/details:sticky">
         <ProductCarousel {...product} />
       </div>
 
       <div className="lg:pt-8">
-        <CardHeader className="max-w-prose gap-4">
+        <CardHeader className="gap-4">
           <Badge variant="outline" className="w-fit">
             {capitalizeString(product.category)}
           </Badge>
           <div className="space-y-6">
-            <CardTitle className="text-lg font-medium text-muted-foreground">
+            <CardTitle className="text-base font-medium text-muted-foreground">
               {product.title}
             </CardTitle>
             <RatingStars
@@ -111,14 +130,14 @@ export async function ProductDetails({
             <Separator />
           </div>
         </CardHeader>
-        <CardContent className="max-w-prose">
+        <CardContent>
           {product.description && (
-            <CardDescription className="mb-4 border-b pb-2">
+            <CardDescription className="mb-4 border-b pb-6">
               {product.description}
             </CardDescription>
           )}
           <div className="flex flex-col gap-8 pb-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="group/actions flex items-center justify-between gap-4">
               <div className="flex items-center justify-center gap-4 max-[370px]:flex-col max-[370px]:gap-2">
                 <Badge
                   variant={"outline"}
@@ -148,7 +167,7 @@ export async function ProductDetails({
             </div>
           </div>
         </CardContent>
-        <CardFooter className="max-w-prose flex-col items-stretch">
+        <CardFooter className="flex-col items-stretch">
           {productFeatures && (
             <ProductDetailsTable type="feats" data={productFeatures} />
           )}
@@ -159,71 +178,4 @@ export async function ProductDetails({
       </div>
     </section>
   );
-}
-
-type ProductDetailsTableProps = {
-  data: Record<string, string>;
-  type: "specs" | "feats";
-};
-
-const ProductDetailsTable = ({ data, type }: ProductDetailsTableProps) => {
-  return (
-    <Accordion type="single" collapsible>
-      <AccordionItem
-        value="details"
-        className={cn(type == "specs" ? "border-b-0" : "")}
-      >
-        <AccordionTrigger
-          className={cn(
-            `text-xs uppercase text-muted-foreground hover:text-foreground/50`,
-            type == "feats" && "sm:pt-0",
-          )}
-        >
-          {type === "specs" ? "Specifications" : "Features"}
-        </AccordionTrigger>
-        <AccordionContent>
-          <table className="bg-secondary text-xs">
-            <thead className="bg-primary text-secondary">
-              <tr>
-                <th className="w-1/4 p-2">Attribute</th>
-                <th className="w-3/4 p-2">Value</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700">
-              {Object.entries(data).map(([key, value]) => (
-                <tr key={key}>
-                  <td className="border px-4 py-2">{key}</td>
-                  <td className="border px-4 py-2">{value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-};
-
-function parseProductDetails(data: string | null) {
-  const obj: { [key: string]: string } = {};
-  if (!data) return obj;
-  const parts = data.split(". ");
-
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i].trim();
-    // Check if this part contains a colon and is not the last part
-    if (part.includes(":") && i < parts.length - 1) {
-      const item = part.split(":").map((item) => item.trim());
-      let key = item[0];
-      const value = item[1];
-      // Remove brackets from keys if present
-      if (key.startsWith("[") && key.endsWith("]")) {
-        key = key.slice(1, -1);
-      }
-
-      obj[key] = value;
-    }
-  }
-
-  return obj;
 }
