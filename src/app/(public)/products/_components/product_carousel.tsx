@@ -28,7 +28,11 @@ export function ProductCarousel(product: TProduct) {
       direction="vertical"
       className="min-h-[600px] lg:min-h-[700px] lg:p-8"
     >
-      <ResizablePanel defaultSize={70} minSize={70} className="size-full">
+      <ResizablePanel
+        defaultSize={70}
+        minSize={70}
+        className="flex size-full items-center"
+      >
         <Dialog>
           <DialogTrigger className="relative flex size-full max-lg:pointer-events-none lg:mx-auto lg:max-w-lg">
             <Image
