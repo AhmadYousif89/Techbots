@@ -41,17 +41,17 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
   const endingPage = totalPages >= 1 ? totalPages : 0;
 
   const path = asin ? `/${asin}` : "";
-  const ps = params ? `&${params}` : "";
-  const firstPageUrl = `/products${path}?page=1${ps}${asin ? "#reviews" : ""}`;
-  const nextPageUrl = `/products${path}?page=${+page == 0 ? 2 : +page + 1}${ps}${asin ? "#reviews" : ""}`;
-  const prevPageUrl = `/products${path}?page=${+page - 1}${ps}${asin ? "#reviews" : ""}`;
-  const lastPageUrl = `/products${path}?page=${totalPages}${ps}${asin ? "#reviews" : ""}`;
+  const ps = params ? params : "";
+  const firstPageUrl = `/products${path}?page=1${ps}${asin ? "#reviews" : "#products-grid"}`;
+  const nextPageUrl = `/products${path}?page=${+page == 0 ? 2 : +page + 1}${ps}${asin ? "#reviews" : "#products-grid"}`;
+  const prevPageUrl = `/products${path}?page=${+page - 1}${ps}${asin ? "#reviews" : "#products-grid"}`;
+  const lastPageUrl = `/products${path}?page=${totalPages}${ps}${asin ? "#reviews" : "#products-grid"}`;
 
   const handleOnChange = (p: string) => {
     startTransition(() => {
       setOptimisticPage(p);
       if (baseUrl.endsWith("products/"))
-        router.push(`${baseUrl}?page=${p}${ps}`);
+        router.push(`${baseUrl}?page=${p}${ps}#products-grid`);
       else router.push(`${baseUrl}?page=${p}${ps}#reviews`);
     });
   };
@@ -68,7 +68,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
       data-pending={isPending ? "" : undefined}
       className={cn("flex items-center gap-2 *:flex-1", props.className)}
     >
-      {!asin && totalPages > 2 && (
+      {totalPages > 2 && (
         <Button
           variant={"outline"}
           className="size-6 p-0 disabled:opacity-25"
@@ -124,7 +124,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
       >
         <ChevronRight className="size-4" />
       </Button>
-      {!asin && totalPages > 2 && (
+      {totalPages > 2 && (
         <Button
           variant={"outline"}
           className="size-6 p-0 disabled:opacity-25"
