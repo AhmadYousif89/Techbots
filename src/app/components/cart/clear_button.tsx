@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { clearServerCart } from "@/app/(protected)/cart/_actions/actions";
 import { useOnClickOutside } from "../hooks/use_onClick_outside";
-import { LoadingSkeleton } from "@/app/(public)/products/_components/skeletons/loading_btn";
+import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
 
 export function ClearCartButton() {
   const { userId } = useAuth();
@@ -55,8 +55,7 @@ export function ClearCartButton() {
         <AccordionTrigger className="py-0 hover:no-underline [&>svg]:hidden">
           <Button
             asChild
-            variant={"destructive"}
-            className="w-full rounded-b-none border-0 px-3 py-2"
+            className="w-full rounded-b-none border-0 bg-input px-3 py-2 font-semibold text-muted-foreground hover:bg-input/50"
           >
             <span>Clear Cart</span>
           </Button>
@@ -67,20 +66,18 @@ export function ClearCartButton() {
             Are you sure you want to clear your cart?
           </p>
           <div className="flex items-center justify-center">
-            {isPending ? (
-              <LoadingSkeleton className="h-9 w-28 bg-input px-4" />
-            ) : (
+            <LoadingButton className="bg-input" isLoading={isPending}>
               <Button
                 size={"sm"}
                 disabled={isPending}
-                variant={"destructive"}
-                className="gap-1 bg-transparent p-0 px-4 text-xs text-destructive hover:bg-destructive/20"
                 onClick={handleDelete}
+                variant={"destructive"}
+                className="gap-1 bg-destructive p-0 px-4 text-xs text-muted"
               >
                 <span>Procced</span>
-                <Trash2 className="size-4 text-destructive" />
+                <Trash2 className="size-4 text-muted" />
               </Button>
-            )}
+            </LoadingButton>
           </div>
         </AccordionContent>
       </AccordionItem>
