@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
+import { Loader2 } from "lucide-react";
 
 import {
   Select,
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { extractSearchParams } from "@/app/lib/utils";
 import { SearchParams, SortValue } from "@/app/lib/types";
-import { LoadingSkeleton } from "./_components/skeletons/loading_btn";
+import { LoadingButton } from "./_components/skeletons/loading_btn";
 
 const sortList = [
   { value: "newest", label: "Newest" },
@@ -47,10 +48,8 @@ export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
   };
 
   return (
-    <Select name="sort" value={optimisticSort} onValueChange={handleOnChange}>
-      {isPending && optimisticSort === "reset" ? (
-        <LoadingSkeleton className="w-28" />
-      ) : (
+    <LoadingButton isLoading={isPending && optimisticSort === "reset"}>
+      <Select name="sort" value={optimisticSort} onValueChange={handleOnChange}>
         <SelectTrigger
           className={`w-28 gap-1 rounded border-0 px-1 pl-2 text-xs font-medium hover:bg-muted hover:ring-1 hover:ring-input`}
         >
@@ -60,30 +59,30 @@ export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
               : "Sort By"}
           </SelectValue>
         </SelectTrigger>
-      )}
-      <SelectContent className="group">
-        {sortList.map(({ value, label }) => (
-          <SelectItem
-            key={value}
-            value={value}
-            className="p-2 text-xs font-medium text-muted-foreground"
-          >
-            {label}
-          </SelectItem>
-        ))}
-        {optimisticSort && (
-          <>
-            <SelectSeparator />
+        <SelectContent className="group">
+          {sortList.map(({ value, label }) => (
             <SelectItem
-              disabled={!optimisticSort}
+              key={value}
+              value={value}
               className="p-2 text-xs font-medium text-muted-foreground"
-              value="reset"
             >
-              Clear
+              {label}
             </SelectItem>
-          </>
-        )}
-      </SelectContent>
-    </Select>
+          ))}
+          {optimisticSort && (
+            <>
+              <SelectSeparator />
+              <SelectItem
+                disabled={!optimisticSort}
+                className="p-2 text-xs font-medium text-muted-foreground"
+                value="reset"
+              >
+                Clear
+              </SelectItem>
+            </>
+          )}
+        </SelectContent>
+      </Select>
+    </LoadingButton>
   );
 }
