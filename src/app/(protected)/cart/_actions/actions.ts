@@ -16,7 +16,7 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
   );
 
   // Start a transaction to ensure that all operations are atomic
-  const cartInfo = await prisma.$transaction(async (prisma) => {
+  await prisma.$transaction(async (prisma) => {
     try {
       // Find the cart in the server
       const serverCart = await prisma.cart.findUnique({
@@ -28,16 +28,16 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
         },
       });
 
-      // // If the cart is already synced, return
-      // if (serverCart && serverCart.isSynced) {
-      //   console.log('Cart synced successfully');
-      //   return { id: serverCart.id, isSynced: true };
-      // }
+      // Return if the cart is already synced
+      if (serverCart && serverCart.isSynced) {
+        console.log("Cart is already synced");
+        return;
+      }
 
       // If the cart doesn't exist, create it
       if (!serverCart) {
-        console.log("Syncing with local cart...");
-        const newCart = await prisma.cart.create({
+        console.log("Creating a new server cart...");
+        await prisma.cart.create({
           data: {
             user: { connect: { clerkUserId } },
             count: cart.length,
@@ -49,8 +49,7 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
           },
         });
         console.log("Local cart synced");
-        revalidatePath("/cart");
-        return { id: newCart.id, isSynced: true };
+        return;
       }
 
       console.log("Syncing with server cart...");
@@ -107,14 +106,10 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
       });
 
       console.log("Server cart synced");
-      return { id: serverCart.id, isSynced: true };
     } catch (error) {
       console.error(error);
     }
   });
-
-  revalidatePath("/cart");
-  return cartInfo;
 };
 
 // Used outside the cart page to add items to the cart
@@ -234,7 +229,6 @@ export const removeFromServerCart = async (
 
   revalidatePath("/products/[asin]", "page");
 };
-
 // Used inside the cart page to increment the quantity of an item
 export const incrementServerCartItem = async (
   clerkUserId: string,
@@ -281,7 +275,6 @@ export const incrementServerCartItem = async (
 
   revalidatePath("/cart");
 };
-
 // Used inside the cart page to decrement the quantity of an item
 export const decrementServerCartItem = async (
   clerkUserId: string,
@@ -336,7 +329,6 @@ export const decrementServerCartItem = async (
 
   revalidatePath("/cart");
 };
-
 // Used inside or outside the cart page to clear the cart
 export const clearServerCart = async (clerkUserId: string) => {
   await prisma.$transaction(async (prisma) => {
