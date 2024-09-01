@@ -1,10 +1,10 @@
-import { Loader } from "lucide-react";
+import { LoaderIcon } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="max-view mx-auto flex min-h-svh items-center justify-center bg-background">
-      <div className="flex animate-pulse flex-col items-center overflow-hidden">
-        <Loader className="size-20 animate-[spin_2s_linear_infinite] md:size-28"></Loader>
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-primary/70">
+      <div className="flex items-center gap-4 text-muted">
+        <LoaderIcon className="size-20 animate-[spin_2s_linear_infinite]" />
       </div>
     </div>
   );

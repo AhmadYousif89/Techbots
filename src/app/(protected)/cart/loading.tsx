@@ -1,10 +1,11 @@
-import { Loader } from "lucide-react";
+import { ShoppingCartIcon } from "lucide-react";
 
-export default function Loading() {
+export default function LoadingCart() {
   return (
-    <div className="max-view mx-auto flex min-h-screen items-center justify-center bg-background">
-      <div className="flex animate-pulse flex-col items-center overflow-hidden">
-        <Loader className="size-20 animate-[spin_2s_linear_infinite] md:size-28"></Loader>
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-primary/90 backdrop-blur-[2px]">
+      <div className="flex items-center gap-4 text-muted">
+        <ShoppingCartIcon className="size-10 animate-bounce" />
+        <p className="text-lg font-semibold">Loading Cart . . .</p>
       </div>
     </div>
   );
