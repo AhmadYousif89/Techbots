@@ -1,9 +1,13 @@
 "use client";
+
 import Link from "next/link";
+import { UserButton } from "@clerk/nextjs";
+
 import { Logo } from "./logo";
+import { AuthButtons } from "./auth_buttons";
+import { categories } from "@/app/lib/types";
 import { useSideMenuState } from "@/app/lib/store";
 import { capitalizeString } from "@/app/lib/utils";
-import { UserButton } from "@clerk/nextjs";
 
 import {
   Sheet,
@@ -13,17 +17,15 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../../components/ui/sheet";
+} from "@/components/ui/sheet";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../components/ui/accordion";
-import { Button } from "../../components/ui/button";
-import { Separator } from "../../components/ui/separator";
-import { AuthButtons } from "./auth_buttons";
-import { categories } from "@/app/lib/types";
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export function SideMenu() {
   const { isOpen, setIsOpen } = useSideMenuState();
@@ -54,15 +56,18 @@ export function SideMenu() {
       <SheetContent side={"left"} className="flex flex-col">
         <SheetHeader className="flex-row items-center justify-between pt-4">
           <SheetTitle>
-            <Logo className="font-medium text-foreground" />
+            <Logo className="font-medium text-primary" />
           </SheetTitle>
+
           <UserButton
+            userProfileMode="navigation"
+            userProfileUrl="/user"
             afterSignOutUrl="/"
             appearance={{
               elements: {
                 userPreviewMainIdentifier: "capitalize font-bold",
                 userPreviewSecondaryIdentifier: "font-medium",
-                userButtonPopoverCard: { pointerEvents: "initial" },
+                userButtonPopoverMain: { pointerEvents: "auto" },
               },
             }}
           />
