@@ -18,20 +18,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useIsMounted } from "./hooks/use_isMounted";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function UserProfileButton() {
   const { userId } = useAuth();
-  const isMounted = useIsMounted();
 
-  if (!isMounted())
-    return <Skeleton className="hidden size-7 rounded-full lg:block" />;
+  let location = { pathname: "" };
+  if (typeof window !== "undefined")
+    location = { pathname: window.location.pathname };
 
-  if (userId && isMounted()) {
+  if (userId) {
     return (
       <div className="hidden size-7 place-content-center rounded-full bg-muted-foreground ring-1 ring-input ring-offset-1 lg:grid">
         <UserButton
+          userProfileMode="navigation"
+          userProfileUrl="/user"
           afterSignOutUrl="/"
           appearance={{
             elements: {
@@ -39,25 +39,7 @@ export function UserProfileButton() {
               userPreviewSecondaryIdentifier: "font-medium",
             },
           }}
-        >
-          <UserButton.UserProfilePage
-            url="orders"
-            label="My Orders"
-            labelIcon={<Menu className="size-4" />}
-          >
-            <div>
-              <CardHeader className="border-b pb-2">
-                <CardTitle className="text-xl">My Orders</CardTitle>
-                <CardDescription>
-                  View your order history and manage your orders.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6 text-center text-muted-foreground">
-                Your order history will be listed here.
-              </CardContent>
-            </div>
-          </UserButton.UserProfilePage>
-        </UserButton>
+        />
       </div>
     );
   }
