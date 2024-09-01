@@ -8,7 +8,7 @@ export default async function ProtectedLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      {children}
     </>
   );
 }

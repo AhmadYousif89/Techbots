@@ -9,10 +9,8 @@ export default async function PublicLayout({
   return (
     <>
       <Header />
-      <main>
-        {children}
-        <Footer />
-      </main>
+      {children}
+      <Footer />
     </>
   );
 }
