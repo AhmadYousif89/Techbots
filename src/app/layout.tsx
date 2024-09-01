@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "../components/ui/sonner";
+import { LoaderIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: {
@@ -23,12 +24,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <html lang="en">
+      <ClerkProvider>
         <body
-          className={`${inter.className} bg-[url('/images/bg.png')] bg-cover bg-no-repeat`}
+          className={`${inter.className} min-h-svh bg-[url('/images/bg.png')] bg-cover bg-no-repeat`}
         >
-          {children}
+          <ClerkLoading>
+            <div className="fixed inset-0 z-[999] flex items-center justify-center">
+              <div className="flex items-center gap-4 text-muted">
+                <LoaderIcon className="size-10 animate-[spin_2s_linear_infinite]" />
+                <p className="text-lg font-semibold">Connecting . . .</p>
+              </div>
+            </div>
+          </ClerkLoading>
+          <ClerkLoaded>{children}</ClerkLoaded>
           <Toaster
             toastOptions={{
               unstyled: true,
@@ -44,7 +53,7 @@ export default function RootLayout({
             duration={2500}
           />
         </body>
-      </html>
-    </ClerkProvider>
+      </ClerkProvider>
+    </html>
   );
 }
