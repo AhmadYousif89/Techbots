@@ -40,7 +40,7 @@ export default function ProductsPage({ searchParams }: PageProps) {
 
   return (
     <Suspense fallback={<ProductsViewSkeleton grid={grid} />}>
-      <main className="max-view mx-auto min-h-screen bg-background">
+      <main className="max-view mx-auto min-h-svh bg-background">
         <div className="flex h-14 items-center justify-between bg-muted px-4 md:px-10">
           <BreadcrumbSection category={category} />
           <div className="relative mx-auto hidden h-8 min-w-80 items-center overflow-hidden rounded-full ring-2 ring-input *:h-full *:w-full *:justify-end *:pr-2 hover:bg-input xl:flex">
@@ -56,7 +56,7 @@ export default function ProductsPage({ searchParams }: PageProps) {
         {/* Filter Section On Small Screens */}
         <div className="relative xl:hidden">
           <FilterProducts searchParams={searchParams} />
-          <div className="absolute right-0 top-[14px] flex items-center gap-4 pr-2 md:pr-8">
+          <div className="absolute right-0 top-3.5 flex items-center gap-4 pr-2 md:pr-8">
             <SearchProducts />
             <SortProducts searchParams={searchParams} />
           </div>

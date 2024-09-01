@@ -1,12 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
+import { getServerCart } from "@/app/(protected)/cart/page";
 
 import { Logo } from "./logo";
 import { MainNav } from "./main_nav";
 import { SideMenu } from "./side_menu";
 import { CartMenu } from "./cart/cart_menu";
-import { getServerCart } from "@/app/(protected)/cart/page";
-import { UserProfileButton } from "./user_profile_button";
 import { WishListMenu } from "./wishlist/wishlist_menu";
+import { UserProfileButton } from "./user_profile_button";
 
 export function Header() {
   const { userId } = auth();
