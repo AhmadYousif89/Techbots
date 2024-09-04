@@ -20,14 +20,14 @@ import { Badge } from "@/components/ui/badge";
 
 export function HotProducts() {
   return (
-    <section className="max-view bg-secondary px-6 py-20 lg:mx-auto">
-      <h2 className="mb-12 text-2xl font-bold">Featured Collections</h2>
-      <Carousel opts={{ align: "end" }} className="mx-auto max-w-screen-xl">
+    <section className="bg-secondary px-6 py-20">
+      <h2 className="mb-12 text-2xl font-bold">Featured Porducts</h2>
+      <Carousel opts={{ align: "center" }} className="mx-auto max-w-screen-xl">
         <CarouselContent>
           {featuredProducts.map((item) => (
             <CarouselItem
               key={item.id}
-              className="grid basis-11/12 sm:basis-1/2 lg:basis-1/3"
+              className="grid basis-10/12 sm:basis-1/2 lg:basis-1/3"
             >
               <Card className="grid">
                 <CardHeader>
@@ -36,13 +36,13 @@ export function HotProducts() {
                     {item.description}
                   </p>
                 </CardHeader>
-                <CardContent className="mt-auto">
+                <CardContent className="mt-auto grid items-center justify-center">
                   <Image
                     src={item.image}
                     alt={item.name}
                     className="rounded-lg"
-                    width={500}
-                    height={250}
+                    width={400}
+                    height={200}
                   />
                 </CardContent>
                 <CardFooter className="grid justify-between gap-2">
