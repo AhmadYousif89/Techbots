@@ -10,9 +10,9 @@ import {
   CarouselNext,
   CarouselContent,
   CarouselPrevious,
-} from "../../components/ui/carousel";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { RatingStars } from "../(public)/products/_components/reviews/rating_stars";
 
 const day = 60 * 60 * 24;
@@ -52,12 +52,15 @@ export async function PopularItemsSlide() {
         </Button>
       </div>
       <Carousel
-        className="max-w-80vw ml-4 xl:mx-auto xl:max-w-screen-lg"
+        className="ml-4 max-w-screen-xl xl:mx-auto"
         opts={{ dragFree: true, align: "start" }}
       >
         <CarouselContent>
           {products.map((product) => (
-            <CarouselItem key={product.id} className="grid basis-48 pb-4">
+            <CarouselItem
+              key={product.id}
+              className="grid basis-48 pb-4 xl:basis-52"
+            >
               <Card className="grid auto-rows-[1fr_auto] gap-4 p-4">
                 <Link
                   href={`/products/${product.asin}`}
@@ -66,8 +69,8 @@ export async function PopularItemsSlide() {
                   <Image
                     src={product.mainImage}
                     alt={product.title}
-                    width={150}
-                    height={150}
+                    width={120}
+                    height={120}
                   />
                 </Link>
                 <CardContent className="mt-auto px-0 py-0">
