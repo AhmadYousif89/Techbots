@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 export function HotProducts() {
   return (
     <section className="bg-secondary px-6 py-20">
-      <h2 className="mb-12 text-2xl font-bold">Featured Porducts</h2>
+      <h2 className="mb-12 text-xl font-bold lg:text-2xl">Featured Porducts</h2>
       <Carousel opts={{ align: "center" }} className="mx-auto max-w-screen-xl">
         <CarouselContent>
           {featuredProducts.map((item) => (
