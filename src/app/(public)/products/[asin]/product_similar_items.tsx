@@ -64,51 +64,53 @@ export async function SimilarProducts({
           opts={{ dragFree: true, skipSnaps: true, align: "start" }}
         >
           <CarouselContent>
-            {products.map((product) => (
-              <CarouselItem key={product.id} className="grid basis-44 pb-4">
-                <Card className="relative gap-2 p-2 py-4">
-                  <div className="absolute left-0 top-2 flex w-full items-center justify-between px-2">
-                    <CartIndicator
-                      asin={product.asin}
-                      checkItemInServerCart={checkItemInServerCart(
-                        product.asin,
-                        userId,
-                      )}
-                    />
-                    <div className="ml-auto">
-                      <WishlistIndicator asin={product.asin} />
-                    </div>
-                  </div>
-                  <Link
-                    href={`/products/${product.asin}`}
-                    className="flex flex-col justify-between"
-                  >
-                    <Image
-                      src={product.mainImage}
-                      alt={product.title}
-                      width={100}
-                      height={100}
-                      className="size-32 object-contain p-4"
-                    />
-                    <CardContent className="mt-auto px-0 py-0">
-                      <p className="mb-1 text-xs font-medium">
-                        {product.title.split(" ").slice(0, 3).join(" ")}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-muted-foreground">
-                          ${product.price.toFixed(2)}
-                        </p>
-                        <RatingStars
-                          productRating={product.rating}
-                          showTotalReviews={false}
-                          size="xs"
-                        />
+            {products.map((product) => {
+              return (
+                <CarouselItem key={product.id} className="grid basis-44 pb-4">
+                  <Card className="relative grid gap-2 p-2 py-4">
+                    <div className="absolute left-0 top-2 flex w-full items-center justify-between px-2">
+                      <CartIndicator
+                        asin={product.asin}
+                        checkItemInServerCart={checkItemInServerCart(
+                          product.asin,
+                          userId,
+                        )}
+                      />
+                      <div className="ml-auto">
+                        <WishlistIndicator asin={product.asin} />
                       </div>
-                    </CardContent>
-                  </Link>
-                </Card>
-              </CarouselItem>
-            ))}
+                    </div>
+                    <Link
+                      href={`/products/${product.asin}`}
+                      className="flex flex-col justify-between"
+                    >
+                      <Image
+                        src={product.mainImage}
+                        alt={product.title}
+                        width={100}
+                        height={100}
+                        className="size-32 object-contain p-4"
+                      />
+                      <CardContent className="mt-auto px-0 py-0">
+                        <p className="mb-1 text-xs font-medium">
+                          {product.title.split(" ").slice(0, 5).join(" ")}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground">
+                            ${product.price.toFixed(2)}
+                          </p>
+                          <RatingStars
+                            productRating={product.rating}
+                            showTotalReviews={false}
+                            size="xs"
+                          />
+                        </div>
+                      </CardContent>
+                    </Link>
+                  </Card>
+                </CarouselItem>
+              );
+            })}
           </CarouselContent>
           <CarouselPrevious className="left-0 top-full translate-y-1/2" />
           <CarouselNext className="right-0 top-full translate-y-1/2" />
