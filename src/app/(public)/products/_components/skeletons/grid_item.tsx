@@ -8,17 +8,23 @@ export function GridItemsSkeleton({ grid }: { grid: string }) {
       {Array.from({ length: 8 }).map((_, i) => (
         <Card
           key={i}
-          className="grid max-w-xs auto-rows-[150px_3px_1fr_3px_auto] justify-self-center rounded border-0 px-4 py-2 shadow-none ring-offset-4 hover:ring-1 hover:ring-muted md:auto-rows-[200px_3px_1fr_3px_auto]"
+          className={cn(
+            "flex min-w-40 flex-col justify-end justify-self-center",
+            "overflow-hidden rounded border-0 px-4 py-2 shadow-none",
+            "ring-1 ring-muted ring-offset-4 max-[380px]:min-w-60 lg:min-w-52",
+            grid === "2" && "lg:min-w-72",
+          )}
         >
           <Skeleton
             className={cn(
-              "size-28 place-self-center",
-              grid === "3" && "p-0 lg:size-36",
-              grid === "2" && "p-2 lg:size-44",
+              "mb-4 size-28 place-self-center",
+              grid === "3" && "lg:size-36 lg:p-0",
+              grid === "2" && "lg:size-44 lg:p-2",
+              grid === "1" && "size-40",
             )}
           />
           <Skeleton className="h-px w-full bg-input/75" />
-          <CardHeader className="min-w-40 p-0 py-8 xl:min-w-52">
+          <CardHeader className={cn("p-0 py-8 xl:min-w-52")}>
             <Skeleton className="h-2 w-full bg-input/50" />
             <Skeleton className="h-2 w-full bg-input/50" />
             <Skeleton className="h-2 w-full bg-input/50" />
@@ -26,8 +32,8 @@ export function GridItemsSkeleton({ grid }: { grid: string }) {
             <Skeleton className="h-2 w-full bg-input/50" />
             <Skeleton className="h-2 w-1/2 bg-input/50" />
           </CardHeader>
-          <Skeleton className="mb-2 h-px w-full bg-input/75" />
-          <CardFooter className="justify-between gap-4 p-0">
+          <Skeleton className="h-px w-full bg-input/75" />
+          <CardFooter className="mt-4 justify-between gap-4 p-0">
             <Skeleton className="h-8 w-20 rounded bg-input/50" />
             <Skeleton className="size-7 rounded-full bg-input/50" />
           </CardFooter>

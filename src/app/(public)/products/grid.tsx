@@ -62,9 +62,10 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
       </div>
       <section
         className={cn(
-          "grid w-full grid-cols-2 grid-rows-[auto,1fr] gap-x-8 gap-y-16 lg:grid-cols-4 xl:col-[2] xl:self-start",
+          "grid w-full grid-cols-2 gap-x-8 gap-y-16 max-[380px]:grid-cols-1 lg:grid-cols-4 xl:col-[2] xl:self-start",
           "mx-auto max-w-screen-lg px-4 py-8 xl:ml-auto xl:pl-0 xl:pr-8",
           "sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]",
+          sp.grid === "1" && "grid-cols-1",
           sp.grid === "2" && "lg:grid-cols-2",
           sp.grid === "3" && "lg:grid-cols-3",
           sp.grid === "4" && "lg:grid-cols-4",
