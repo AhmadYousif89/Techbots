@@ -4,14 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
 
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../../components/ui/carousel";
+} from "@/components/ui/carousel";
 
 const slides = [
   {
@@ -51,7 +51,7 @@ export function HomeSlider() {
       plugins={[Autoplay({ delay: 6000, stopOnInteraction: false })]}
       className="group relative"
     >
-      <CarouselContent className="bg-secondarys h-[calc(100svh-80px)]">
+      <CarouselContent className="h-[calc(100svh-80px)]">
         {slides.map((slide, index) => (
           <CarouselItem
             key={index}
@@ -63,9 +63,9 @@ export function HomeSlider() {
               loading="eager"
               src={slide.img}
               alt={"product image"}
-              className="max-view h-full w-full bg-background object-cover md:col-[2] md:row-span-full md:object-contain"
+              className="max-view size-full bg-background object-cover md:col-[2] md:row-span-full md:object-contain"
             />
-            <div className="xl grid place-content-center gap-4 bg-gradient-to-b from-primary/50 to-primary/90 px-4 py-8 text-center backdrop-blur-sm sm:gap-8 md:row-span-full lg:gap-12 lg:px-16">
+            <div className="grid place-content-center gap-4 overflow-hidden bg-primary px-4 py-8 text-center backdrop-blur-sm sm:gap-8 md:row-span-full lg:gap-12 lg:px-16">
               <p className="rounded p-4 text-lg text-secondary lg:text-xl xl:text-2xl">
                 {slide.title}
               </p>
