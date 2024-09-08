@@ -1,6 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GridItemsSkeleton } from "./grid_item";
+import { GridItemSkeleton } from "./grid_item";
 
 export function ProductsViewSkeleton({ grid }: { grid: string }) {
   return (
@@ -81,7 +81,7 @@ export function ProductsViewSkeleton({ grid }: { grid: string }) {
           <div
             className={`mx-auto grid w-full max-w-screen-lg grid-cols-2 grid-rows-[auto,1fr] gap-8 px-4 py-8 sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] lg:grid-cols-4 xl:col-[2] xl:ml-auto xl:mr-0 xl:self-start xl:pl-0 xl:pr-8 xl:pt-20`}
           >
-            <GridItemsSkeleton grid={grid} />
+            <GridItemSkeleton grid={grid} />
           </div>
         </div>
       </div>

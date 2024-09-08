@@ -2,24 +2,23 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 
-export function GridItemsSkeleton({ grid }: { grid: string }) {
+export function GridItemSkeleton({ grid }: { grid: string }) {
   return (
     <>
       {Array.from({ length: 8 }).map((_, i) => (
         <Card
           key={i}
           className={cn(
-            "flex min-w-40 flex-col justify-end justify-self-center",
+            "flex flex-col justify-end justify-self-center",
             "overflow-hidden rounded border-0 px-4 py-2 shadow-none",
-            "ring-1 ring-muted ring-offset-4 max-[380px]:min-w-60 lg:min-w-52",
-            grid === "2" && "lg:min-w-72",
+            "max-w-48 ring-1 ring-muted ring-offset-4 max-[380px]:min-w-60",
           )}
         >
           <Skeleton
             className={cn(
               "mb-4 size-28 place-self-center",
-              grid === "3" && "lg:size-36 lg:p-0",
-              grid === "2" && "lg:size-44 lg:p-2",
+              grid === "3" && "size-36 p-0",
+              grid === "2" && "size-44 p-2",
               grid === "1" && "size-40",
             )}
           />
