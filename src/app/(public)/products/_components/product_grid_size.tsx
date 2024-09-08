@@ -15,7 +15,7 @@ export function ProductGridSize() {
   const router = useRouter();
   const params = useSearchParams();
   const sp = extractSearchParams(params.entries());
-  const isMobile = useMediaQuery("(max-width: 639px)");
+  const isMobile = useMediaQuery("(max-width: 1024px)");
   const [optimisticGrid, setOptimisticGrid] = useOptimistic(sp.grid);
   const [isPending, startTransition] = useTransition();
 
@@ -50,6 +50,14 @@ export function ProductGridSize() {
           onClick={() => handleGridChange("1")}
         >
           <LayoutList className="size-6 stroke-[1.5px]" />
+        </Button>
+        <Button
+          variant="ghost"
+          data-active={optimisticGrid === "2"}
+          className='hidden rounded-md p-2 ring-1 ring-transparent hover:bg-transparent data-[active="true"]:shadow data-[active="true"]:ring-input md:inline-flex'
+          onClick={() => handleGridChange("2")}
+        >
+          <Grid2x2 />
         </Button>
 
         {isPending && (
