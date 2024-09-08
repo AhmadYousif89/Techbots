@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 
@@ -16,18 +17,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ProductCarousel } from "../_components/product_carousel";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { ViewInCartButton } from "./in_cart_buttons";
 import { AddToCartButton } from "@/app/components/cart/add_button";
 import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { TItemInServerCart, getProductDetails } from "./page";
 import { ProductDetailsTable } from "./product_feats_specs";
-import { PropsWithChildren } from "react";
+import { ViewInCartButton } from "./in_cart_buttons";
 
 function parseProductDetails(data: string | null) {
   const obj: { [key: string]: string } = {};

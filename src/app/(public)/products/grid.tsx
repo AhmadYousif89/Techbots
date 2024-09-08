@@ -10,7 +10,7 @@ import { SearchParams, SortValue, TProduct } from "../../lib/types";
 import { ProductGridSize } from "./_components/product_grid_size";
 import { ProductGridItem } from "./_components/product_grid_item";
 import { PaginationButtons } from "./_components/pagination_button";
-import { GridItemsSkeleton } from "./_components/skeletons/grid_item";
+import { GridItemSkeleton } from "./_components/skeletons/grid_item";
 
 type ProductGridProps = {
   searchParams: SearchParams;
@@ -62,18 +62,19 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
       </div>
       <section
         className={cn(
-          "grid w-full grid-cols-2 gap-x-8 gap-y-16 max-[380px]:grid-cols-1 lg:grid-cols-4 xl:col-[2] xl:self-start",
-          "mx-auto max-w-screen-lg px-4 py-8 xl:ml-auto xl:pl-0 xl:pr-8",
-          "sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]",
-          sp.grid === "1" && "grid-cols-1",
-          sp.grid === "2" && "lg:grid-cols-2",
-          sp.grid === "3" && "lg:grid-cols-3",
-          sp.grid === "4" && "lg:grid-cols-4",
+          "@container grid gap-x-8 gap-y-16",
+          "mx-auto w-full max-w-screen-lg px-4 py-8",
+          "grid-cols-1 min-[380px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+          "xl:col-[2] xl:ml-auto xl:self-start xl:pl-0 xl:pr-8",
+          sp.grid === "1" && "!grid-cols-1",
+          sp.grid === "2" && "!grid-cols-2",
+          sp.grid === "3" && "!grid-cols-3",
+          sp.grid === "4" && "!grid-cols-4",
         )}
       >
         <Suspense
           key={JSON.stringify(searchParams)}
-          fallback={<GridItemsSkeleton grid={sp.grid} />}
+          fallback={<GridItemSkeleton grid={sp.grid} />}
         >
           <DisplayProductsGrid {...searchParams} />
         </Suspense>

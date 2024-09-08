@@ -32,7 +32,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
   const prodUrl = `/products/${asin}`;
 
   return (
-    <Card className="group/item relative grid max-w-xs justify-end justify-self-center overflow-hidden rounded border-0 px-4 py-2 shadow-none ring-offset-4 hover:ring-1 hover:ring-muted">
+    <Card className="group/item relative grid max-w-xs justify-self-center overflow-hidden rounded border-0 px-4 py-2 shadow-none ring-offset-4 hover:ring-1 hover:ring-muted">
       <Dialog>
         <DialogTrigger asChild>
           <button className="absolute left-0 top-0 flex h-8 w-full translate-y-0 select-none items-center justify-center gap-2 rounded bg-muted transition-transform duration-200 active:bg-input group-hover/item:visible group-hover/item:-translate-y-0 group-hover/item:opacity-100 lg:-translate-y-16">
@@ -46,12 +46,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           <ProductQuickView product={product} />
         </DialogContent>
       </Dialog>
-      <div
-        className={cn(
-          "grid size-full min-h-40 items-center justify-center pt-4 lg:self-start",
-          grid === "1" && "min-h-60",
-        )}
-      >
+      <div className="grid size-full min-h-40 items-center justify-center pt-4">
         <Image
           src={mainImage}
           alt={title}
@@ -59,8 +54,8 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           height={120}
           className={cn(
             "size-28 object-contain max-[380px]:size-44",
-            grid === "3" && "lg:size-36 lg:p-0",
-            grid === "2" && "lg:size-44 lg:p-2",
+            grid === "3" && "size-36 p-0",
+            grid === "2" && "size-44 p-2",
             grid === "1" && "size-44",
           )}
         />
@@ -71,7 +66,8 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           <CardTitle
             className={cn(
               "text-xs font-medium hover:text-blue-700 hover:underline",
-              grid === "2" && "lg:text-sm",
+              grid === "1" && "text-sm",
+              grid === "2" && "text-sm",
             )}
           >
             {title}
