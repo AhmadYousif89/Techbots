@@ -2,22 +2,25 @@ import Link from "next/link";
 import { TProduct } from "@/app/lib/types";
 import { capitalizeString } from "@/app/lib/utils";
 
+import { ArrowRightSquare } from "lucide-react";
 import { ProductCarousel } from "./product_carousel";
 import { RatingStars } from "./reviews/rating_stars";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRightSquare } from "lucide-react";
+import { getBase64Images } from "@/app/lib/convertBase64Images";
 
 type ProductQuickViewProps = {
   product: TProduct;
 };
 
-export function ProductQuickView({ product }: ProductQuickViewProps) {
+export async function ProductQuickView({ product }: ProductQuickViewProps) {
+  const getBlobImages = getBase64Images();
+
   return (
     <div className="max-h-[600px] overflow-y-auto lg:max-h-[700px]">
       <section className="grid gap-4 md:grid-cols-2">
-        <ProductCarousel {...product} />
+        <ProductCarousel product={product} blobImages={getBlobImages} />
 
         <div className="self-center p-4 pb-8 lg:p-8">
           <div className="mb-6 flex items-center justify-between gap-4 *:text-muted-foreground">
@@ -25,7 +28,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
               {capitalizeString(product.category)}
             </Badge>
             <Badge variant={"outline"} className="shadow-sm">
-              {product.color}
+              {product.color || "Color n/a"}
             </Badge>
           </div>
           <div className="mb-6 space-y-6">
