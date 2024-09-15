@@ -18,9 +18,11 @@ logger = setup_logger(
 
 data_dir = Path('./data')
 thumb_dir = Path('./thumbnails')
+TYPE_IMAGE_LIST = list[dict[str, str]]
+TYPE_IMAGES = dict[str, TYPE_IMAGE_LIST]
 
 
-def resize_images(input_json_file, output_json_file, size=20):
+def resize_images(input_json_file: str, output_json_file: str, size=20):
     """Resizes images from URLs specified in a JSON file.
 
     Args :
@@ -36,24 +38,26 @@ def resize_images(input_json_file, output_json_file, size=20):
         return
 
     categories = list(set([product['category'] for product in data]))
-    images = {category: [] for category in categories}
+
+    images: TYPE_IMAGES = {category: [] for category in categories}
 
     for product in data:
+        asin = product['asin']
         category = product['category']
         image = product['main_image']['link']
         if image and image not in images[category]:
-            images[category].append(image)
+            images[category].append({asin: image})
 
-    data_uri = {}
-    for category, images in images.items():
-        data_uri[category] = create_thumbnails(images, category, size)
+    data_uri: TYPE_IMAGES = {}
+    for category, image_data in images.items():
+        data_uri[category] = create_thumbnails(image_data, category, size)
 
     with open(output_json_file, 'w') as f:
         json.dump(data_uri, f, indent=4)
-        logger.info(f"Images data URIs saved to {output_json_file}")
+        logger.info(f"Images data has been saved in {output_json_file}")
 
 
-def create_thumbnails(images, category, size=20):
+def create_thumbnails(image_data: TYPE_IMAGE_LIST, category: str, size=20):
     """Creates thumbnails for a list of images and returns their data URIs.
 
     Args:
@@ -70,14 +74,19 @@ def create_thumbnails(images, category, size=20):
 
     data_uris = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_to_image = {
-            executor.submit(process_image, image, category, size): image
-            for image in images
-        }
+        future_to_image = {}
+        for image in image_data:
+            for asin in image:
+                future = executor.submit(
+                    process_image, image[asin], category, size
+                )
+                future_to_image[future] = asin
+
         for future in concurrent.futures.as_completed(future_to_image):
             data_uri = future.result()
             if data_uri:
-                data_uris.append(data_uri)
+                # Add the data URI to the list, indexed by the ASIN i.e {ASIN: data_uri}
+                data_uris.append({future_to_image[future]: data_uri})
 
     return data_uris
 
@@ -99,7 +108,8 @@ def process_image(image, category, size):
     with open(thumbnail_path, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode('utf-8')
         data_uri = f"data:image/jpg;base64,{encoded_string}"
-        return data_uri
+
+    return data_uri
 
 
 if __name__ == '__main__':
@@ -107,3 +117,18 @@ if __name__ == '__main__':
     output_json = 'data/image_data_uri.json'
 
     resize_images(input_json, output_json)
+
+x = [
+    {'B0BV4BC7LV': 'https://m.media-amazon.com/images/I/81L4FpeS3VL.jpg'},
+    {'B085RMD5TP': 'https://m.media-amazon.com/images/I/61V2O4vbYhL.jpg'},
+    {'B00NLZUM36': 'https://m.media-amazon.com/images/I/71QDJHG1PqL.jpg'},
+    {'B098LG3N6R': 'https://m.media-amazon.com/images/I/618zZ7u3sUL.jpg'},
+    {'B07QGHK6Q8': 'https://m.media-amazon.com/images/I/71y+Sl+qWwL.jpg'},
+    {'B0BV4BC7LV': 'https://m.media-amazon.com/images/I/81L4FpeS3VL.jpg'},
+    {'B0BSKX8W3B': 'https://m.media-amazon.com/images/I/81ykzmz6KZL.jpg'},
+    {'B0C7KFZ5TL': 'https://m.media-amazon.com/images/I/91YxKZjwOPL.jpg'},
+    {'B0CLLHSWRL': 'https://m.media-amazon.com/images/I/61mB8mL33pL.jpg'},
+]
+# for image in x:
+#     for asin in image:
+#         print(image[asin])
