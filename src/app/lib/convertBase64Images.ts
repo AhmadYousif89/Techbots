@@ -15,7 +15,7 @@ export async function getBase64Images() {
     for (const [type, imageData] of Object.entries(uriObject)) {
       const images: ImageData[] = [];
       for (const image of imageData) {
-        let [asin, data] = Object.entries(image)[0];
+        const [asin, data] = Object.entries(image)[0];
         images.push({ asin, data });
       }
       categories[type] = images;
