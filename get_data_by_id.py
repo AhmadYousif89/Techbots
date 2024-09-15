@@ -1,31 +1,32 @@
-from dotenv import load_dotenv
-from random import randint
-from os import getenv
-import requests
-import json
 import os
+import json
+import requests
+from pathlib import Path
+from random import randint
+from dotenv import load_dotenv
+from logger import setup_logger
 
 load_dotenv()
 
-api_key = getenv('ASIN_API_KEY')
-base_url = 'https://api.asindataapi.com/request'
+data_dir = Path('./data')
+logger = setup_logger(
+    f'./{os.path.basename(__file__)}', './logs/get_data_by_id.log'
+)
 
 
 def load_json_file(file_path):
     try:
         with open(file_path, 'r') as file:
-            data = json.load(file)
-        return data
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
+            return json.load(file)
+    except IOError:
+        logger.error(f"File not found: {file_path}")
         return []
 
 
-productType = 'gaming_labtops'
-json_data = load_json_file(f'./data/list_{productType}.json')
-
-
 def fetch_product_details(asin):
+    api_key = os.getenv('ASIN_API_KEY', '')
+    base_url = 'https://api.asindataapi.com/request'
+
     product_params = {
         'api_key': api_key,
         'type': 'product',
@@ -36,13 +37,13 @@ def fetch_product_details(asin):
 
     response = requests.get(base_url, params=product_params)
     if response.status_code > 399:
-        print(
+        logger.error(
             f"Failed to fetch product details for ASIN {asin}: {response.status_code}"
         )
         return None
 
     product = response.json().get('product', {})
-    print(f"Fetched product ASIN {asin}")
+    logger.info(f"Fetched product ASIN {asin}")
 
     return {
         'title': product.get('title'),
@@ -64,37 +65,70 @@ def fetch_product_details(asin):
     }
 
 
-file_path = f'./data/fetched_{productType}.json'
-if not os.path.exists(file_path):
-    # Initialize the JSON file with an empty list if it doesn't exist
-    try:
-        with open(file_path, 'w') as file:
-            json.dump([], file, indent=4)
-    except IOError as e:
-        print(f"Error initializing the file: {e}")
+def get_filenames():
+    return [
+        file.name.split('_')[-1].split('.')[0]
+        for file in data_dir.iterdir()
+        if file.name.startswith('list_')
+    ]
 
-# Fetch and save detailed product information incrementally
-limit = 20
-print(f"Processing {limit} products for category {productType}.")
-for i, data in enumerate(json_data[:limit], start=1):
-    asin = data.get('asin')
-    price = data.get('price')
-    productType = data.get('category')
-    if asin:
-        product_details = fetch_product_details(asin)
-        if product_details:
-            product_details['price'] = price
-            product_details['category'] = productType
-            product_details['stock_quantity'] = randint(5, 50)
+
+def load_json_data(filenames):
+    json_data = []
+    for filename in filenames:
+        file_path = data_dir / f'list_{filename}.json'
+        json_data.extend(load_json_file(file_path))
+    logger.info(json_data)
+    return json_data
+
+
+def initialize_fetched_files(json_data):
+    for jdata in json_data:
+        jtype = jdata.get('category')
+        path = data_dir / f'fetched_{jtype}.json'
+        if not path.exists():
             try:
-                with open(file_path, 'r+') as file:
-                    data = json.load(file)
-                    data.append(product_details)
-                    file.seek(0)
-                    json.dump(data, file, indent=4)
+                with open(path, 'w') as f:
+                    json.dump(jdata, f, indent=4)
             except IOError as e:
-                print(f"Error writing to the file: {e}")
+                logger.error(f"Error initializing the file: {e}")
 
-            print(f"Processed {i}/{len(json_data[:limit])} products")
 
-print("All products have been processed and saved.")
+def process_products(json_data, limit=20):
+    print(f"Processing {limit} products.")
+    for i, data in enumerate(json_data[:limit], start=1):
+        asin = data.get('asin')
+        price = data.get('price')
+        product_type = data.get('category')
+        if asin:
+            product_details = fetch_product_details(asin)
+            if product_details:
+                product_details['price'] = price
+                product_details['category'] = product_type
+                product_details['stock_quantity'] = randint(5, 50)
+                save_product_details(product_details, product_type)
+            print(f"Processed {i}/{limit} products")
+
+
+def save_product_details(product_details, product_type):
+    file_path = data_dir / f'fetched_{product_type}.json'
+    try:
+        with open(file_path, 'r+') as file:
+            data = json.load(file)
+            data.append(product_details)
+            file.seek(0)
+            json.dump(data, file, indent=4)
+    except IOError as e:
+        logger.error(f"Error writing to the file: {e}")
+
+
+def main():
+    filenames = get_filenames()
+    json_data = load_json_data(filenames)
+    # initialize_fetched_files(json_data)
+    # process_products(json_data)
+    # print("All products have been processed and saved.")
+
+
+if __name__ == "__main__":
+    main()
