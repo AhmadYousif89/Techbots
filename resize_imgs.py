@@ -22,7 +22,7 @@ TYPE_IMAGE_LIST = list[dict[str, str]]
 TYPE_IMAGES = dict[str, TYPE_IMAGE_LIST]
 
 
-def resize_images(input_json_file: str, output_json_file: str, size=20):
+def resize_images(input_json_file: str, output_json_file: str, size=10):
     """Resizes images from URLs specified in a JSON file.
 
     Args :
@@ -57,7 +57,7 @@ def resize_images(input_json_file: str, output_json_file: str, size=20):
         logger.info(f"Images data has been saved in {output_json_file}")
 
 
-def create_thumbnails(image_data: TYPE_IMAGE_LIST, category: str, size=20):
+def create_thumbnails(image_data: TYPE_IMAGE_LIST, category: str, size=10):
     """Creates thumbnails for a list of images and returns their data URIs.
 
     Args:
@@ -114,21 +114,6 @@ def process_image(image, category, size):
 
 if __name__ == '__main__':
     input_json = 'data/products.json'
-    output_json = 'data/image_data_uri.json'
+    output_json = 'data/thumbnail_data_uri.json'
 
     resize_images(input_json, output_json)
-
-x = [
-    {'B0BV4BC7LV': 'https://m.media-amazon.com/images/I/81L4FpeS3VL.jpg'},
-    {'B085RMD5TP': 'https://m.media-amazon.com/images/I/61V2O4vbYhL.jpg'},
-    {'B00NLZUM36': 'https://m.media-amazon.com/images/I/71QDJHG1PqL.jpg'},
-    {'B098LG3N6R': 'https://m.media-amazon.com/images/I/618zZ7u3sUL.jpg'},
-    {'B07QGHK6Q8': 'https://m.media-amazon.com/images/I/71y+Sl+qWwL.jpg'},
-    {'B0BV4BC7LV': 'https://m.media-amazon.com/images/I/81L4FpeS3VL.jpg'},
-    {'B0BSKX8W3B': 'https://m.media-amazon.com/images/I/81ykzmz6KZL.jpg'},
-    {'B0C7KFZ5TL': 'https://m.media-amazon.com/images/I/91YxKZjwOPL.jpg'},
-    {'B0CLLHSWRL': 'https://m.media-amazon.com/images/I/61mB8mL33pL.jpg'},
-]
-# for image in x:
-#     for asin in image:
-#         print(image[asin])
