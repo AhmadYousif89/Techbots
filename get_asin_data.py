@@ -1,3 +1,4 @@
+from pathlib import Path
 from dotenv import load_dotenv
 from os import getenv
 import requests
@@ -8,13 +9,14 @@ load_dotenv()
 
 api_key = getenv('ASIN_API_KEY')
 base_url = 'https://api.asindataapi.com/request'
+term = 'gaming-laptops'
 
 # Parameters for the API request
 params = {
     'api_key': api_key,
     'type': 'search',
     'amazon_domain': 'amazon.com',
-    'search_term': 'gaming labtops',
+    'search_term': term,
     'output': 'json',
 }
 
@@ -43,5 +45,12 @@ for product in products:
     }
     data.append(fetched_product)
 
-with open('./data/list_gaming_labtops.json', 'w') as file:
-    json.dump(data, file, indent=4)
+data_dir = Path('./data')
+if not data_dir.exists():
+    data_dir.mkdir()
+
+json_file = data_dir / f'/list_{term}.json'
+
+
+with open(json_file, 'w') as file:
+    json.dump([], file, indent=4)
