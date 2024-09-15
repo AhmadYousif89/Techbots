@@ -7,17 +7,11 @@ import os
 import re
 import json
 from pathlib import Path
-from datetime import datetime
 from logger import setup_logger
 
 log_dir = Path('./logs')
 log_file = log_dir / 'duplicate_asins.log'
 logger = setup_logger(f'./{os.path.basename(__file__)}', log_file)
-
-FILE_NAMES = [
-    re.sub(r'^fetched_(.+)\.json$', r'\1', file.name)
-    for file in Path('data').glob('fetched_*.json')
-]
 
 
 def get_top_lvl_asins(json_file):
@@ -90,6 +84,10 @@ def print_log_separator(log_file, separator='='):
 if __name__ == '__main__':
 
     data_dir = Path('./data')
+    FILE_NAMES = [
+        re.sub(r'^fetched_(.+)\.json$', r'\1', file.name)
+        for file in data_dir.glob('fetched_*.json')
+    ]
 
     for json_file in FILE_NAMES:
         file = data_dir / f'fetched_{json_file}.json'
