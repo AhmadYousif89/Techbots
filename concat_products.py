@@ -3,6 +3,7 @@
 Concatenate all products from different JSON files into a single JSON file.
 """
 
+import os
 import re
 import json
 from pathlib import Path
@@ -11,12 +12,9 @@ from typing import Any, Dict, List
 from logger import setup_logger
 
 
-FILE_NAMES = [
-    re.sub(r'^fetched_(.+)\.json$', r'\1', file.name)
-    for file in Path('data').glob('fetched_*.json')
-]
-
-logger = setup_logger(__name__, './logs/concat_products.log')
+logger = setup_logger(
+    f'./{os.path.basename(__file__)}', './logs/concat_products.log'
+)
 
 
 def load_json_file(file_path: Path) -> List[Dict[str, Any]]:
@@ -46,7 +44,7 @@ def clean_object(obj: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def process_product(product: Dict[str, Any]) -> Dict[str, Any]:
+def process_product(product):
     """Process a product dictionary and clean its values."""
     if 'price' in product:
         product['price'] = float(
@@ -54,7 +52,7 @@ def process_product(product: Dict[str, Any]) -> Dict[str, Any]:
         )
 
     if 'stock_quantity' not in product:
-        product['stock_quantity'] = randint(5, 50)
+        product.setdefault('stock_quantity', randint(5, 50))
 
     for review in product.get('top_reviews', []):
         review.setdefault('asin', product.get('asin'))
@@ -66,6 +64,10 @@ def process_product(product: Dict[str, Any]) -> Dict[str, Any]:
 def main():
     data_dir = Path('./data')
     all_products = []
+    FILE_NAMES = [
+        re.sub(r'^fetched_(.+)\.json$', r'\1', file.name)
+        for file in data_dir.glob('fetched_*.json')
+    ]
 
     for file in FILE_NAMES:
         path = data_dir / f'fetched_{file}.json'
@@ -80,7 +82,9 @@ def main():
     try:
         with products_file.open('w', encoding='utf-8') as file:
             json.dump(all_products, file, indent=4)
-        logger.info(f'JSON file cleaned and saved as {products_file}')
+        logger.info(
+            f'JSON file cleaned and saved as {products_file} with total of {len(all_products)} products.'
+        )
     except Exception as error:
         logger.error('Error cleaning JSON file:', exc_info=True)
 
