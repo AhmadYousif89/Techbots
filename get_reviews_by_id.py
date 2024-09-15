@@ -1,7 +1,8 @@
-from os import getenv, makedirs, path
-from dotenv import load_dotenv
-import requests
 import json
+import requests
+from os import getenv
+from pathlib import Path
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -37,15 +38,13 @@ data = {
 
 print(f"Found {len(result['reviews'])} reviews")
 
-# Define the directory and file path
-directory = f'./data/{asin}'
-file_path = path.join(directory, 'reviews.json')
+data_dir = Path('./data')
+if not data_dir.exists():
+    data_dir.mkdir()
 
-# Create the directory if it doesn't exist
-makedirs(directory, exist_ok=True)
-
+file_path = data_dir / 'reviews.json'
 # Write the reviews to a JSON file
-with open(file_path, 'w') as file:
-    json.dump(result, file, indent=4)
+with open(file_path, 'w') as f:
+    json.dump(result, f, indent=4)
 
 print(f"Reviews saved to {file_path}")
