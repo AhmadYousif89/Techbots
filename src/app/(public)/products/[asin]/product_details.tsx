@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { cn } from "@/lib/utils";
 import { SearchParams } from "@/app/lib/types";
 import { capitalizeString } from "@/app/lib/utils";
+import { getBase64Images } from "@/app/lib/convertBase64Images";
 import { RatingStars } from "../_components/reviews/rating_stars";
 import {
   Card,
@@ -65,6 +66,7 @@ export async function ProductDetails({
 }: ProductDetailsProps) {
   const { userId } = auth();
   const { product } = await getProductDetails(asin, searchParams);
+  const getBlobImages = getBase64Images();
 
   if (!product) {
     return notFound();
@@ -82,7 +84,7 @@ export async function ProductDetails({
     >
       {/* add sticky only if one of the Card's childrens has aria-expanded e.g. one of the Accordions */}
       <div className="top-20 self-start lg:group-has-[[aria-expanded='true']]/details:sticky">
-        <ProductCarousel {...product} />
+        <ProductCarousel product={product} blobImages={getBlobImages} />
       </div>
 
       <div className="lg:pt-8">
