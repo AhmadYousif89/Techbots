@@ -2,29 +2,37 @@
 """
 Create image placeholders for the main images of products in a JSON file.
 """
-
 import os
 import json
 import base64
 import subprocess
+from pathlib import Path
 import concurrent.futures
 from logger import setup_logger
 
-logger = setup_logger(__name__, './logs/resize_images.log')
+logger = setup_logger(
+    f'./{os.path.basename(__file__)}',
+    './logs/resize_images.log',
+    info_formatr='%(levelname)s: %(asctime)s - %(message)s',
+)
+
+data_dir = Path('./data')
+thumb_dir = Path('./thumbnails')
 
 
 def resize_images(input_json_file, output_json_file, size=20):
     """Resizes images from URLs specified in a JSON file.
 
-    Args:
-        input_json_file: Path to the input JSON file.
-        output_json_file: Path to the output JSON file.
+    Args :
+    -   **input_json_file** : Path to the input JSON file.
+    -   **output_json_file** : Path to the output JSON file.
+    -   **size** : Size of the thumbnails in pixels.
     """
     try:
         with open(input_json_file, 'r') as f:
             data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        logger.error(f"Loading data from \"{input_json_file}\"\n{e}")
+        logger.error(f"Failed to load data from {input_json_file}\n{e}")
         return
 
     categories = list(set([product['category'] for product in data]))
@@ -36,27 +44,29 @@ def resize_images(input_json_file, output_json_file, size=20):
         if image and image not in images[category]:
             images[category].append(image)
 
-    output_json = {}
+    data_uri = {}
     for category, images in images.items():
-        output_json[category] = create_thumbnails(images, category, size)
+        data_uri[category] = create_thumbnails(images, category, size)
 
     with open(output_json_file, 'w') as f:
-        json.dump(output_json, f, indent=4)
+        json.dump(data_uri, f, indent=4)
+        logger.info(f"Images data URIs saved to {output_json_file}")
 
 
 def create_thumbnails(images, category, size=20):
     """Creates thumbnails for a list of images and returns their data URIs.
 
     Args:
-        images: List of image URLs.
-        category: Category of the images.
-        size: Size of the thumbnails in pixels.
+    -   **images**: List of image URLs.
+    -   **category**: Category of the images.
+    -   **size**: Size of the thumbnails in pixels.
 
-    Returns:
-        List of image data URIs.
+    Returns :
+    -   List of image data URIs.
     """
-    if not os.path.exists(f'thumbnails/{category}'):
-        os.makedirs(f'thumbnails/{category}', exist_ok=True)
+    path = thumb_dir / category
+    if not path.exists():
+        path.mkdir(parents=True)
 
     data_uris = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -66,7 +76,7 @@ def create_thumbnails(images, category, size=20):
         }
         for future in concurrent.futures.as_completed(future_to_image):
             data_uri = future.result()
-            if data_uri is not None:
+            if data_uri:
                 data_uris.append(data_uri)
 
     return data_uris
@@ -75,8 +85,8 @@ def create_thumbnails(images, category, size=20):
 def process_image(image, category, size):
     """Resizes an image and returns its data URI."""
     image_name = image.split('/')[-1].replace('.jpg', '_thumb.jpg')
-    thumbnail_path = f'thumbnails/{category}/{image_name}'
-    if not os.path.exists(thumbnail_path):
+    thumbnail_path = thumb_dir / f'{category}/{image_name}'
+    if not thumbnail_path.exists():
         try:  # Resize the image using ffmpeg
             subprocess.run(
                 f'ffmpeg -y -i {image} -vf scale={size}:-1 {thumbnail_path}',
@@ -92,9 +102,8 @@ def process_image(image, category, size):
         return data_uri
 
 
-# Example usage:
-input_json = 'data/products.json'
-output_json = 'data/image_data_uri.json'
+if __name__ == '__main__':
+    input_json = 'data/products.json'
+    output_json = 'data/image_data_uri.json'
 
-
-resize_images(input_json, output_json)
+    resize_images(input_json, output_json)
