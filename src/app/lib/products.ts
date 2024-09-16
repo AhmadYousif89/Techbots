@@ -1,7 +1,48 @@
+"use server";
 import prisma from "./db";
 import { cache } from "./cache";
 
 const day = 60 * 60 * 24;
+
+export type Data = {
+  asin: string;
+  title: string;
+  mainImage: string;
+  category: string;
+};
+
+export const getSearchedProducts = cache(
+  async () => {
+    try {
+      const result = await prisma.product.findMany({
+        select: {
+          asin: true,
+          title: true,
+          category: true,
+          mainImage: true,
+        },
+      });
+
+      const data = result.reduce((list: Record<string, Data[]>, p) => {
+        const item = {
+          asin: p.asin,
+          title: p.title,
+          mainImage: p.mainImage,
+          category: p.category,
+        };
+        list[p.category] = [...(list[p.category] ?? []), item];
+        return list;
+      }, {});
+
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to fetch search data!");
+    }
+  },
+  ["/products", "getSearchedProducts"],
+  { revalidate: day },
+);
 
 export const getCategoryList = cache(
   async () => {
