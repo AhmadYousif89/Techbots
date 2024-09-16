@@ -62,7 +62,7 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
       </div>
       <section
         className={cn(
-          "@container grid gap-x-8 gap-y-16",
+          "grid gap-x-8 gap-y-16 @container",
           "mx-auto w-full max-w-screen-lg px-4 py-8",
           "grid-cols-1 min-[380px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
           "xl:col-[2] xl:ml-auto xl:self-start xl:pl-0 xl:pr-8",
@@ -161,7 +161,7 @@ const getProducts = cache(
     } = {
       orderBy: sort
         ? sortOptions[sort as keyof typeof sortOptions]
-        : { createdAt: "asc" },
+        : { stockQuantity: "asc" },
       take: limit,
       skip: start,
     };
