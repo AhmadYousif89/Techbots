@@ -2,12 +2,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function SearchItemSkeleton() {
   return (
-    <Skeleton className="my-2 flex items-center gap-4 bg-none p-2">
-      <Skeleton className="size-12 rounded-md bg-muted-foreground/50" />
-      <div className="grid flex-1 gap-2">
-        <Skeleton className="h-2 w-full rounded-md bg-muted-foreground/50"></Skeleton>
-        <Skeleton className="h-2 w-3/4 rounded-md bg-muted-foreground/50"></Skeleton>
-      </div>
-    </Skeleton>
+    <div className="p-4">
+      <Skeleton className="mb-6 h-5 w-32" />
+
+      {[...Array(4)].map((_, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-between gap-4 pb-3"
+        >
+          <Skeleton className="h-12 w-16" />
+          <div className="size-full space-y-2">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-full" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
