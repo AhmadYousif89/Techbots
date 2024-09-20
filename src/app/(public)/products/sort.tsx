@@ -1,7 +1,9 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { extractSearchParams } from "@/app/lib/utils";
+import { SearchParams, SortValue } from "@/app/lib/types";
 
 import {
   Select,
@@ -11,9 +13,8 @@ import {
   SelectContent,
   SelectSeparator,
 } from "@/components/ui/select";
-import { extractSearchParams } from "@/app/lib/utils";
-import { SearchParams, SortValue } from "@/app/lib/types";
 import { LoadingButton } from "./_components/skeletons/loading_btn";
+import { updateCookies } from "@/app/lib/update_cookies";
 
 const sortList = [
   { value: "newest", label: "Newest" },
@@ -28,21 +29,20 @@ export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
   const [isPending, startTransition] = useTransition();
   const [optimisticSort, setOptimisticSort] = useOptimistic(sp.sort);
 
-  const params: Record<string, string> = {
-    ...(sp.page && { page: sp.page }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.max }),
-    ...(sp.grid && { grid: sp.grid }),
-  };
-
   const handleOnChange = (value: SortValue) => {
-    value !== "reset" ? (params.sort = value) : undefined;
+    const newParams = new URLSearchParams(
+      Object.entries(sp).filter(([k, v]) => (v ? v && k !== "sort" : v)),
+    );
 
-    const newParams = new URLSearchParams(params);
     startTransition(() => {
       setOptimisticSort(value);
+      if (value !== "reset") {
+        newParams.set("sort", value);
+        updateCookies({ sort: value });
+      } else {
+        newParams.delete("sort");
+        updateCookies({ sort: undefined });
+      }
       router.push(`/products?${newParams.toString()}`);
     });
   };
