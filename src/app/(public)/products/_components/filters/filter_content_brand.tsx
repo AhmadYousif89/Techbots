@@ -19,6 +19,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { updateCookies } from "@/app/lib/update_cookies";
 
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
@@ -36,8 +37,8 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const newParams = new URLSearchParams(
     Object.entries(sp).filter(([k, v]) => (v ? v && k !== "brand" : v)),
   );
-
-  const url = () => `/products/?${newParams.toString()}`;
+  const ps = newParams.toString() ? `&${newParams.toString()}` : "";
+  const url = `/products/?${ps}`;
 
   const hasFilterBrand = optBrands.length > 0;
   const filteredBrands = brands.filter((brand) =>
@@ -57,10 +58,16 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
     setOptBrands(updatedBrands);
 
     startTransition(() => {
-      router.push(
-        url() +
-          (updatedBrands.length > 0 ? `&brand=${updatedBrands.join(",")}` : ""),
-      );
+      router.push(url + `&brand=${updatedBrands.join(",")}`);
+      updateCookies({ brand: updatedBrands.join(",") });
+    });
+  };
+
+  const onBrandReset = () => {
+    setOptBrands([]);
+    startTransition(() => {
+      router.push(url);
+      updateCookies({ brand: undefined });
     });
   };
 
@@ -135,7 +142,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
               </HoverCard>
               <Button
                 variant={"link"}
-                onClick={() => router.push(url())}
+                onClick={onBrandReset}
                 className="h-auto gap-1 p-0 text-xs font-medium text-muted-foreground hover:text-destructive md:pr-4"
               >
                 <ChevronLeft className="size-3" /> Clear
