@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import prisma from "@/app/lib/db";
 import { SearchParams, TProduct } from "@/app/lib/types";
-import { capitalizeString, extractSearchParams } from "@/app/lib/utils";
+import { capitalizeString } from "@/app/lib/utils";
 
 import { ProductDetails } from "./product_details";
 import { ProductReviews } from "./product_reviews";
@@ -16,6 +16,7 @@ import { SimilarItemSkeleton } from "./skeletons/similar_items";
 import { ProductDetailSkeleton } from "./skeletons/product_view";
 import { ReviewSkeleton } from "./skeletons/reviews";
 import { Separator } from "@/components/ui/separator";
+import { getSearchParams } from "@/app/lib/getSearchParams";
 
 export const generateMetadata = async ({
   params,
@@ -35,12 +36,8 @@ export const generateMetadata = async ({
   };
 };
 
-export const getProductDetails = async (
-  asin: string,
-  searchParams?: SearchParams,
-  limit = 8,
-) => {
-  const { page, selectedRating } = extractSearchParams(searchParams);
+export const getProductDetails = async (asin: string, limit = 8) => {
+  const { page, selectedRating } = getSearchParams();
   const limitPerPage = limit;
   const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
   let product = {} as TProduct;
@@ -106,7 +103,7 @@ type PageProps = {
   searchParams: SearchParams;
 };
 
-export default function SingleProductPage({ params, searchParams }: PageProps) {
+export default function SingleProductPage({ params }: PageProps) {
   const { asin } = params;
 
   return (
@@ -118,7 +115,6 @@ export default function SingleProductPage({ params, searchParams }: PageProps) {
       <Suspense fallback={<ProductDetailSkeleton />}>
         <ProductDetails
           asin={asin}
-          searchParams={searchParams}
           checkItemInServerCart={checkItemInServerCart}
         />
       </Suspense>
@@ -138,7 +134,7 @@ export default function SingleProductPage({ params, searchParams }: PageProps) {
               Customer’s Review
             </CardTitle>
           </CardHeader>
-          <ProductReviews asin={asin} searchParams={searchParams} />
+          <ProductReviews asin={asin} />
         </Card>
       </Suspense>
     </main>
