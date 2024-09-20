@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { cn } from "@/lib/utils";
 import { SearchParams } from "@/app/lib/types";
 import { capitalizeString } from "@/app/lib/utils";
-import { getBase64Images } from "@/app/lib/convertBase64Images";
+import { getThumbnailImages } from "@/app/lib/getThumbnailImages";
 import { RatingStars } from "../_components/reviews/rating_stars";
 import {
   Card,
@@ -51,7 +51,6 @@ function parseProductDetails(data: string | null) {
 type ProductDetailsProps = PropsWithChildren<{
   asin: string;
   className?: string;
-  searchParams?: SearchParams;
   checkItemInServerCart?: (
     asin: string,
     cuid: string | null,
@@ -61,12 +60,11 @@ type ProductDetailsProps = PropsWithChildren<{
 export async function ProductDetails({
   asin,
   className,
-  searchParams,
   checkItemInServerCart,
 }: ProductDetailsProps) {
   const { userId } = auth();
-  const { product } = await getProductDetails(asin, searchParams);
-  const getBlobImages = getBase64Images();
+  const { product } = await getProductDetails(asin);
+  const getBlobImages = getThumbnailImages();
 
   if (!product) {
     return notFound();
