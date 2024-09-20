@@ -2,8 +2,9 @@
 
 import { useOptimistic, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { extractSearchParams } from "@/app/lib/utils";
 import { LayoutGrid, LayoutList, Loader2 } from "lucide-react";
+import { extractSearchParams } from "@/app/lib/utils";
+import { updateCookies } from "@/app/lib/update_cookies";
 
 import { Grid2x2 } from "@/icons/grid2x2";
 import { Grid3x3 } from "@/icons/grid3x3";
@@ -15,28 +16,27 @@ export function ProductGridSize() {
   const router = useRouter();
   const params = useSearchParams();
   const sp = extractSearchParams(params.entries());
-  const isMobile = useMediaQuery("(max-width: 1024px)");
   const [optimisticGrid, setOptimisticGrid] = useOptimistic(sp.grid);
   const [isPending, startTransition] = useTransition();
+  const isMobile = useMediaQuery("(max-width: 1024px)");
 
-  const newParams = new URLSearchParams({
-    ...(sp.page && { page: sp.page }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.max }),
-  });
+  const newParams = new URLSearchParams(
+    Object.entries(sp).filter(([k, v]) => (v ? v && k !== "grid" : v)),
+  );
   const ps = newParams.toString();
 
   const handleGridChange = (value: string) => {
+    if (optimisticGrid === value) {
+      router.push(`/products?${ps}`);
+      updateCookies({ grid: undefined });
+      return;
+    }
+
     startTransition(() => {
-      if (optimisticGrid === value) {
-        router.push(`/products?${ps}`);
-        return;
-      }
       setOptimisticGrid(value);
-      router.push(`/products?${ps && ps + "&"}grid=${value}`);
+      const updatedParams = ps ? `${ps}&grid=${value}` : `grid=${value}`;
+      router.push(`/products?${updatedParams}`);
+      updateCookies({ grid: value });
     });
   };
 
