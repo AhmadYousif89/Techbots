@@ -5,9 +5,9 @@ import { EyeIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
 
 import { cn } from "@/lib/utils";
-import { extractSearchParams } from "@/app/lib/utils";
-import { TProduct, SearchParams } from "@/app/lib/types";
 import { checkItemInServerCart } from "../[asin]/page";
+import { TProduct, SearchParams } from "@/app/lib/types";
+import { getSearchParams } from "@/app/lib/getSearchParams";
 
 import { RatingStars } from "./reviews/rating_stars";
 import { Separator } from "@/components/ui/separator";
@@ -22,13 +22,12 @@ const ProductQuickView = dynamic(() =>
 
 type Props = {
   product: TProduct;
-  searchParams: SearchParams;
 };
 
-export async function ProductGridItem({ product, searchParams }: Props) {
+export async function ProductGridItem({ product }: Props) {
   const { userId } = auth();
   const { asin, rating, mainImage, title, price } = product;
-  const { grid } = extractSearchParams(searchParams);
+  const { grid } = getSearchParams();
   const prodUrl = `/products/${asin}`;
 
   return (
