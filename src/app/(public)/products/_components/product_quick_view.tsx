@@ -8,14 +8,14 @@ import { RatingStars } from "./reviews/rating_stars";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getBase64Images } from "@/app/lib/convertBase64Images";
+import { getThumbnailImages } from "@/app/lib/getThumbnailImages";
 
 type ProductQuickViewProps = {
   product: TProduct;
 };
 
 export async function ProductQuickView({ product }: ProductQuickViewProps) {
-  const getBlobImages = getBase64Images();
+  const getBlobImages = getThumbnailImages();
 
   return (
     <div className="max-h-[600px] overflow-y-auto lg:max-h-[700px]">
