@@ -24,39 +24,39 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
   const router = useRouter();
   const params = useSearchParams();
+  const sp = extractSearchParams(params.entries());
+
   const [showMore, setShowMore] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const sp = extractSearchParams(params.entries());
+
   const brandParams = sp.brand ? sp.brand.split(",") : [];
-  const [optimisticBrands, useOptimisticBrands] = useOptimistic(brandParams);
+  const [optBrands, setOptBrands] = useOptimistic(brandParams);
   const [isPending, startTransition] = useTransition();
 
-  const newParams = new URLSearchParams({
-    ...(sp.page && { page: sp.page }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.max }),
-    ...(sp.grid && { grid: sp.grid }),
-  });
+  const newParams = new URLSearchParams(
+    Object.entries(sp).filter(([k, v]) => (v ? v && k !== "brand" : v)),
+  );
 
   const url = () => `/products/?${newParams.toString()}`;
 
-  const hasFilterBrand = optimisticBrands.length > 0;
+  const hasFilterBrand = optBrands.length > 0;
   const filteredBrands = brands.filter((brand) =>
-    brand.toLowerCase().includes(searchValue.toLowerCase()),
+    brand
+      .toLowerCase()
+      .replace(/[-_]/g, "")
+      .includes(searchValue.toLowerCase().replace(/[-_]/g, "")),
   );
   const end = 30;
   const list = filteredBrands.slice(0, end);
 
   const onBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
+    const updatedBrands = optBrands.includes(name)
+      ? optBrands.filter((brand) => brand !== name)
+      : [...optBrands, name];
+    setOptBrands(updatedBrands);
+
     startTransition(() => {
-      const updatedBrands = optimisticBrands.includes(name)
-        ? optimisticBrands.filter((brand) => brand !== name)
-        : [...optimisticBrands, name];
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useOptimisticBrands(updatedBrands);
       router.push(
         url() +
           (updatedBrands.length > 0 ? `&brand=${updatedBrands.join(",")}` : ""),
@@ -73,7 +73,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
           name={brand}
           type="checkbox"
           className="h-4 w-4 cursor-pointer"
-          checked={optimisticBrands.includes(brand)}
+          checked={optBrands.includes(brand)}
           onChange={onBrandChange}
         />
         <Label
@@ -87,6 +87,12 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
       </div>
     );
   };
+
+  const noResultMsg = (
+    <p className="col-span-full text-center text-xs text-muted-foreground">
+      Your search did not match any brands.
+    </p>
+  );
 
   return (
     <>
@@ -103,7 +109,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
                     {isPending ? (
                       <Loader2 className="size-4 animate-spin text-muted-foreground" />
                     ) : (
-                      optimisticBrands.length
+                      optBrands.length
                     )}
                   </small>
                 </HoverCardTrigger>
@@ -113,7 +119,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
                   </h4>
                   <Separator className="my-2" />
                   <div className="grid grid-cols-[repeat(auto-fit,minmax(90px,1fr))] gap-2">
-                    {optimisticBrands.map((brand, index) => (
+                    {optBrands.map((brand, index) => (
                       <p
                         key={index}
                         className="text-xs font-medium text-muted-foreground"
@@ -143,41 +149,37 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
             type="search"
             id="brand-search"
             placeholder="Filter by brand..."
-            className="h-7 py-0 focus-visible:rounded-none sm:placeholder:text-xs"
-            value={searchValue}
+            className="h-7 py-0 focus-visible:rounded sm:placeholder:text-xs"
             onChange={(e) => setSearchValue(e.target.value)}
+            value={searchValue}
           />
         </Label>
       </section>
 
-      <section className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 pl-4 xl:grid-cols-2 xl:gap-x-0">
-        {filteredBrands.length > 0 ? (
-          <>
-            {list.map(renderBrandItem)}
-            {filteredBrands.length > end && (
-              <Accordion type="single" collapsible className="col-span-full">
-                <AccordionItem value="cats-2" className="border-b-0">
-                  <AccordionContent>
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 xl:grid-cols-2 xl:gap-x-0">
-                      {filteredBrands.slice(end).map(renderBrandItem)}
-                    </div>
-                  </AccordionContent>
-                  <AccordionTrigger
-                    onClick={() => setShowMore(!showMore)}
-                    className="justify-center gap-1 py-0 pt-4 text-xs text-muted-foreground underline-offset-4 hover:text-primary/50"
-                  >
-                    {showMore ? "Show Less" : "Show More"}
-                  </AccordionTrigger>
-                </AccordionItem>
-              </Accordion>
-            )}
-          </>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            No brands match your search.
-          </p>
-        )}
-      </section>
+      {filteredBrands.length > 0 ? (
+        <section className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 pl-4 xl:grid-cols-2 xl:gap-x-0">
+          {list.map(renderBrandItem)}
+          {filteredBrands.length > end && (
+            <Accordion type="single" collapsible className="col-span-full">
+              <AccordionItem value="cats-2" className="border-b-0">
+                <AccordionContent>
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,auto))] gap-2 space-y-1 xl:grid-cols-2 xl:gap-x-0">
+                    {filteredBrands.slice(end).map(renderBrandItem)}
+                  </div>
+                </AccordionContent>
+                <AccordionTrigger
+                  onClick={() => setShowMore(!showMore)}
+                  className="justify-center gap-1 py-0 pt-4 text-xs text-muted-foreground underline-offset-4 hover:text-primary/50"
+                >
+                  {showMore ? "Show Less" : "Show More"}
+                </AccordionTrigger>
+              </AccordionItem>
+            </Accordion>
+          )}
+        </section>
+      ) : (
+        noResultMsg
+      )}
     </>
   );
 }
