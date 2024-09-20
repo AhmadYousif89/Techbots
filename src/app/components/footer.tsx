@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { capitalizeString } from "@/app/lib/utils";
 import { Copyright } from "lucide-react";
+import { capitalizeString } from "../lib/utils";
+import { getCategories } from "../lib/products";
 
-import { Logo } from "../components/logo";
-import { Button } from "../../components/ui/button";
-import { Separator } from "../../components/ui/separator";
-import { categories } from "@/app/lib/types";
+import { Logo } from "./logo";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
-export function Footer() {
+export async function Footer() {
+  const categories = await getCategories();
+
   return (
     <footer id="footer" className="mt-8 bg-background px-6 py-20 lg:p-20">
       <div className="lg:max-view mx-auto grid max-w-screen-md gap-8 text-primary lg:grid-cols-2 lg:gap-y-0">
