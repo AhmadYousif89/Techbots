@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { SearchParams } from "@/app/lib/types";
-import { capitalizeString, extractSearchParams } from "@/app/lib/utils";
+import { capitalizeString } from "@/app/lib/utils";
 
 import { Separator } from "@/components/ui/separator";
 import { PaginationSummary } from "./_components/pagination_summary";
@@ -12,7 +12,8 @@ import { ProductGrid } from "./grid";
 import { SortProducts } from "./sort";
 import { FilterProducts } from "./filter";
 import { SearchProducts } from "./search";
-import { getSearchedProducts } from "@/app/lib/products";
+import { getSearchItems } from "@/app/lib/products";
+import { getSearchParams } from "@/app/lib/getSearchParams";
 
 export const generateMetadata = ({ searchParams }: PageProps): Metadata => {
   const category = capitalizeString(searchParams["cat"] ?? "", false);
@@ -37,8 +38,8 @@ type PageProps = {
 };
 
 export default function ProductsPage({ searchParams }: PageProps) {
-  const { category, grid } = extractSearchParams(searchParams);
-  const searchResults = getSearchedProducts();
+  const { category, grid } = getSearchParams();
+  const searchResults = getSearchItems();
 
   return (
     <Suspense fallback={<ProductsViewSkeleton grid={grid} />}>
@@ -51,13 +52,13 @@ export default function ProductsPage({ searchParams }: PageProps) {
             </p>
             <SearchProducts data={searchResults} />
           </div>
-          <PaginationSummary searchParams={searchParams} />
+          <PaginationSummary />
         </div>
 
         <Separator />
         {/* Filter Section On Small Screens */}
         <div className="relative xl:hidden">
-          <FilterProducts searchParams={searchParams} />
+          <FilterProducts />
           <div className="absolute right-0 top-3.5 flex items-center gap-4 pr-2 md:pr-8">
             <SearchProducts data={searchResults} />
             <SortProducts searchParams={searchParams} />
@@ -68,13 +69,13 @@ export default function ProductsPage({ searchParams }: PageProps) {
         <div className="py-8 xl:grid xl:grid-cols-[minmax(20%,auto),1fr] xl:gap-8">
           {/* Filter Section On Desktop */}
           <div className="relative hidden justify-between self-start xl:flex">
-            <FilterProducts searchParams={searchParams} open="filter" />
+            <FilterProducts open="filter" />
             <div className="absolute right-0 top-3 flex items-center gap-4">
               <SortProducts searchParams={searchParams} />
             </div>
           </div>
           {/* End Filter */}
-          <ProductGrid searchParams={searchParams} />
+          <ProductGrid />
         </div>
       </main>
     </Suspense>
