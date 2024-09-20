@@ -2,24 +2,19 @@ import prisma from "@/app/lib/db";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import { Ban } from "lucide-react";
-import { cache } from "@/app/lib/cache";
 import { redirect } from "next/navigation";
-import { extractSearchParams } from "@/app/lib/utils";
-import { SearchParams, SortValue, TProduct } from "../../lib/types";
+import { getSearchParams } from "@/app/lib/getSearchParams";
+import { SearchParams, SortValue, TProduct } from "@/app/lib/types";
 
 import { ProductGridSize } from "./_components/product_grid_size";
 import { ProductGridItem } from "./_components/product_grid_item";
 import { PaginationButtons } from "./_components/pagination_button";
 import { GridItemSkeleton } from "./_components/skeletons/grid_item";
 
-type ProductGridProps = {
-  searchParams: SearchParams;
-};
-
-export async function ProductGrid({ searchParams }: ProductGridProps) {
-  const filters = getFilters(searchParams);
-  const sp = extractSearchParams(searchParams);
+export async function ProductGrid() {
+  const filters = getFilters();
   const totalCount = await prisma.product.count({ where: filters });
+  const sp = getSearchParams();
 
   const { page } = sp;
   const limitPerPage = 8;
@@ -31,15 +26,9 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
   const hasNextPage = end < totalCount;
   const hasPrevPage = start > 0;
 
-  const params = {
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.min && { min: sp.min }),
-    ...(sp.max && { max: sp.max }),
-    ...(sp.grid && { grid: sp.grid }),
-  };
-  const newParams = new URLSearchParams(params);
+  const newParams = new URLSearchParams(
+    Object.entries(sp).filter(([k, v]) => (v ? v && k !== "page" : v)),
+  );
 
   const ps = newParams.toString() ? `&${newParams.toString()}` : "";
 
@@ -51,8 +40,8 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
           <PaginationButtons
             className="ml-auto flex items-center justify-center gap-2"
             page={page}
-            baseUrl={"/products/"}
             params={ps}
+            baseUrl={"/products/"}
             totalCount={totalCount}
             totalPages={totalPages}
             hasPrevPage={hasPrevPage}
@@ -73,18 +62,18 @@ export async function ProductGrid({ searchParams }: ProductGridProps) {
         )}
       >
         <Suspense
-          key={JSON.stringify(searchParams)}
+          key={JSON.stringify(sp)}
           fallback={<GridItemSkeleton grid={sp.grid} />}
         >
-          <DisplayProductsGrid {...searchParams} />
+          <DisplayProductsGrid />
         </Suspense>
       </section>
     </div>
   );
 }
 
-async function DisplayProductsGrid(searchParams: SearchParams) {
-  const products = await getProducts(searchParams);
+async function DisplayProductsGrid() {
+  const products = await getProducts();
 
   if (products.length == 0) {
     return (
@@ -100,18 +89,14 @@ async function DisplayProductsGrid(searchParams: SearchParams) {
   return (
     <>
       {products.map((product) => (
-        <ProductGridItem
-          key={product.id}
-          searchParams={searchParams}
-          product={product}
-        />
+        <ProductGridItem key={product.id} product={product} />
       ))}
     </>
   );
 }
 
-export function getFilters(searchParams: SearchParams) {
-  const { category, brand, min, max } = extractSearchParams(searchParams);
+export function getFilters() {
+  const { category, brand, min, max } = getSearchParams();
 
   let filter: { [k: string]: any } = category ? { category } : {};
   if (brand && brand.includes(",")) {
@@ -133,61 +118,63 @@ export function getFilters(searchParams: SearchParams) {
   return filter;
 }
 
-const getProducts = cache(
-  async (searchParams: SearchParams) => {
-    const limit = 8;
-    const filter = getFilters(searchParams);
-    const { page, sort } = extractSearchParams(searchParams);
-    const totalCount = await prisma.product.count({ where: filter });
-    const totalPages = Math.ceil(totalCount / limit);
-    const start = (+page <= 0 || +page > totalPages ? 0 : +page - 1) * limit;
+export async function getProducts() {
+  const limit = 8;
+  const filter = getFilters();
+  const searchParams = getSearchParams();
+  const { page, sort } = searchParams;
+  const totalCount = await prisma.product.count({ where: filter });
+  const totalPages = Math.ceil(totalCount / limit);
+  const start = (+page <= 0 || +page > totalPages ? 0 : +page - 1) * limit;
 
-    type SortOptions = Record<
-      Exclude<SortValue, "">,
-      Record<string, "asc" | "desc">
-    >;
-    const sortOptions: Omit<SortOptions, "reset"> = {
-      popular: { rating: "desc" },
-      newest: { createdAt: "desc" },
-      "lowest-price": { price: "asc" },
-      "highest-price": { price: "desc" },
-    };
+  type SortOptions = Record<
+    Exclude<SortValue, "">,
+    Record<string, "asc" | "desc">
+  >;
+  const sortOptions: Omit<SortOptions, "reset"> = {
+    popular: { rating: "desc" },
+    newest: { createdAt: "desc" },
+    "lowest-price": { price: "asc" },
+    "highest-price": { price: "desc" },
+  };
 
-    const args: {
-      where?: any;
-      orderBy: Record<string, "asc" | "desc">;
-      take: number;
-      skip: number;
-    } = {
-      orderBy: sort
-        ? sortOptions[sort as keyof typeof sortOptions]
-        : { stockQuantity: "asc" },
-      take: limit,
-      skip: start,
-    };
+  const args: {
+    where?: any;
+    orderBy: Record<string, "asc" | "desc">;
+    take: number;
+    skip: number;
+  } = {
+    orderBy: sort
+      ? sortOptions[sort as keyof typeof sortOptions]
+      : { stockQuantity: "asc" },
+    take: limit,
+    skip: start,
+  };
 
-    if (Object.values(filter).length > 0) {
-      args.where = filter;
-    }
+  if (Object.values(filter).length > 0) {
+    args.where = filter;
+  }
 
-    let products: TProduct[] = [];
-    try {
-      products = (await prisma.product.findMany({
-        ...args,
-        include: { images: true },
-      })) as TProduct[];
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+  let products: TProduct[] = [];
+  try {
+    products = (await prisma.product.findMany({
+      ...args,
+      include: { images: true },
+    })) as TProduct[];
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
 
-    // Redirect to first page if is products and page is out of bounds
-    if (totalCount > 0 && (+page > totalPages || +page < 0)) {
-      console.log("Redirecting to first page");
-      const newParams = new URLSearchParams({ ...searchParams, page: "1" });
-      redirect(`/products/?${newParams.toString()}`);
-    }
+  // Redirect to first page if is products and page is out of bounds
+  if (totalCount > 0 && (+page > totalPages || +page < 0)) {
+    console.log("Redirecting to first page");
+    const newParams = new URLSearchParams(
+      Object.entries(searchParams).filter(([k, v]) => v),
+    );
+    newParams.set("page", "1");
+    console.log(newParams.toString());
+    redirect(`/products/?${newParams.toString()}`);
+  }
 
-    return products;
-  },
-  ["/products", "getProducts"],
-);
+  return products;
+}
