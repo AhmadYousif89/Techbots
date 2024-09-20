@@ -3,7 +3,6 @@ import Image from "next/image";
 
 import prisma from "@/app/lib/db";
 import { cache } from "@/app/lib/cache";
-import { Category } from "../lib/types";
 import {
   Carousel,
   CarouselContent,
@@ -19,7 +18,7 @@ const day = 60 * 60 * 24;
 
 const getTechDeals = cache(
   async () => {
-    const categories: Category[] = [
+    const categories: string[] = [
       "gpu",
       "routers",
       "powerbanks",

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Button } from "../../components/ui/button";
 import { CategoryNavMenu } from "./category_nav_menu";
-import { getCategoryList } from "@/app/lib/products";
+import { getCategories } from "@/app/lib/products";
 
 export async function MainNav() {
-  const categories = getCategoryList();
+  const categories = getCategories();
 
   return (
     <nav className="hidden items-center lg:flex">
