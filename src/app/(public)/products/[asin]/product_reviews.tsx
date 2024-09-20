@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { TProduct } from "@/app/lib/types";
-import { extractSearchParams } from "@/app/lib/utils";
 import { RatingBreakdown, SearchParams } from "@/app/lib/types";
-
+import { getSearchParams } from "@/app/lib/getSearchParams";
 import { getProductDetails } from "../[asin]/page";
+
 import { AddReview } from "../_components/reviews/add_review";
 import { ReviewItem } from "../_components/reviews/review_item";
 import { RatingStars } from "../_components/reviews/rating_stars";
@@ -23,20 +23,12 @@ import { Button } from "@/components/ui/button";
 
 type ProductReviewsProps = {
   asin: string;
-  searchParams: SearchParams;
 };
 
-export async function ProductReviews({
-  asin,
-  searchParams,
-}: ProductReviewsProps) {
+export async function ProductReviews({ asin }: ProductReviewsProps) {
   const limit = 5;
-  const { page, selectedRating } = extractSearchParams(searchParams);
-  const { product, reviewsCount } = await getProductDetails(
-    asin,
-    searchParams,
-    limit,
-  );
+  const { page, selectedRating } = getSearchParams();
+  const { product, reviewsCount } = await getProductDetails(asin, limit);
 
   const reviews = product?.topReviews;
 
@@ -89,7 +81,6 @@ export async function ProductReviews({
           <h3 className="text-lg font-medium">{headDesciption}</h3>
           <ReviewsPaginationButtons
             asin={asin}
-            searchParams={searchParams}
             hasPrevPage={hasPrevPage}
             hasNextPage={hasNextPage}
             totalPages={totalPages}
@@ -107,7 +98,7 @@ export async function ProductReviews({
   return (
     <CardContent>
       <section className="flex flex-col gap-8 lg:flex-row lg:justify-between">
-        <RatingOverview searchParams={searchParams} product={product} />
+        <RatingOverview product={product} />
         <Card
           id="reviews"
           className="flex flex-1 scroll-mt-14 flex-col justify-between p-6 lg:basis-full"
@@ -127,7 +118,6 @@ type PaginationSectionProps = {
   hasPrevPage: boolean;
   hasNextPage: boolean;
   totalPages: number;
-  searchParams: SearchParams;
 };
 
 export function ReviewsPaginationButtons({
@@ -135,9 +125,8 @@ export function ReviewsPaginationButtons({
   hasPrevPage,
   hasNextPage,
   totalPages,
-  searchParams,
 }: PaginationSectionProps) {
-  const { page, selectedRating, category } = extractSearchParams(searchParams);
+  const { page, selectedRating, category } = getSearchParams();
   const params = new URLSearchParams({
     ...(category && { cat: category }),
     ...(selectedRating && { sr: selectedRating }),
@@ -176,10 +165,9 @@ type RatingOverviewProps = {
     TProduct,
     "asin" | "rating" | "ratingsTotal" | "ratingBreakdown"
   >;
-  searchParams: SearchParams;
 };
 
-function RatingOverview({ product, searchParams }: RatingOverviewProps) {
+function RatingOverview({ product }: RatingOverviewProps) {
   const { asin, rating, ratingsTotal } = product;
   const ratingBreakdown = product.ratingBreakdown as RatingBreakdown;
 
@@ -202,7 +190,6 @@ function RatingOverview({ product, searchParams }: RatingOverviewProps) {
       </Card>
       <ReviewsRatingBars
         asin={asin}
-        searchParams={searchParams}
         ratingsTotal={ratingsTotal}
         ratingBreakdown={ratingBreakdown}
       />
