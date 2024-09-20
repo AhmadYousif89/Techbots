@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { updateCookies } from "@/app/lib/update_cookies";
 
 export function FilterContentPrice() {
   const router = useRouter();
@@ -19,22 +20,19 @@ export function FilterContentPrice() {
 
   const { min, max, setMax, setMin, clearPrice } = useFilter((s) => s.price);
 
-  const newParams = new URLSearchParams({
-    ...(sp.page && { page: sp.page }),
-    ...(sp.category && { cat: sp.category }),
-    ...(sp.brand && { brand: sp.brand }),
-    ...(sp.sort && { sort: sp.sort }),
-    ...(sp.grid && { grid: sp.grid }),
-  });
+  const newParams = new URLSearchParams(
+    Object.entries(sp).filter(([k, v]) =>
+      v ? v && k !== "min" && k !== "max" : v,
+    ),
+  );
 
   const { min: paramMin, max: paramMax } = sp;
-  const minParam = min && `min=${min ? min : paramMin}`;
-  const maxParam = max && `max=${max ? max : paramMax}`;
-  const url = () => {
-    return `/products?${newParams.toString()}${minParam ? `&${minParam}` : ""}${
-      maxParam ? `&${maxParam}` : ""
-    }`;
-  };
+  const minParam = min ? `min=${min}` : paramMin ? `min=${paramMin}` : "";
+  const maxParam = max ? `max=${max}` : paramMax ? `max=${paramMax}` : "";
+  const ps = [newParams.toString(), minParam, maxParam]
+    .filter(Boolean)
+    .join("&");
+  const url = `/products${ps ? `?${ps}` : ""}`;
 
   const handleMinChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const val = parseFloat(e.target.value);
@@ -48,13 +46,15 @@ export function FilterContentPrice() {
 
   const handleReset = () => {
     router.push(`/products?${newParams.toString()}`);
+    updateCookies({ min: undefined, max: undefined });
     clearPrice();
   };
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     startTransition(() => {
-      router.push(url());
+      router.push(url);
+      updateCookies({ min, max });
     });
   };
 
