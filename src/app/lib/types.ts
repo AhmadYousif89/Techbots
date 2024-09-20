@@ -1,31 +1,15 @@
-import { OrderItem, Product, ProductImages, Review } from '@prisma/client';
+import { OrderItem, Product, ProductImages, Review } from "@prisma/client";
 
-export const categories = [
-  'gaming-laptops',
-  'laptops',
-  'accessories',
-  'cpu',
-  'computers',
-  'gpu',
-  'monitors',
-  'headphones',
-  'powerbanks',
-  'mobiles',
-  'routers',
-  'watches',
-] as const;
-
-export type Category = (typeof categories)[number] | '';
-export type SearchParams = { [key: string]: string | Category | undefined };
+export type SearchParams = { [key: string]: string | string | undefined };
 export type SortValue =
-  | 'popular'
-  | 'newest'
-  | 'lowest-price'
-  | 'highest-price'
-  | 'reset'
-  | '';
+  | "popular"
+  | "newest"
+  | "lowest-price"
+  | "highest-price"
+  | "reset"
+  | "";
 export type TProduct = Product & {
-  category: Category;
+  category: string;
   cartQuantity: number;
   topReviews: Review[];
   images: ProductImages[];
