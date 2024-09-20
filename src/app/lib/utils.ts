@@ -1,3 +1,5 @@
+import { SearchParams, SortValue } from "./types";
+
 export function capitalizeString(str: string, removeHyphen = true) {
   if (!str) return "General";
   let res = str[0].toUpperCase() + str.slice(1).toLowerCase();
@@ -11,8 +13,6 @@ export function capitalizeString(str: string, removeHyphen = true) {
   }
   return res;
 }
-
-import { Category, SearchParams, SortValue } from "./types";
 
 export function extractSearchParams(
   searchParams: SearchParams | IterableIterator<[string, string]> | undefined,
@@ -32,7 +32,7 @@ export function extractSearchParams(
   const result = {
     page: "",
     brand: "",
-    category: "" as Category,
+    category: "",
     sort: "" as SortValue,
     grid: "",
     selectedRating: "",
@@ -40,7 +40,6 @@ export function extractSearchParams(
     max: "",
     cid: "",
   };
-  type Result = typeof result;
 
   for (const key in params) {
     if (key === "cat") {
@@ -50,7 +49,7 @@ export function extractSearchParams(
       result["selectedRating"] = params[key];
       continue;
     }
-    result[key as keyof Result] = params[key];
+    result[key as keyof typeof result] = params[key];
   }
 
   return result;
