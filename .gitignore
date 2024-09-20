@@ -39,7 +39,6 @@ next-env.d.ts
 __pycache__/
 *.log
 *.json
-!products.json
 !thumbnail_data_uri.json
 thumbnails/
 logs/
