@@ -1,4 +1,3 @@
-"use server";
 import prisma from "./db";
 import { cache } from "./cache";
 
@@ -11,7 +10,7 @@ export type Data = {
   category: string;
 };
 
-export const getSearchedProducts = cache(
+export const getSearchItems = cache(
   async () => {
     try {
       const result = await prisma.product.findMany({
@@ -40,35 +39,29 @@ export const getSearchedProducts = cache(
       throw new Error("Failed to fetch search data!");
     }
   },
-  ["/products", "getSearchedProducts"],
+  ["/products", "getSearchItems"],
   { revalidate: day },
 );
 
-export const getCategoryList = cache(
+export const getCategories = cache(
   async () => {
     try {
       const categories = await prisma.product.findMany({
         select: { category: true },
         orderBy: { category: "asc" },
       });
-      const list: string[] = [];
-      for (const item of categories) {
-        if (!list.includes(item.category.toLowerCase())) {
-          list.push(item.category.toLowerCase());
-        }
-      }
 
-      return list;
+      return [...new Set(categories.map((c) => c.category))];
     } catch (error) {
       console.error(error);
-      // can't throw error here because of no error boundary at the layout level
+      return [];
     }
   },
-  ["/products", "getCategoryList"],
+  ["/products", "getCategories"],
   { revalidate: day },
 );
 
-export const getBrandList = cache(
+export const getBrands = cache(
   async (category: string) => {
     try {
       const brands = await prisma.product.findMany({
@@ -90,6 +83,6 @@ export const getBrandList = cache(
       throw error;
     }
   },
-  ["/products", "getBrandList"],
+  ["/products", "getBrands"],
   { revalidate: day },
 );
