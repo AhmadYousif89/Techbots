@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { extractSearchParams } from "@/app/lib/utils";
 import { RatingBreakdown, RatingDetails, SearchParams } from "@/app/lib/types";
 
 import {
@@ -11,21 +10,20 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { getSearchParams } from "@/app/lib/getSearchParams";
 
 type ReviewsRatingBarsProps = {
   asin: string;
   ratingsTotal: number;
   ratingBreakdown: RatingBreakdown;
-  searchParams: SearchParams;
 };
 
 export function ReviewsRatingBars({
   asin,
   ratingsTotal,
   ratingBreakdown,
-  searchParams,
 }: ReviewsRatingBarsProps) {
-  const { selectedRating } = extractSearchParams(searchParams);
+  const { selectedRating } = getSearchParams();
   const keys: Array<keyof RatingBreakdown> = [
     "five_star",
     "four_star",
