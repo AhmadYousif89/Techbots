@@ -1,11 +1,11 @@
 "use client";
 
+import { use } from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 
 import { Logo } from "./logo";
 import { AuthButtons } from "./auth_buttons";
-import { categories } from "@/app/lib/types";
 import { useSideMenuState } from "@/app/lib/store";
 import { capitalizeString } from "@/app/lib/utils";
 
@@ -27,7 +27,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-export function SideMenu() {
+type Props = {
+  categoryList: Promise<string[]>;
+};
+
+export function SideMenu({ categoryList }: Props) {
+  const categories = use(categoryList);
   const { isOpen, setIsOpen } = useSideMenuState();
 
   return (
