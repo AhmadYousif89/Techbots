@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { SearchParams } from "@/app/lib/types";
 import { capitalizeString } from "@/app/lib/utils";
+import { getSearchItems } from "@/app/lib/products";
+import { getSearchParams } from "@/app/lib/getSearchParams";
 
 import { Separator } from "@/components/ui/separator";
 import { PaginationSummary } from "./_components/pagination_summary";
@@ -12,8 +14,6 @@ import { ProductGrid } from "./grid";
 import { SortProducts } from "./sort";
 import { FilterProducts } from "./filter";
 import { SearchProducts } from "./search";
-import { getSearchItems } from "@/app/lib/products";
-import { getSearchParams } from "@/app/lib/getSearchParams";
 
 export const generateMetadata = ({ searchParams }: PageProps): Metadata => {
   const category = capitalizeString(searchParams["cat"] ?? "", false);
