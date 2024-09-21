@@ -1,3 +1,4 @@
+import path from "path";
 import { readFile } from "fs/promises";
 
 type ImageData = { asin: string; data: string };
@@ -5,7 +6,8 @@ type Base64ImgList = { asin: string }[];
 
 export async function getThumbnailImages() {
   try {
-    const data = await readFile("../../thumbnail_data_uri.json", "utf8");
+    const filePath = path.join(process.cwd(), "src", "thumbnail_data_uri.json");
+    const data = await readFile(filePath, "utf8");
     const uriObject = JSON.parse(data) as Record<string, Base64ImgList>;
 
     const categories: Record<string, ImageData[]> = {};
@@ -20,7 +22,7 @@ export async function getThumbnailImages() {
 
     return categories;
   } catch (error) {
-    console.error(error);
+    console.error("Error reading thumbnail data:", error);
     return {};
   }
 }
