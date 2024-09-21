@@ -5,7 +5,7 @@ type Base64ImgList = { asin: string }[];
 
 export async function getThumbnailImages() {
   try {
-    const data = await readFile("data/thumbnail_data_uri.json", "utf8");
+    const data = await readFile("../../thumbnail_data_uri.json", "utf8");
     const uriObject = JSON.parse(data) as Record<string, Base64ImgList>;
 
     const categories: Record<string, ImageData[]> = {};
