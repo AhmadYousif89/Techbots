@@ -2,12 +2,12 @@
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { use, useOptimistic, useState, useTransition } from "react";
+import { extractSearchParams, capitalizeString } from "@/app/lib/utils";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { extractSearchParams, capitalizeString } from "@/app/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -23,8 +23,8 @@ import {
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
   const router = useRouter();
-  const [params] = useSearchParams();
-  const sp = extractSearchParams(params);
+  const params = useSearchParams();
+  const sp = extractSearchParams(params.entries());
 
   const [showMore, setShowMore] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -36,7 +36,7 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const newParams = new URLSearchParams(
     Object.entries(sp).filter(([k, v]) => (v ? v && k !== "brand" : v)),
   );
-  const ps = newParams.toString() ? `&${newParams.toString()}` : "";
+  const ps = newParams.toString() ? newParams.toString() : "";
   const url = `/products/?${ps}`;
 
   const hasFilterBrand = optBrands.length > 0;
@@ -57,7 +57,9 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
 
     startTransition(() => {
       setOptBrands(updatedBrands);
-      router.push(url + `&brand=${updatedBrands.join(",")}`);
+      if (updatedBrands.length === 0) router.push(url);
+      else
+        router.push(url + `${ps ? "&" : ""}brand=${updatedBrands.join(",")}`);
     });
   };
 
