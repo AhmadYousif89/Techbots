@@ -6,6 +6,7 @@ import os
 import json
 import base64
 import subprocess
+from sys import argv
 from pathlib import Path
 import concurrent.futures
 from logger import setup_logger
@@ -22,7 +23,7 @@ TYPE_IMAGE_LIST = list[dict[str, str]]
 TYPE_IMAGES = dict[str, TYPE_IMAGE_LIST]
 
 
-def resize_images(input_json_file: str, output_json_file: str, size=10):
+def resize_images(input_json_file: str, output_json_file: str, size: int):
     """Resizes images from URLs specified in a JSON file.
 
     Args :
@@ -57,7 +58,7 @@ def resize_images(input_json_file: str, output_json_file: str, size=10):
         logger.info(f"Images data has been saved in {output_json_file}")
 
 
-def create_thumbnails(image_data: TYPE_IMAGE_LIST, category: str, size=10):
+def create_thumbnails(image_data: TYPE_IMAGE_LIST, category: str, size: int):
     """Creates thumbnails for a list of images and returns their data URIs.
 
     Args:
@@ -115,5 +116,6 @@ def process_image(image, category, size):
 if __name__ == '__main__':
     input_json = 'data/products.json'
     output_json = 'data/thumbnail_data_uri.json'
+    size = int(argv[1]) if len(argv) > 1 else 10
 
-    resize_images(input_json, output_json)
+    resize_images(input_json, output_json, size)
