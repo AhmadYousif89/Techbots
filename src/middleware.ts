@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isProtectedRoute = createRouteMatcher([
@@ -9,26 +8,11 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware((auth, req) => {
-  // const response = handleCookies(req);
   // Apply Clerk's protection for protected routes
   if (isProtectedRoute(req)) {
     auth().protect();
   }
-  // return response;
 });
-
-function handleCookies(req: NextRequest) {
-  if (!req.nextUrl) {
-    return NextResponse.next();
-  }
-  const urlSearchParams = Object.fromEntries(req.nextUrl.searchParams);
-  const response = NextResponse.next();
-  response.cookies.set({
-    name: "searchParams",
-    value: JSON.stringify(urlSearchParams),
-  });
-  return response;
-}
 
 export const config = {
   matcher: [
