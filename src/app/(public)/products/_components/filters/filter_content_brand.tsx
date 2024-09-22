@@ -23,8 +23,8 @@ import {
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
   const router = useRouter();
-  const params = useSearchParams();
-  const sp = extractSearchParams(params.entries());
+  const [params] = useSearchParams();
+  const sp = extractSearchParams(params);
 
   const [showMore, setShowMore] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -54,16 +54,16 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
     const updatedBrands = optBrands.includes(name)
       ? optBrands.filter((brand) => brand !== name)
       : [...optBrands, name];
-    setOptBrands(updatedBrands);
 
     startTransition(() => {
+      setOptBrands(updatedBrands);
       router.push(url + `&brand=${updatedBrands.join(",")}`);
     });
   };
 
   const onBrandReset = () => {
-    setOptBrands([]);
     startTransition(() => {
+      setOptBrands([]);
       router.push(url);
     });
   };

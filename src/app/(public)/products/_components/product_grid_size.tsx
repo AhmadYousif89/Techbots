@@ -13,8 +13,8 @@ import { useMediaQuery } from "@/app/components/hooks/use_media_query";
 
 export function ProductGridSize() {
   const router = useRouter();
-  const params = useSearchParams();
-  const sp = extractSearchParams(params.entries());
+  const [params] = useSearchParams();
+  const sp = extractSearchParams(params);
   const [optimisticGrid, setOptimisticGrid] = useOptimistic(sp.grid);
   const [isPending, startTransition] = useTransition();
   const isMobile = useMediaQuery("(max-width: 1024px)");

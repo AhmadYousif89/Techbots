@@ -22,9 +22,9 @@ type Props = {
 
 export function CategoryNavMenu({ data }: Props) {
   const router = useRouter();
-  const params = useSearchParams();
-  const sp = extractSearchParams(params.entries());
-  const [_, startTransition] = useTransition();
+  const [params] = useSearchParams();
+  const sp = extractSearchParams(params);
+  const [, startTransition] = useTransition();
   const [optCategory, setOptCategory] = useOptimistic(sp.category);
 
   const newParams = new URLSearchParams(

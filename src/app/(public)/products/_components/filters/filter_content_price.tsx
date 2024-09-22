@@ -13,8 +13,8 @@ import { Badge } from "@/components/ui/badge";
 
 export function FilterContentPrice() {
   const router = useRouter();
-  const params = useSearchParams();
-  const sp = extractSearchParams(params.entries());
+  const [params] = useSearchParams();
+  const sp = extractSearchParams(params);
   const [isPending, startTransition] = useTransition();
 
   const { min, max, setMax, setMin, clearPrice } = useFilter((s) => s.price);

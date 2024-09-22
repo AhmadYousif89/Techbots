@@ -15,18 +15,17 @@ export function capitalizeString(str: string, removeHyphen = true) {
 }
 
 export function extractSearchParams(
-  searchParams: SearchParams | IterableIterator<[string, string]> | undefined,
+  searchParams: SearchParams | [string, string],
 ) {
   let params: { [key: string]: any } = {};
 
-  if (Symbol.iterator in Object(searchParams)) {
-    for (const [key, value] of searchParams as IterableIterator<
-      [string, string]
-    >) {
-      params[key] = value;
-    }
+  if (Array.isArray(searchParams)) {
+    const [key, value] = searchParams;
+    params[key] = value;
+  } else if (searchParams && typeof searchParams === "object") {
+    params = { ...searchParams };
   } else {
-    params = searchParams ?? {};
+    params = {};
   }
 
   const result = {
