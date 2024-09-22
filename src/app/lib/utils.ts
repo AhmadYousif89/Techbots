@@ -14,18 +14,19 @@ export function capitalizeString(str: string, removeHyphen = true) {
   return res;
 }
 
-export function extractSearchParams(
-  searchParams: SearchParams | [string, string],
-) {
+type ExtractSearchProps = SearchParams | IterableIterator<[string, string]>;
+
+export function extractSearchParams(searchParams: ExtractSearchProps) {
   let params: { [key: string]: any } = {};
 
-  if (Array.isArray(searchParams)) {
-    const [key, value] = searchParams;
-    params[key] = value;
-  } else if (searchParams && typeof searchParams === "object") {
-    params = { ...searchParams };
-  } else {
-    params = {};
+  if (searchParams) {
+    if (typeof searchParams === "object" && Symbol.iterator in searchParams) {
+      for (const [key, value] of searchParams) {
+        params[key] = value;
+      }
+    } else {
+      params = { ...searchParams };
+    }
   }
 
   const result = {
