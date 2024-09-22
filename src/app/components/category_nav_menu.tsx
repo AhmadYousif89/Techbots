@@ -22,19 +22,19 @@ type Props = {
 
 export function CategoryNavMenu({ data }: Props) {
   const router = useRouter();
-  const [params] = useSearchParams();
-  const sp = extractSearchParams(params);
+  const params = useSearchParams();
+  const sp = extractSearchParams(params.entries());
   const [, startTransition] = useTransition();
   const [optCategory, setOptCategory] = useOptimistic(sp.category);
 
   const newParams = new URLSearchParams(
     Object.entries(sp).filter(([k, v]) => (v ? v && k !== "category" : v)),
   );
-  const ps = newParams.toString() ? `&${newParams.toString()}` : "";
+  const ps = newParams.toString() ? newParams.toString() : "";
   const end = 14;
   const categories = use(data);
   const cats = categories.slice(0, end);
-  const url = (cat: string) => `/products?cat=${cat}${ps}`;
+  const url = (cat: string) => `/products?${ps ? `${ps}&` : ""}cat=${cat}`;
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -51,7 +51,7 @@ export function CategoryNavMenu({ data }: Props) {
     startTransition(() => {
       if (category === optCategory) {
         setOptCategory("");
-        router.push("/products");
+        router.push(`/products?${ps}`);
         return;
       }
       setOptCategory(category);
