@@ -15,7 +15,6 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useOnClickOutside } from "./hooks/use_onClick_outside";
-import { updateCookies } from "../lib/update_cookies";
 
 type Props = {
   data: Promise<string[]>;
@@ -49,17 +48,14 @@ export function CategoryNavMenu({ data }: Props) {
   useOnClickOutside(ref, handleClickOutside);
 
   const handleCategoryChange = (category: string) => {
-    setOptCategory(category);
-
     startTransition(() => {
       if (category === optCategory) {
         setOptCategory("");
         router.push("/products");
-        updateCookies({ cat: undefined });
         return;
       }
+      setOptCategory(category);
       router.push(url(category));
-      updateCookies({ cat: category });
     });
   };
 

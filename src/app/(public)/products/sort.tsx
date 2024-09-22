@@ -14,7 +14,6 @@ import {
   SelectSeparator,
 } from "@/components/ui/select";
 import { LoadingButton } from "./_components/skeletons/loading_btn";
-import { updateCookies } from "@/app/lib/update_cookies";
 
 const sortList = [
   { value: "newest", label: "Newest" },
@@ -33,15 +32,12 @@ export function SortProducts({ searchParams }: { searchParams: SearchParams }) {
     const newParams = new URLSearchParams(
       Object.entries(sp).filter(([k, v]) => (v ? v && k !== "sort" : v)),
     );
-
     startTransition(() => {
       setOptimisticSort(value);
       if (value !== "reset") {
         newParams.set("sort", value);
-        updateCookies({ sort: value });
       } else {
         newParams.delete("sort");
-        updateCookies({ sort: undefined });
       }
       router.push(`/products?${newParams.toString()}`);
     });

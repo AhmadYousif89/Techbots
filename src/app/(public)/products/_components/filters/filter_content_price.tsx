@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { updateCookies } from "@/app/lib/update_cookies";
 
 export function FilterContentPrice() {
   const router = useRouter();
@@ -46,7 +45,6 @@ export function FilterContentPrice() {
 
   const handleReset = () => {
     router.push(`/products?${newParams.toString()}`);
-    updateCookies({ min: undefined, max: undefined });
     clearPrice();
   };
 
@@ -54,7 +52,6 @@ export function FilterContentPrice() {
     e.preventDefault();
     startTransition(() => {
       router.push(url);
-      updateCookies({ min, max });
     });
   };
 

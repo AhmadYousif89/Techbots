@@ -1,16 +1,21 @@
 import { cn } from "@/lib/utils";
 import prisma from "@/app/lib/db";
-import { getSearchParams } from "@/app/lib/getSearchParams";
 
 import { getFilters } from "../grid";
+import { SearchParams } from "@/app/lib/types";
+import { extractSearchParams } from "@/app/lib/utils";
 
 type PaginationSummaryProps = {
   className?: string;
+  searchParams: SearchParams;
 };
 
-export async function PaginationSummary({ className }: PaginationSummaryProps) {
-  const filters = getFilters();
-  const { page } = getSearchParams();
+export async function PaginationSummary({
+  className,
+  searchParams,
+}: PaginationSummaryProps) {
+  const filters = getFilters(searchParams);
+  const { page } = extractSearchParams(searchParams);
   const totalCount = await prisma.product.count({ where: filters });
 
   const limit = 8;

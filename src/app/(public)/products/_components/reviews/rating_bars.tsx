@@ -10,20 +10,22 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { getSearchParams } from "@/app/lib/getSearchParams";
+import { extractSearchParams } from "@/app/lib/utils";
 
 type ReviewsRatingBarsProps = {
   asin: string;
   ratingsTotal: number;
   ratingBreakdown: RatingBreakdown;
+  searchParams: SearchParams;
 };
 
 export function ReviewsRatingBars({
   asin,
   ratingsTotal,
   ratingBreakdown,
+  searchParams,
 }: ReviewsRatingBarsProps) {
-  const { selectedRating } = getSearchParams();
+  const { selectedRating } = extractSearchParams(searchParams);
   const keys: Array<keyof RatingBreakdown> = [
     "five_star",
     "four_star",

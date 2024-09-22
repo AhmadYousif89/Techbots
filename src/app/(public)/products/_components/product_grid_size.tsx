@@ -4,7 +4,6 @@ import { useOptimistic, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LayoutGrid, LayoutList, Loader2 } from "lucide-react";
 import { extractSearchParams } from "@/app/lib/utils";
-import { updateCookies } from "@/app/lib/update_cookies";
 
 import { Grid2x2 } from "@/icons/grid2x2";
 import { Grid3x3 } from "@/icons/grid3x3";
@@ -28,7 +27,6 @@ export function ProductGridSize() {
   const handleGridChange = (value: string) => {
     if (optimisticGrid === value) {
       router.push(`/products?${ps}`);
-      updateCookies({ grid: undefined });
       return;
     }
 
@@ -36,7 +34,6 @@ export function ProductGridSize() {
       setOptimisticGrid(value);
       const updatedParams = ps ? `${ps}&grid=${value}` : `grid=${value}`;
       router.push(`/products?${updatedParams}`);
-      updateCookies({ grid: value });
     });
   };
 

@@ -10,7 +10,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { clearCookieAndRedirect } from "@/app/lib/actions";
 
 type BreadcrumbSectionProps = {
   asin?: string;
@@ -61,7 +60,6 @@ export async function BreadcrumbSection({
     );
   }
 
-  // revalidatePath("/products");
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -73,9 +71,7 @@ export async function BreadcrumbSection({
         <BreadcrumbSeparator />
         <BreadcrumbItem className="text-xs underline-offset-4 hover:underline">
           <BreadcrumbLink asChild>
-            <form action={clearCookieAndRedirect.bind(null, "/products")}>
-              <button>Shop</button>
-            </form>
+            <Link href="/products">Shop</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {category && !category.includes(",") && (

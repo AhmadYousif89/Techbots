@@ -51,6 +51,7 @@ function parseProductDetails(data: string | null) {
 type ProductDetailsProps = PropsWithChildren<{
   asin: string;
   className?: string;
+  searchParams: SearchParams;
   checkItemInServerCart?: (
     asin: string,
     cuid: string | null,
@@ -60,10 +61,11 @@ type ProductDetailsProps = PropsWithChildren<{
 export async function ProductDetails({
   asin,
   className,
+  searchParams,
   checkItemInServerCart,
 }: ProductDetailsProps) {
   const { userId } = auth();
-  const { product } = await getProductDetails(asin);
+  const { product } = await getProductDetails(asin, searchParams);
   const getBlobImages = getThumbnailImages();
 
   if (!product) {

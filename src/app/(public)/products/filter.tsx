@@ -1,7 +1,7 @@
 import { Filter } from "lucide-react";
 import { SearchParams } from "@/app/lib/types";
 import { getBrands } from "@/app/lib/products";
-import { getSearchParams } from "@/app/lib/getSearchParams";
+import { extractSearchParams } from "@/app/lib/utils";
 
 import {
   Accordion,
@@ -15,10 +15,11 @@ import { FilterContentPrice } from "./_components/filters/filter_content_price";
 
 type FilterProductsProps = {
   open?: string;
+  searchParams: SearchParams;
 };
 
-export function FilterProducts({ open }: FilterProductsProps) {
-  const { category } = getSearchParams();
+export function FilterProducts({ open, searchParams }: FilterProductsProps) {
+  const { category } = extractSearchParams(searchParams);
   const brands = getBrands(category);
 
   return (

@@ -7,7 +7,6 @@ import { auth } from "@clerk/nextjs/server";
 import { cn } from "@/lib/utils";
 import { checkItemInServerCart } from "../[asin]/page";
 import { TProduct, SearchParams } from "@/app/lib/types";
-import { getSearchParams } from "@/app/lib/getSearchParams";
 
 import { RatingStars } from "./reviews/rating_stars";
 import { Separator } from "@/components/ui/separator";
@@ -15,19 +14,22 @@ import { AddToCartButton } from "@/app/components/cart/add_button";
 import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { extractSearchParams } from "@/app/lib/utils";
 
-const ProductQuickView = dynamic(() =>
-  import("./product_quick_view").then((mod) => mod.ProductQuickView),
+const ProductQuickView = dynamic(
+  () => import("./product_quick_view").then((mod) => mod.ProductQuickView),
+  { ssr: false },
 );
 
 type Props = {
   product: TProduct;
+  searchParams: SearchParams;
 };
 
-export async function ProductGridItem({ product }: Props) {
+export async function ProductGridItem({ product, searchParams }: Props) {
   const { userId } = auth();
   const { asin, rating, mainImage, title, price } = product;
-  const { grid } = getSearchParams();
+  const { grid } = extractSearchParams(searchParams);
   const prodUrl = `/products/${asin}`;
 
   return (

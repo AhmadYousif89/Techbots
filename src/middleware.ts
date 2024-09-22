@@ -9,12 +9,12 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware((auth, req) => {
-  const response = handleCookies(req);
+  // const response = handleCookies(req);
   // Apply Clerk's protection for protected routes
   if (isProtectedRoute(req)) {
     auth().protect();
   }
-  return response;
+  // return response;
 });
 
 function handleCookies(req: NextRequest) {

@@ -19,7 +19,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { updateCookies } from "@/app/lib/update_cookies";
 
 export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
   const brands = use(data);
@@ -59,7 +58,6 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
 
     startTransition(() => {
       router.push(url + `&brand=${updatedBrands.join(",")}`);
-      updateCookies({ brand: updatedBrands.join(",") });
     });
   };
 
@@ -67,7 +65,6 @@ export function FilterContentBrands({ data }: { data: Promise<string[]> }) {
     setOptBrands([]);
     startTransition(() => {
       router.push(url);
-      updateCookies({ brand: undefined });
     });
   };
 

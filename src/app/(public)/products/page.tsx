@@ -1,9 +1,8 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { SearchParams } from "@/app/lib/types";
-import { capitalizeString } from "@/app/lib/utils";
 import { getSearchItems } from "@/app/lib/products";
-import { getSearchParams } from "@/app/lib/getSearchParams";
+import { capitalizeString, extractSearchParams } from "@/app/lib/utils";
 
 import { Separator } from "@/components/ui/separator";
 import { PaginationSummary } from "./_components/pagination_summary";
@@ -38,7 +37,7 @@ type PageProps = {
 };
 
 export default function ProductsPage({ searchParams }: PageProps) {
-  const { category, grid } = getSearchParams();
+  const { category, grid } = extractSearchParams(searchParams);
   const searchResults = getSearchItems();
 
   return (
@@ -52,13 +51,13 @@ export default function ProductsPage({ searchParams }: PageProps) {
             </p>
             <SearchProducts data={searchResults} />
           </div>
-          <PaginationSummary />
+          <PaginationSummary searchParams={searchParams} />
         </div>
 
         <Separator />
         {/* Filter Section On Small Screens */}
         <div className="relative xl:hidden">
-          <FilterProducts />
+          <FilterProducts searchParams={searchParams} />
           <div className="absolute right-0 top-3.5 flex items-center gap-4 pr-2 md:pr-8">
             <SearchProducts data={searchResults} />
             <SortProducts searchParams={searchParams} />
@@ -69,13 +68,13 @@ export default function ProductsPage({ searchParams }: PageProps) {
         <div className="py-8 xl:grid xl:grid-cols-[minmax(20%,auto),1fr] xl:gap-8">
           {/* Filter Section On Desktop */}
           <div className="relative hidden justify-between self-start xl:flex">
-            <FilterProducts open="filter" />
+            <FilterProducts searchParams={searchParams} open="filter" />
             <div className="absolute right-0 top-3 flex items-center gap-4">
               <SortProducts searchParams={searchParams} />
             </div>
           </div>
           {/* End Filter */}
-          <ProductGrid />
+          <ProductGrid searchParams={searchParams} />
         </div>
       </main>
     </Suspense>

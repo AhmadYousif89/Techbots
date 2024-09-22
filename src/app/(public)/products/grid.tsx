@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import { Ban } from "lucide-react";
 import { redirect } from "next/navigation";
-import { getSearchParams } from "@/app/lib/getSearchParams";
+import { extractSearchParams } from "@/app/lib/utils";
 import { SearchParams, SortValue, TProduct } from "@/app/lib/types";
 
 import { ProductGridSize } from "./_components/product_grid_size";
@@ -11,10 +11,14 @@ import { ProductGridItem } from "./_components/product_grid_item";
 import { PaginationButtons } from "./_components/pagination_button";
 import { GridItemSkeleton } from "./_components/skeletons/grid_item";
 
-export async function ProductGrid() {
-  const filters = getFilters();
+export async function ProductGrid({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const filters = getFilters(searchParams);
   const totalCount = await prisma.product.count({ where: filters });
-  const sp = getSearchParams();
+  const sp = extractSearchParams(searchParams);
 
   const { page } = sp;
   const limitPerPage = 8;
@@ -65,15 +69,19 @@ export async function ProductGrid() {
           key={JSON.stringify(sp)}
           fallback={<GridItemSkeleton grid={sp.grid} />}
         >
-          <DisplayProductsGrid />
+          <DisplayProductsGrid searchParams={searchParams} />
         </Suspense>
       </section>
     </div>
   );
 }
 
-async function DisplayProductsGrid() {
-  const products = await getProducts();
+async function DisplayProductsGrid({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const products = await getProducts({ searchParams });
 
   if (products.length == 0) {
     return (
@@ -89,14 +97,18 @@ async function DisplayProductsGrid() {
   return (
     <>
       {products.map((product) => (
-        <ProductGridItem key={product.id} product={product} />
+        <ProductGridItem
+          key={product.id}
+          product={product}
+          searchParams={searchParams}
+        />
       ))}
     </>
   );
 }
 
-export function getFilters() {
-  const { category, brand, min, max } = getSearchParams();
+export function getFilters(searchParams: SearchParams) {
+  const { category, brand, min, max } = extractSearchParams(searchParams);
 
   let filter: { [k: string]: any } = category ? { category } : {};
   if (brand && brand.includes(",")) {
@@ -118,11 +130,15 @@ export function getFilters() {
   return filter;
 }
 
-export async function getProducts() {
+export async function getProducts({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const limit = 8;
-  const filter = getFilters();
-  const searchParams = getSearchParams();
-  const { page, sort } = searchParams;
+  const filter = getFilters(searchParams);
+  const sp = extractSearchParams(searchParams);
+  const { page, sort } = sp;
   const totalCount = await prisma.product.count({ where: filter });
   const totalPages = Math.ceil(totalCount / limit);
   const start = (+page <= 0 || +page > totalPages ? 0 : +page - 1) * limit;
@@ -169,7 +185,7 @@ export async function getProducts() {
   if (totalCount > 0 && (+page > totalPages || +page < 0)) {
     console.log("Redirecting to first page");
     const newParams = new URLSearchParams(
-      Object.entries(searchParams).filter(([k, v]) => v),
+      Object.entries(sp).filter(([k, v]) => v),
     );
     newParams.set("page", "1");
     console.log(newParams.toString());
