@@ -13,8 +13,8 @@ import { useMediaQuery } from "@/app/components/hooks/use_media_query";
 
 export function ProductGridSize() {
   const router = useRouter();
-  const [params] = useSearchParams();
-  const sp = extractSearchParams(params);
+  const params = useSearchParams();
+  const sp = extractSearchParams(params.entries());
   const [optimisticGrid, setOptimisticGrid] = useOptimistic(sp.grid);
   const [isPending, startTransition] = useTransition();
   const isMobile = useMediaQuery("(max-width: 1024px)");
@@ -22,7 +22,7 @@ export function ProductGridSize() {
   const newParams = new URLSearchParams(
     Object.entries(sp).filter(([k, v]) => (v ? v && k !== "grid" : v)),
   );
-  const ps = newParams.toString();
+  const ps = newParams.toString() ? newParams.toString() : "";
 
   const handleGridChange = (value: string) => {
     if (optimisticGrid === value) {
@@ -32,8 +32,7 @@ export function ProductGridSize() {
 
     startTransition(() => {
       setOptimisticGrid(value);
-      const updatedParams = ps ? `${ps}&grid=${value}` : `grid=${value}`;
-      router.push(`/products?${updatedParams}`);
+      router.push(`/products?${ps}${ps ? "&" : ""}grid=${value}`);
     });
   };
 
