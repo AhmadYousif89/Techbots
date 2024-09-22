@@ -1,153 +1,119 @@
 "use client";
 
-import { useTransition, FormEventHandler, ChangeEventHandler } from "react";
+import { useState, useTransition, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { extractSearchParams } from "@/app/lib/utils";
-import { useFilter } from "../../_store/filters";
-
 import { ChevronLeft, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+
+import { LoadingButton } from "../skeletons/loading_btn";
+import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+
+const MIN_PRICE = 10;
+const MAX_PRICE = 5000;
 
 export function FilterContentPrice() {
   const router = useRouter();
-  const [params] = useSearchParams();
-  const sp = extractSearchParams(params);
-  const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
+  const [isReset, resetTransition] = useTransition();
+  const [isPending, applyTransition] = useTransition();
 
-  const { min, max, setMax, setMin, clearPrice } = useFilter((s) => s.price);
+  const initialMin = Number(searchParams.get("min")) || MIN_PRICE;
+  const initialMax = Number(searchParams.get("max")) || MAX_PRICE;
 
-  const newParams = new URLSearchParams(
-    Object.entries(sp).filter(([k, v]) =>
-      v ? v && k !== "min" && k !== "max" : v,
-    ),
-  );
+  const [priceRange, setPriceRange] = useState<number[]>([
+    initialMin,
+    initialMax,
+  ]);
 
-  const { min: paramMin, max: paramMax } = sp;
-  const minParam = min ? `min=${min}` : paramMin ? `min=${paramMin}` : "";
-  const maxParam = max ? `max=${max}` : paramMax ? `max=${paramMax}` : "";
-  const ps = [newParams.toString(), minParam, maxParam]
-    .filter(Boolean)
-    .join("&");
-  const url = `/products${ps ? `?${ps}` : ""}`;
+  const handlePriceChange = useCallback((value: number[]) => {
+    if (value.length !== 2) return;
+    setPriceRange(value);
+  }, []);
 
-  const handleMinChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const val = parseFloat(e.target.value);
-    setMin(isNaN(val) ? "" : val.toString());
-  };
-
-  const handleMaxChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const val = parseFloat(e.target.value);
-    setMax(isNaN(val) ? "" : val.toString());
-  };
-
-  const handleReset = () => {
-    router.push(`/products?${newParams.toString()}`);
-    clearPrice();
-  };
-
-  const handleSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    startTransition(() => {
-      router.push(url);
+  const handleReset = useCallback(() => {
+    setPriceRange([MIN_PRICE, MAX_PRICE]);
+    const params = new URLSearchParams(searchParams);
+    params.delete("min");
+    params.delete("max");
+    resetTransition(() => {
+      router.push(`/products?${params.toString()}`);
     });
-  };
+  }, [router, searchParams]);
+
+  const handleApply = useCallback(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set("min", priceRange[0].toString());
+    params.set("max", priceRange[1].toString());
+    applyTransition(() => {
+      router.push(`/products?${params.toString()}`);
+    });
+  }, [router, searchParams, priceRange]);
+
+  const isFilterApplied = initialMin > MIN_PRICE || initialMax < MAX_PRICE;
 
   return (
-    <form
-      className="grid w-full max-w-sm gap-4 self-start"
-      onSubmit={handleSubmit}
-    >
-      <div className="flex items-center justify-between gap-4">
+    <div className="grid w-full max-w-sm gap-4 self-start">
+      <div className="flex items-center justify-between gap-4 px-2">
         <h3 className="font-medium text-muted-foreground">Price</h3>
-        {(paramMin || paramMax) && (
-          <Button
-            type="button"
-            variant={"link"}
-            onClick={handleReset}
-            className="h-auto gap-1 py-0 text-xs font-medium text-muted-foreground hover:text-destructive"
-          >
-            <ChevronLeft className="size-3" /> Reset
-          </Button>
+        {isFilterApplied && (
+          <LoadingButton isLoading={isReset} className="bg-transparent">
+            <Button
+              type="button"
+              variant="link"
+              onClick={handleReset}
+              className="h-auto gap-1 p-0 text-xs font-medium text-muted-foreground hover:text-destructive"
+            >
+              <ChevronLeft className="size-3" /> Reset
+            </Button>
+          </LoadingButton>
         )}
       </div>
 
-      <div className="flex items-center gap-4 xl:max-w-52 xl:flex-col xl:items-stretch">
-        <Label htmlFor="min" className="relative min-w-28 flex-1">
-          <Input
-            id="min"
-            min={1}
-            max={5000}
-            type="number"
-            placeholder="Min"
-            className="placeholder:text-muted-foreground"
-            onChange={handleMinChange}
-            value={min}
-          />
-          {paramMin.trim() && !min && (
-            <Badge
-              variant={"secondary"}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-            >
-              {paramMin}
-            </Badge>
-          )}
-        </Label>
-        <Label htmlFor="max" className="relative min-w-28 flex-1">
-          <Input
-            id="max"
-            min={1}
-            max={5000}
-            type="number"
-            placeholder="Max"
-            className="placeholder:text-muted-foreground"
-            onChange={handleMaxChange}
-            value={max}
-          />
-          {paramMax.trim() && !max && (
-            <Badge
-              variant={"secondary"}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-            >
-              {paramMax}
-            </Badge>
-          )}
-        </Label>
+      <div className="px-2">
+        <Slider
+          step={10}
+          min={MIN_PRICE}
+          max={MAX_PRICE}
+          className="my-4"
+          value={priceRange}
+          onValueChange={handlePriceChange}
+          minStepsBetweenThumbs={50}
+          addRightThumb
+        />
       </div>
-      <small className="font-medium text-muted-foreground">
-        {/* trim is necessary for when manually changing the url values */}
-        {paramMin.trim() && paramMax.trim() ? (
-          <>
-            Showing items between{" "}
-            <span className="font-semibold">
-              ${Number(paramMin).toFixed(2)} and ${Number(paramMax).toFixed(2)}
-            </span>
-          </>
-        ) : paramMin.trim() ? (
-          <>
-            Showing items with minimum value of{" "}
-            <span className="font-semibold">
-              ${Number(paramMin).toFixed(2)}
-            </span>
-          </>
-        ) : paramMax.trim() ? (
-          <>
-            Showing items with maximum value of{" "}
-            <span className="font-semibold">
-              ${Number(paramMax).toFixed(2)}
-            </span>
-          </>
-        ) : null}
-      </small>
-      <Button
-        size={"sm"}
-        disabled={(+min < 1 && +max < 1) || isPending}
-        className="min-w-20 justify-self-start text-xs transition-transform duration-200 active:translate-y-1"
-      >
-        {isPending ? <Loader2 className="size-5 animate-spin" /> : "Apply"}
-      </Button>
-    </form>
+
+      <div className="flex justify-between">
+        <Badge variant="secondary" className="text-muted-foreground">
+          ${priceRange[0]}
+        </Badge>
+        <Badge variant="secondary" className="text-muted-foreground">
+          ${priceRange[1]}
+        </Badge>
+      </div>
+
+      {isFilterApplied && (
+        <small className="font-medium text-muted-foreground">
+          Showing items between{" "}
+          <span className="font-semibold">
+            ${initialMin.toFixed(2)} and ${initialMax.toFixed(2)}
+          </span>
+        </small>
+      )}
+
+      <LoadingButton isLoading={isPending} className="[width:min(10rem,65%)]">
+        <Button
+          size="sm"
+          onClick={handleApply}
+          disabled={
+            isPending ||
+            (priceRange[0] === initialMin && priceRange[1] === initialMax)
+          }
+          className="w-full text-xs transition-transform duration-200 active:translate-y-1"
+        >
+          Apply
+        </Button>
+      </LoadingButton>
+    </div>
   );
 }
