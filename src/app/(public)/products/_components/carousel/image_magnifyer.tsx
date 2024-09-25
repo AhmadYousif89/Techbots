@@ -33,16 +33,8 @@ export const ProductImageZoom = memo(
         backgroundSize: `${zoomFactor * 100}%`,
         backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
       }),
-      [
-        width,
-        height,
-        src,
-        mousePosition.x,
-        mousePosition.y,
-        zoomFactor,
-        imageSize.width,
-        imageSize.height,
-      ],
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [width, height, src, mousePosition.x, mousePosition.y, zoomFactor],
     );
 
     return (
