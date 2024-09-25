@@ -33,8 +33,15 @@ export const ProductImageZoom = memo(
         backgroundSize: `${zoomFactor * 100}%`,
         backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
       }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [width, height, src, mousePosition.x, mousePosition.y, zoomFactor],
+
+      [
+        src,
+        imageSize.width,
+        imageSize.height,
+        mousePosition.x,
+        mousePosition.y,
+        zoomFactor,
+      ],
     );
 
     return (
@@ -49,7 +56,8 @@ export const ProductImageZoom = memo(
           width={width}
           height={height}
           draggable={false}
-          className="object-contain"
+          className="object-contain max-[500px]:pointer-events-none"
+          style={{ maxHeight: height }}
         />
         {showZoom && (
           <div

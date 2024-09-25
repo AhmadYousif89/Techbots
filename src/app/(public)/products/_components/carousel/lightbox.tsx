@@ -13,7 +13,7 @@ export function Lightbox({ product }: LightboxProps) {
   return (
     <section>
       <h2 className="sr-only">Browse Product Images</h2>
-      <div className="flex size-full flex-col items-center justify-between lg:flex-row lg:gap-x-8">
+      <div className="flex h-full flex-col items-center justify-between lg:flex-row lg:gap-x-8">
         <div className="mb-4 grid flex-1 justify-center border-b p-4 xl:pb-8">
           <ProductImageZoom
             width={650}
