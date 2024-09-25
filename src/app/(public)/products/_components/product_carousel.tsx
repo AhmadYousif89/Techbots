@@ -73,14 +73,14 @@ export function ProductCarousel({
       >
         <Dialog>
           <DialogTrigger
-            className={`relative flex h-full max-w-[30rem] p-4 lg:mx-auto lg:max-w-lg ${showLightbox ? "" : "pointer-events-none"}`}
+            className={`relative flex size-full max-w-[30rem] p-4 lg:mx-auto lg:max-w-lg ${showLightbox ? "" : "pointer-events-none"}`}
           >
             <Image
               fill
               src={imageUrl}
               alt={`thumbnail image for ${product.title}`}
               className={cn(
-                "size-full animate-pulse object-contain",
+                "animate-pulse object-contain",
                 isLoaded && "hidden",
               )}
             />
