@@ -20,7 +20,11 @@ export async function ProductQuickView({ product }: ProductQuickViewProps) {
   return (
     <div className="max-h-[600px] overflow-y-auto lg:max-h-[700px]">
       <section className="grid gap-4 md:grid-cols-2">
-        <ProductCarousel product={product} blobImages={getBlobImages} />
+        <ProductCarousel
+          product={product}
+          blobImages={getBlobImages}
+          showLightbox={false}
+        />
 
         <div className="self-center p-4 pb-8 lg:p-8">
           <div className="mb-6 flex items-center justify-between gap-4 *:text-muted-foreground">

@@ -19,9 +19,11 @@ import {
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Lightbox } from "./carousel/lightbox";
 
 type ProductCarouselProps = {
   blobImages?: Promise<Record<string, { asin: string; data: any }[]>>;
+  showLightbox?: boolean;
   product: TProduct;
 };
 
@@ -33,7 +35,11 @@ const convertToBlob = (uri: string) => {
   return new Blob([buffer], { type: mimeType });
 };
 
-export function ProductCarousel({ product, blobImages }: ProductCarouselProps) {
+export function ProductCarousel({
+  product,
+  blobImages,
+  showLightbox = true,
+}: ProductCarouselProps) {
   const [imageIndex, setImageIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const thumbImages = blobImages ? use(blobImages) : null;
@@ -63,10 +69,12 @@ export function ProductCarousel({ product, blobImages }: ProductCarouselProps) {
       <ResizablePanel
         defaultSize={70}
         minSize={70}
-        className="flex size-full items-center"
+        className="flex size-full items-center justify-center"
       >
         <Dialog>
-          <DialogTrigger className="relative flex size-full max-lg:pointer-events-none lg:mx-auto lg:max-w-lg">
+          <DialogTrigger
+            className={`relative flex h-full max-w-[30rem] p-4 lg:mx-auto lg:max-w-lg ${showLightbox ? "" : "pointer-events-none"}`}
+          >
             <Image
               fill
               src={imageUrl}
@@ -77,24 +85,20 @@ export function ProductCarousel({ product, blobImages }: ProductCarouselProps) {
               )}
             />
             <Image
-              fill
+              width={500}
+              height={500}
               loading="lazy"
               alt={product.title}
               src={product.images[imageIndex].link}
               className={cn(
-                "object-contain p-8 transition-opacity duration-300",
+                "size-full object-contain transition-opacity duration-300",
                 isLoaded ? "opacity-100" : "opacity-0",
               )}
               onLoad={handleImageLoad}
             />
           </DialogTrigger>
-          <DialogContent className="h-[calc(100%-15vh)] max-w-[calc(100%-15vw)]">
-            <Image
-              fill
-              alt={product.title}
-              src={product.images[imageIndex].link}
-              className="object-contain p-8"
-            />
+          <DialogContent className="min-h-svh max-w-screen-xl px-0 min-[400px]:min-h-[calc(100%-10rem)] lg:px-6">
+            <Lightbox product={product} />
           </DialogContent>
         </Dialog>
       </ResizablePanel>
