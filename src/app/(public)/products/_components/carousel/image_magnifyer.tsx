@@ -33,7 +33,16 @@ export const ProductImageZoom = memo(
         backgroundSize: `${zoomFactor * 100}%`,
         backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
       }),
-      [width, height, src, mousePosition.x, mousePosition.y, zoomFactor],
+      [
+        width,
+        height,
+        src,
+        mousePosition.x,
+        mousePosition.y,
+        zoomFactor,
+        imageSize.width,
+        imageSize.height,
+      ],
     );
 
     return (
@@ -60,3 +69,5 @@ export const ProductImageZoom = memo(
     );
   },
 );
+
+ProductImageZoom.displayName = "ProductImageZoom";

@@ -26,9 +26,9 @@ export function Lightbox({ product }: LightboxProps) {
           {product.images.map((image, index) => (
             <button
               key={index}
-              aria-selected={imageIndex === index}
+              aria-pressed={imageIndex === index}
               onClick={() => setImageIndex(index)}
-              className="rounded border border-transparent p-1 hover:border-input hover:bg-primary/10 focus:border focus:bg-primary/10 aria-selected:border aria-selected:bg-primary/10"
+              className="rounded border border-transparent p-1 hover:border-input hover:bg-primary/10 focus:border focus:bg-primary/10 aria-pressed:border aria-pressed:bg-primary/10"
             >
               <Image
                 width={100}

@@ -24,18 +24,16 @@ export function useImageZoom<T extends HTMLElement = HTMLElement>(
     [elementRef],
   );
 
-  const data = {
-    showZoom,
-    zoomFactor,
-    imageSize,
-    mousePosition,
-    handlePointerEnter,
-    handlePointerLeave,
-    handlePointerMove,
-  };
-
   return useMemo(
-    () => data,
+    () => ({
+      showZoom,
+      zoomFactor,
+      imageSize,
+      mousePosition,
+      handlePointerEnter,
+      handlePointerLeave,
+      handlePointerMove,
+    }),
     [
       showZoom,
       zoomFactor,
