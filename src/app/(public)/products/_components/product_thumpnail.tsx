@@ -10,6 +10,7 @@ import { TProduct } from "@/app/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
+import { formatPrice } from "@/app/lib/utils";
 import { TCartProduct } from "@/app/(protected)/cart/page";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { removeFromServerCart } from "@/app/(protected)/cart/_actions/actions";
@@ -47,7 +48,7 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
               variant="outline"
               className="border-0 bg-gradient-to-tl from-primary to-primary/70 py-1 font-semibold text-muted"
             >
-              {product.price.toFixed(2)}
+              {formatPrice(product.price)}
             </Badge>
           </div>
           <Link

@@ -3,7 +3,11 @@ import { Suspense } from "react";
 
 import prisma from "@/app/lib/db";
 import { SearchParams, TProduct } from "@/app/lib/types";
-import { capitalizeString, extractSearchParams } from "@/app/lib/utils";
+import {
+  capitalizeString,
+  extractSearchParams,
+  normalizePrice,
+} from "@/app/lib/utils";
 
 import { ProductDetails } from "./product_details";
 import { ProductReviews } from "./product_reviews";
@@ -58,6 +62,13 @@ export const getProductDetails = async (
         },
       },
     })) as TProduct;
+
+    if (product) {
+      product = {
+        ...product,
+        price: normalizePrice(product.price),
+      } as TProduct;
+    }
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw error;

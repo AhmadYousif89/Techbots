@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import { Ban } from "lucide-react";
 import { redirect } from "next/navigation";
-import { extractSearchParams } from "@/app/lib/utils";
+import { extractSearchParams, normalizePrice } from "@/app/lib/utils";
 import { SearchParams, SortValue, TProduct } from "@/app/lib/types";
 
 import { ProductGridSize } from "./_components/product_grid_size";
@@ -173,10 +173,15 @@ export async function getProducts({
 
   let products: TProduct[] = [];
   try {
-    products = (await prisma.product.findMany({
-      ...args,
-      include: { images: true },
-    })) as TProduct[];
+    products = (
+      await prisma.product.findMany({
+        ...args,
+        include: { images: true },
+      })
+    ).map((product) => ({
+      ...product,
+      price: normalizePrice(product.price),
+    }));
   } catch (error) {
     console.error("Error fetching products:", error);
   }

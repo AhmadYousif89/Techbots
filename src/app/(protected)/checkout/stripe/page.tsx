@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import prisma from "@/app/lib/db";
 import { Checkout } from "../_component/checkout";
 import { SearchParams, TProduct } from "@/app/lib/types";
+import { normalizePrice } from "@/app/lib/utils";
 
 export const metadata = {
   title: "Checkout",
@@ -34,7 +35,9 @@ export default async function Page({ searchParams }: PageProps) {
 
   const totalAmount = products.reduce((acc, item) => {
     const cartItem = items.find((cartItem) => cartItem.asin === item.asin);
-    return acc + item.price * (cartItem?.cartQuantity || 1);
+    return (
+      acc + normalizePrice(item.price) * Number(cartItem?.cartQuantity || 1)
+    );
   }, 0);
 
   const result: { [k: string]: string } = {};

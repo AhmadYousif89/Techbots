@@ -2,6 +2,7 @@
 import prisma from "@/app/lib/db";
 import { revalidatePath } from "next/cache";
 import { TCartItem } from "../_lib/types";
+import { normalizePrice } from "@/app/lib/utils";
 
 // Sync the local cart with the server cart
 export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
@@ -11,7 +12,7 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
   }));
 
   const cartTotalValue = cart.reduce(
-    (acc, item) => acc + item.price * item.cartQuantity,
+    (acc, item) => acc + normalizePrice(item.price) * item.cartQuantity,
     0,
   );
 
@@ -116,8 +117,10 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
 export const addServerCartItem = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number,
+  itemPrice: unknown,
 ) => {
+  const normalizedItemPrice = normalizePrice(itemPrice);
+
   await prisma.$transaction(async (prisma) => {
     console.log("Add item to cart");
     const user = await prisma.user.findUnique({ where: { clerkUserId } });
@@ -139,7 +142,7 @@ export const addServerCartItem = async (
         data: {
           clerkUserId,
           count: 1,
-          totalValue: itemPrice,
+          totalValue: normalizedItemPrice,
           cartItems: {
             create: { productAsin: asin, quantity: 1 },
           },
@@ -159,7 +162,7 @@ export const addServerCartItem = async (
       });
     }
 
-    const totalValue = cart.totalValue + itemPrice;
+    const totalValue = normalizePrice(cart.totalValue) + normalizedItemPrice;
 
     await prisma.cart.update({
       where: { clerkUserId },
@@ -174,8 +177,10 @@ export const addServerCartItem = async (
 export const removeFromServerCart = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number,
+  itemPrice: unknown,
 ) => {
+  const normalizedItemPrice = normalizePrice(itemPrice);
+
   await prisma.$transaction(async (prisma) => {
     console.log("Remove item from cart");
     const user = await prisma.user.findUnique({ where: { clerkUserId } });
@@ -219,7 +224,8 @@ export const removeFromServerCart = async (
       return;
     }
 
-    const totalValue = cart.totalValue - itemPrice * cartItem.quantity;
+    const totalValue =
+      normalizePrice(cart.totalValue) - normalizedItemPrice * cartItem.quantity;
     await prisma.cart.update({
       where: { clerkUserId },
       data: { totalValue, count: { decrement: 1 } },
@@ -233,8 +239,10 @@ export const removeFromServerCart = async (
 export const incrementServerCartItem = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number,
+  itemPrice: unknown,
 ) => {
+  const normalizedItemPrice = normalizePrice(itemPrice);
+
   await prisma.$transaction(async (prisma) => {
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
@@ -263,8 +271,8 @@ export const incrementServerCartItem = async (
       data: { quantity: newQuantity },
     });
 
-    let totalValue = cart.totalValue;
-    totalValue += itemPrice;
+    let totalValue = normalizePrice(cart.totalValue);
+    totalValue += normalizedItemPrice;
 
     await prisma.cart.update({
       where: { clerkUserId },
@@ -279,8 +287,10 @@ export const incrementServerCartItem = async (
 export const decrementServerCartItem = async (
   clerkUserId: string,
   asin: string,
-  itemPrice: number,
+  itemPrice: unknown,
 ) => {
+  const normalizedItemPrice = normalizePrice(itemPrice);
+
   await prisma.$transaction(async (prisma) => {
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
@@ -300,8 +310,8 @@ export const decrementServerCartItem = async (
       throw new Error("Cart item not found");
     }
 
-    let totalValue = cart.totalValue;
-    totalValue -= itemPrice;
+    let totalValue = normalizePrice(cart.totalValue);
+    totalValue -= normalizedItemPrice;
 
     if (cartItem.quantity === 1) {
       await prisma.cartItem.delete({

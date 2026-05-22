@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatPrice } from "@/app/lib/utils";
 import { RatingStars } from "../(public)/products/_components/reviews/rating_stars";
 
 const day = 60 * 60 * 24;
@@ -78,7 +79,7 @@ export async function PopularItemsSlide() {
                   </p>
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
-                      ${product.price.toFixed(2)}
+                      ${formatPrice(product.price)}
                     </p>
                     <RatingStars
                       productRating={product.rating}

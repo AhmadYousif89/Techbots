@@ -5,6 +5,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { CartListView } from "./_components/cart_list";
 import { CartPaymentView } from "./_components/cart_payment";
 import { CartShippingView } from "./_components/cart_shipping";
+import { normalizePrice } from "@/app/lib/utils";
 
 export const metadata = {
   title: "Cart",
@@ -71,13 +72,13 @@ export const getServerCart = async (
 
     data = {
       count: cart?.count || 0,
-      totalValue: cart?.totalValue || 0,
+      totalValue: normalizePrice(cart?.totalValue || 0),
       cartItems: cartItems.map((item) => ({
         asin: item.productAsin,
         quantity: item.quantity,
         product: {
           asin: item.Product.asin,
-          price: item.Product.price,
+          price: normalizePrice(item.Product.price),
           title: item.Product.title,
           category: item.Product.category,
           mainImage: item.Product.mainImage,

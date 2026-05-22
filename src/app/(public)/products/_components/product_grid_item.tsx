@@ -5,6 +5,7 @@ import { EyeIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
 
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/app/lib/utils";
 import { checkItemInServerCart } from "../[asin]/page";
 import { TProduct, SearchParams } from "@/app/lib/types";
 
@@ -80,7 +81,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
             showTotalReviews={false}
             size="xs"
           />
-          <span className="place-self-end text-xs">${price.toFixed(2)}</span>
+          <span className="place-self-end text-xs">${formatPrice(price)}</span>
         </div>
       </CardHeader>
       <Separator className="mt-auto" />

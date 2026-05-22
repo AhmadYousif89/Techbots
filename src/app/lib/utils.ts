@@ -14,6 +14,20 @@ export function capitalizeString(str: string, removeHyphen = true) {
   return res;
 }
 
+export function normalizePrice(price: unknown) {
+  if (price == null) return 0;
+
+  const numericValue =
+    typeof price === "string" ? price.replace(/[^0-9.-]/g, "") : price;
+  const parsedPrice = Number(numericValue);
+
+  return Number.isFinite(parsedPrice) ? parsedPrice : 0;
+}
+
+export function formatPrice(price: unknown) {
+  return normalizePrice(price).toFixed(2);
+}
+
 type ExtractSearchProps = SearchParams | IterableIterator<[string, string]>;
 
 export function extractSearchParams(searchParams: ExtractSearchProps) {

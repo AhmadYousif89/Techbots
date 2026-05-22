@@ -24,6 +24,7 @@ import { Card, CardTitle, CardFooter, CardContent } from "@/components/ui/card";
 import { useCartStore } from "../../cart/_store/cart";
 import { NEXT_DAY_SHIPPING_COST } from "../../cart/constants";
 import { useShippingStore } from "../../cart/_store/shipping_form";
+import { formatPrice } from "@/app/lib/utils";
 
 const loader = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
@@ -141,7 +142,7 @@ function PaymentInformation() {
 
                   <div className="flex items-center gap-4">
                     <Badge className="font-medium">
-                      $ {item.price.toFixed(2)}
+                      $ {formatPrice(item.price)}
                     </Badge>
                     <span className="text-sm font-medium">
                       x {item.cartQuantity}
@@ -187,7 +188,7 @@ function PaymentInformation() {
             />
           </div>
           <CardFooter className="px-0 pt-6">
-            <Button disabled={isDisabled}>
+            <Button type="submit" disabled={isDisabled}>
               {isLoading ? "Processing..." : <>Purchase | ${fullAmount}</>}
             </Button>
           </CardFooter>

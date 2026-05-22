@@ -12,6 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { formatPrice, normalizePrice } from "@/app/lib/utils";
 import { CartIndicator } from "./item_indicators/cart_indicator";
 import { WishlistIndicator } from "./item_indicators/wishlist_indicator";
 import { RatingStars } from "../_components/reviews/rating_stars";
@@ -21,11 +22,18 @@ const getSimilarProducts = cache(
   async (asin: string) => {
     const category = await getProductCategory(asin);
 
-    return await prisma.product.findMany({
-      where: { asin: { not: asin }, category },
-      orderBy: { rating: "desc" },
-      take: 8,
-    });
+    return await prisma.product
+      .findMany({
+        where: { asin: { not: asin }, category },
+        orderBy: { rating: "desc" },
+        take: 8,
+      })
+      .then((products) =>
+        products.map((product) => ({
+          ...product,
+          price: normalizePrice(product.price),
+        })),
+      );
   },
   ["getSimilarProducts"],
 );
@@ -52,7 +60,7 @@ export async function SimilarProducts({
           <h2 className="text-2xl font-medium">Related products</h2>
           <Link
             className="text-sm text-muted-foreground hover:underline hover:underline-offset-4"
-            href={`/products?category=${products[0].category}`}
+            href={`/products?cat=${products[0]?.category}`}
           >
             View all
           </Link>
@@ -97,7 +105,7 @@ export async function SimilarProducts({
                         </p>
                         <div className="flex items-center justify-between">
                           <p className="text-xs text-muted-foreground">
-                            ${product.price.toFixed(2)}
+                            ${formatPrice(product.price)}
                           </p>
                           <RatingStars
                             productRating={product.rating}

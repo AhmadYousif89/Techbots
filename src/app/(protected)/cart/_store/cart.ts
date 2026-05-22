@@ -8,9 +8,14 @@ import {
   NEXT_DAY_SHIPPING_COST,
 } from "../constants";
 import { TProduct } from "@/app/lib/types";
+import { normalizePrice } from "@/app/lib/utils";
+
+export type TCartStoreItem = Omit<TProduct, "price"> & {
+  price: number | string;
+};
 
 export type CartState = {
-  cart: TProduct[];
+  cart: TCartStoreItem[];
   getVAT: () => number;
   getTotalCount: () => number;
   getTotalValue: () => number;
@@ -36,7 +41,7 @@ export const useCartStore = create<CartState>()(
         const { cart } = get();
         const ShippingType = useShippingStore.getState().data.shipping;
         const total = cart.reduce(
-          (acc, item) => acc + item.price * item.cartQuantity,
+          (acc, item) => acc + normalizePrice(item.price) * item.cartQuantity,
           0,
         );
 
@@ -46,7 +51,10 @@ export const useCartStore = create<CartState>()(
         const { getTotalValue: totalValue } = get();
         return totalValue() * VAT_PERCENTAGE;
       },
-      addToCart: (item) => set((state) => ({ cart: [...state.cart, item] })),
+      addToCart: (item) =>
+        set((state) => ({
+          cart: [...state.cart, { ...item, price: normalizePrice(item.price) }],
+        })),
       removeFromCart: (asin) =>
         set((state) => ({
           cart: state.cart.filter((cartItem) => cartItem.asin !== asin),

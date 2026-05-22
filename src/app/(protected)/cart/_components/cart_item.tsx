@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import useStore from "@/app/components/hooks/use-store";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/app/lib/utils";
 
 type CartItemProps = {
   asin: string;
@@ -88,7 +89,7 @@ export function CartItem({
             className="py-1 text-muted-foreground shadow-sm"
             variant={"outline"}
           >
-            {item.price.toFixed(2)}
+            {formatPrice(item.price)}
           </Badge>
         </div>
         <Link href={`/products/${item.asin}`} className="group">
