@@ -26,7 +26,7 @@ model Cart {
   clerkUserId String     @unique @map("clerk_user_id")
   user        User       @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
   count       Int        @default(0)
-  totalValue  Float      @default(0) @map("total_value")
+  totalValue  Decimal    @default(0.00) @map("total_value") @db.Decimal(10, 2)
   cartItems   CartItem[]
   isSynced    Boolean    @default(false) @map("is_synced")
   createdAt   DateTime   @default(now()) @map("created_at")
@@ -55,7 +55,7 @@ model Product {
   title              String
   brand              String
   color              String?
-  price              Float           @default(0)
+  price              Decimal         @default(0.00) @db.Decimal(10, 2)
   category           String
   description        String?
   rating             Float
@@ -66,7 +66,6 @@ model Product {
   specificationsFlat String?         @map("specifications_flat")
   featureBulletsFlat String?         @map("feature_bullets_flat")
   stockQuantity      Int             @default(0) @map("stock_quantity")
-  cartId             String?         @map("cart_id")
   images             ProductImages[]
   topReviews         Review[]
   orderItems         OrderItem[]
@@ -80,13 +79,14 @@ model Product {
 model Order {
   id           String      @id @default(cuid())
   user         User        @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
-  clerkUserId  String      @unique @map("clerk_user_id")
+  clerkUserId  String      @map("clerk_user_id")
   shippingInfo Json        @map("shipping_info")
-  pricePaid    Float       @default(0) @map("price_paid")
+  pricePaid    Decimal     @default(0.00) @map("price_paid") @db.Decimal(10, 2)
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
   orderItems   OrderItem[]
 
+  @@index([clerkUserId])
   @@map("orders")
 }
 
@@ -94,10 +94,13 @@ model OrderItem {
   id          String  @id @default(cuid())
   order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId     String
-  product     Product @relation(fields: [productAsin], references: [asin], onDelete: Cascade)
+  // If you delete a product from your catalog, it will no longer wipe out your historical financial records.
+  product     Product @relation(fields: [productAsin], references: [asin], onDelete: Restrict)
   productAsin String  @map("product_asin")
   count       Int     @default(0)
 
+  @@index([orderId])
+  @@index([productAsin])
   @@map("order_items")
 }
 

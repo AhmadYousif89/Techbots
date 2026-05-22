@@ -1,24 +1,23 @@
 // Seeds the products table
 
-import { PrismaClient } from '@prisma/client';
-import { readFileSync } from 'fs';
-import { z } from 'zod';
+import { PrismaClient } from "@prisma/client";
+import { readFileSync } from "fs";
+import { z } from "zod";
 
 const prisma = new PrismaClient();
 
 const ratingDetailSchema = z.object({
   percentage: z.number(),
-  count: z.number()
+  count: z.number(),
 });
 
 const productImageSchema = z.object({
   link: z.string(),
-  variant: z.string()
+  variant: z.string(),
 });
-type PImage = z.infer<typeof productImageSchema>;
 
 const mainImageSchema = z.object({
-  link: z.string()
+  link: z.string(),
 });
 
 const videoSchema = z
@@ -32,7 +31,7 @@ const videoSchema = z
     variant: z.string(),
     group_id: z.string(),
     group_type: z.string().nullish(),
-    title: z.string()
+    title: z.string(),
   })
   .nullish();
 
@@ -46,22 +45,20 @@ const reviewSchema = z.object({
   rating: z.number(),
   date: z.object({
     raw: z.string(),
-    utc: z.string()
+    utc: z.string(),
   }),
   profile: z
     .object({
       id: z.string().nullish(),
       name: z.string().nullish(),
-      link: z.string().nullish()
+      link: z.string().nullish(),
     })
     .nullish(),
   vine_program: z.boolean(),
   verified_purchase: z.boolean(),
   review_country: z.string(),
-  is_global_review: z.boolean()
+  is_global_review: z.boolean(),
 });
-
-type Review = z.infer<typeof reviewSchema>;
 
 const productSchema = z.object({
   asin: z.string(),
@@ -78,7 +75,7 @@ const productSchema = z.object({
     four_star: ratingDetailSchema,
     three_star: ratingDetailSchema,
     two_star: ratingDetailSchema,
-    one_star: ratingDetailSchema
+    one_star: ratingDetailSchema,
   }),
   main_image: mainImageSchema,
   images: z.array(productImageSchema),
@@ -88,25 +85,27 @@ const productSchema = z.object({
   top_reviews: z.array(reviewSchema),
   specifications_flat: z.string().nullish(),
   feature_bullets_flat: z.string().nullish(),
-  stock_quantity: z.number()
+  stock_quantity: z.number(),
 });
 
 export type Product = z.infer<typeof productSchema>;
 
-const path = './data/products.json';
+const path = "./data/products.json";
 
 async function main() {
-  const data = JSON.parse(readFileSync(path, 'utf8')) as Product[];
+  const data = JSON.parse(readFileSync(path, "utf8")) as Product[];
 
   for (const product of data) {
     try {
       productSchema.parse(product); // Validate the product data
       const existingProduct = await prisma.product.findUnique({
-        where: { asin: product.asin }
+        where: { asin: product.asin },
       });
 
       if (existingProduct) {
-        console.log(`Product with asin ${product.asin} already exists. Skipping...`);
+        console.log(
+          `Product with asin ${product.asin} already exists. Skipping...`,
+        );
         continue;
       }
 
@@ -127,19 +126,19 @@ async function main() {
             specificationsFlat: product.specifications_flat,
             featureBulletsFlat: product.feature_bullets_flat,
             stockQuantity: product.stock_quantity,
-            ratingBreakdown: product.rating_breakdown
-          }
+            ratingBreakdown: product.rating_breakdown,
+          },
         }),
-        ...product.images.map(image =>
+        ...product.images.map((image) =>
           prisma.productImages.create({
             data: {
               link: image.link,
               variant: image.variant,
-              productAsin: product.asin
-            }
-          })
+              productAsin: product.asin,
+            },
+          }),
         ),
-        ...product.top_reviews.map(review =>
+        ...product.top_reviews.map((review) =>
           prisma.review.create({
             data: {
               id: review.id,
@@ -151,21 +150,23 @@ async function main() {
               rating: review.rating,
               date: review.date,
               profile: review.profile ?? undefined,
-              reviewCountry: review.review_country
-            }
-          })
-        )
+              reviewCountry: review.review_country,
+            },
+          }),
+        ),
       ]);
 
       console.log(`Product with asin ${product.asin} seeded successfully.`);
     } catch (error) {
-      throw new Error(`Validation failed for product ${product.asin}:\t\n` + error);
+      throw new Error(
+        `Validation failed for product ${product.asin}:\t\n` + error,
+      );
     }
   }
 }
 
 main()
-  .catch(e => {
+  .catch((e) => {
     console.error(e);
     process.exit(1);
   })
