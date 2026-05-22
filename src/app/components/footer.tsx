@@ -11,7 +11,7 @@ export async function Footer() {
   const categories = await getCategories();
 
   return (
-    <footer id="footer" className="mt-8 bg-background px-6 py-20 lg:p-20">
+    <footer id="footer" className="mt-auto bg-background px-6 py-20 lg:p-20">
       <div className="lg:max-view mx-auto grid max-w-screen-md gap-8 text-primary lg:grid-cols-2 lg:gap-y-0">
         <div className="lg:max-w-[50ch]">
           <Logo className="mb-2 place-self-start text-2xl text-primary" />

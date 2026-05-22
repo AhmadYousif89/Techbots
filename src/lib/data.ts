@@ -5,7 +5,8 @@ export const featuredProducts = [
     description: "Shop high quality type C powerbanks",
     price: "$54.00",
     buttonTitle: "Shop Now",
-    image: "https://i.ibb.co/svWYstT/highlights-Three.webp",
+    image:
+      "https://m.media-amazon.com/images/I/81ng9GU9zoL._AC_UF894,1000_QL80_.jpg",
     url: "/products/B097TQZ38L",
   },
   {
@@ -14,7 +15,7 @@ export const featuredProducts = [
     description: "Shop the latest OnePlus flagship mobiles",
     price: "$299.00",
     buttonTitle: "Shop Now",
-    image: "https://i.ibb.co/bLRNKGq/highlights-Two.webp",
+    image: "https://m.media-amazon.com/images/I/51ATh2G6W1L.jpg",
     url: "/products/B0C22BRGLG",
   },
   {
@@ -23,7 +24,8 @@ export const featuredProducts = [
     description: "Discover the latest HQ headphones",
     price: "$429.00",
     buttonTitle: "Shop Now",
-    image: "https://i.ibb.co/G951N5B/highlights-One.webp",
+    image:
+      "https://m.media-amazon.com/images/I/51ZR4lyxBHL._AC_UF894,1000_QL80_DpWeblab_.jpg",
     url: "/products/B0CCZ1L489",
   },
 ];

@@ -51,11 +51,8 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
     : cart;
 
   const cartButton = (
-    <Button className="relative size-7 p-0 ring-2 ring-input transition-all hover:bg-background hover:ring-primary">
+    <Button className="relative size-7 p-0 ring-1 ring-input transition-all hover:bg-background hover:ring-primary">
       <ShoppingBag size={18} className="fill-background stroke-primary" />
-      <span className="absolute -left-3 -top-3 grid aspect-square size-5 place-content-center rounded-full bg-destructive text-[9px] font-semibold text-secondary ring-1 ring-background">
-        {cartCount > 99 ? "99+" : cartCount}
-      </span>
     </Button>
   );
 

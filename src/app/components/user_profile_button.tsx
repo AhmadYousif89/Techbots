@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, User } from "lucide-react";
+import { LogIn, User } from "lucide-react";
 import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/nextjs";
 
 import {
@@ -11,12 +11,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Separator } from "@/components/ui/separator";
 
 export function UserProfileButton() {
@@ -47,24 +42,27 @@ export function UserProfileButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="hidden lg:flex">
-        <div className="grid size-7 cursor-pointer place-content-center rounded-full bg-primary text-secondary ring-1 ring-input ring-offset-1 hover:bg-secondary hover:text-primary">
-          <User className="size-6" />
+        <div className="grid size-7 cursor-pointer place-content-center rounded-full bg-primary p-1 text-secondary ring-1 ring-input hover:bg-secondary hover:text-primary hover:ring-0">
+          <User className="size-fit" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-44">
-        <DropdownMenuLabel>Account</DropdownMenuLabel>
-        <Separator />
-        <DropdownMenuRadioGroup className="divide-y *:p-4">
-          <DropdownMenuItem className="*:text-xs *:font-medium hover:bg-muted">
+        <DropdownMenuRadioGroup>
+          <DropdownMenuItem className="h-9 p-0 hover:bg-muted">
             <SignInButton fallbackRedirectUrl={location.pathname} mode="modal">
-              Login
+              <span className="flex size-full cursor-pointer items-center gap-2 px-2">
+                <LogIn className="size-4" />
+                Login
+              </span>
             </SignInButton>
           </DropdownMenuItem>
-          <DropdownMenuItem className="*:text-xs *:font-medium hover:bg-muted">
-            <SignUpButton
-              fallbackRedirectUrl={location.pathname}
-              mode="modal"
-            />
+          <DropdownMenuItem className="h-9 p-0 hover:bg-muted">
+            <SignUpButton fallbackRedirectUrl={location.pathname} mode="modal">
+              <span className="flex size-full cursor-pointer items-center gap-2 px-2">
+                <User className="size-4" />
+                Sign Up
+              </span>
+            </SignUpButton>
           </DropdownMenuItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

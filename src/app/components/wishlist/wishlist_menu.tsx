@@ -37,11 +37,8 @@ export function WishListMenu() {
   const count = useStore(useWishlistStore, (s) => s.getTotalCount()) ?? 0;
 
   const WishListButton = (
-    <Button className="relative size-7 p-1 ring-2 ring-input transition-all hover:bg-background hover:ring-primary">
+    <Button className="relative size-7 p-1 ring-1 ring-input transition-all hover:bg-background hover:ring-primary">
       <Heart className="fill-background stroke-primary" />
-      <span className="absolute -left-3 -top-3 grid aspect-square size-5 place-content-center rounded-full bg-destructive text-[9px] font-semibold text-secondary ring-1 ring-background">
-        {count > 99 ? "99+" : count}
-      </span>
     </Button>
   );
 

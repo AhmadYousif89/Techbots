@@ -27,13 +27,17 @@ export default function RootLayout({
     <html lang="en">
       <ClerkProvider>
         <body
-          className={`${inter.className} min-h-svh bg-[url('/images/bg.png')] bg-cover bg-no-repeat`}
+          className={`${inter.className} flex min-h-dvh flex-col bg-gradient-to-br from-gray-200/80 to-indigo-200/40`}
         >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 -z-10 [background-image:linear-gradient(rgba(0,0,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,255,0.05)_1px,transparent_1px)] [background-size:27px_27px] [mask-image:linear-gradient(to_bottom,white,transparent_92%)]"
+          />
           <ClerkLoading>
             <div className="fixed inset-0 z-[999] flex items-center justify-center">
-              <div className="flex items-center gap-4 text-muted">
-                <LoaderIcon className="size-10 animate-[spin_2s_linear_infinite]" />
-                <p className="text-lg font-semibold">Connecting . . .</p>
+              <div className="flex items-center gap-4 text-primary">
+                <LoaderIcon className="size-10 animate-[spin_2s_linear_infinite] text-current" />
+                <p className="text-lg font-semibold">Loading...</p>
               </div>
             </div>
           </ClerkLoading>

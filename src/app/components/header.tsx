@@ -19,7 +19,7 @@ export function Header() {
         <SideMenu categoryList={categories} />
         <Logo />
         <MainNav />
-        <div className="flex items-center gap-4 lg:gap-8">
+        <div className="flex items-center gap-4">
           <WishListMenu />
           <CartMenu getServerCart={getServerCart(userId)} />
           <UserProfileButton />

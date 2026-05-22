@@ -45,15 +45,15 @@ export function HotProducts() {
                     height={200}
                   />
                 </CardContent>
-                <CardFooter className="grid justify-between gap-2">
-                  <span className="col-span-2 row-span-1 text-sm font-medium text-muted-foreground">
-                    Starts from:
-                  </span>
+                <CardFooter className="flex justify-between gap-2">
                   <Badge
                     variant={"outline"}
-                    className="min-w-16 justify-center py-2 font-medium shadow"
+                    className="min-w-16 justify-center py-2"
                   >
-                    {item.price}
+                    Starting at
+                    <small className="ml-1.5 text-sm font-bold">
+                      {item.price}
+                    </small>
                   </Badge>
                   <Link href={item.url}>
                     <Button
