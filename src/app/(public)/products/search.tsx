@@ -1,12 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { Data } from "@/app/lib/products";
+import type { Data } from "@/app/lib/products";
 import { capitalizeString } from "@/app/lib/utils";
 
 import {
@@ -20,12 +20,57 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-type SearchProductProps = {
-  data: Promise<Record<string, Data[]>>;
-};
+type SearchResultGroups = Record<string, Data[]>;
 
-export function SearchProducts({ data }: SearchProductProps) {
-  const itemsByCategory = use(data);
+export function SearchProducts() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResultGroups>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) {
+      setResults({});
+      setIsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(
+          `/api/products/search?query=${encodeURIComponent(trimmedQuery)}`,
+          { signal: controller.signal },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch search results.");
+        }
+
+        const data: SearchResultGroups = await response.json();
+
+        if (!controller.signal.aborted) {
+          setResults(data);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setResults({});
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    }, 200);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [query]);
 
   return (
     <Dialog>
@@ -33,40 +78,49 @@ export function SearchProducts({ data }: SearchProductProps) {
         <Button
           title="search"
           variant={"ghost"}
-          className="group z-10 aspect-square size-auto rounded-full p-0 ring-2 ring-input max-xl:hover:bg-input xl:hover:bg-transparent"
+          className="group z-10 size-auto rounded-full border px-1.5 py-1 max-xl:hover:bg-input xl:hover:bg-transparent"
         >
           <Search
             strokeWidth={2.5}
             className="size-6 p-1 text-muted-foreground"
           />
+          <span className="text-xs text-muted-foreground">Search</span>
+          <kbd className="ml-4 hidden min-w-8 justify-center rounded-full border bg-input text-muted-foreground sm:inline-flex">
+            ⌘/
+          </kbd>
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-4">
-        <Command
-          loop
-          filter={(value, search) => {
-            if (value.toLowerCase().includes(search.toLowerCase())) return 1;
-            return 0;
-          }}
-        >
-          <CommandInput placeholder="Type something to search..." />
-          <CommandEmpty className="py-8 text-center text-sm font-semibold text-muted-foreground">
-            No results found.
-          </CommandEmpty>
+      <DialogContent className="min-h-[380px] p-4">
+        <Command loop shouldFilter={false}>
+          <CommandInput
+            placeholder="Type something to search..."
+            value={query}
+            onValueChange={setQuery}
+          />
           <CommandList>
-            {Object.keys(itemsByCategory).map((category, i) => (
-              <CommandGroup
-                key={i + "-" + category}
-                className="[&_[cmdk-group-heading]]:px-0"
-                heading={
-                  <h3 className="text-xs font-medium text-muted-foreground">
-                    {capitalizeString(category)}
-                  </h3>
-                }
-              >
-                <SearchItems items={itemsByCategory[category]} />
-              </CommandGroup>
-            ))}
+            {!query.trim() ? (
+              <p className="px-2 py-8 text-center text-sm font-semibold text-muted-foreground">
+                Start typing to load search results.
+              </p>
+            ) : Object.keys(results).length > 0 ? (
+              Object.keys(results).map((category) => (
+                <CommandGroup
+                  key={category}
+                  className="[&_[cmdk-group-heading]]:px-0"
+                  heading={
+                    <h3 className="text-xs font-medium text-muted-foreground">
+                      {capitalizeString(category)}
+                    </h3>
+                  }
+                >
+                  <SearchItems items={results[category]} />
+                </CommandGroup>
+              ))
+            ) : (
+              <CommandEmpty className="py-8 text-center text-sm font-semibold text-muted-foreground">
+                No results found.
+              </CommandEmpty>
+            )}
           </CommandList>
         </Command>
       </DialogContent>

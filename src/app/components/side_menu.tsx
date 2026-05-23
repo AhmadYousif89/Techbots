@@ -40,7 +40,7 @@ export function SideMenu({ categoryList }: Props) {
       <SheetTrigger asChild>
         <Button
           size={"sm"}
-          className="size-7 bg-primary p-1 ring-2 ring-input transition-all hover:bg-secondary hover:ring-primary *:hover:stroke-primary lg:hidden"
+          className="size-7 bg-primary p-1 ring-1 ring-input transition-all hover:bg-secondary hover:ring-primary *:hover:stroke-primary lg:hidden"
         >
           <svg
             className="size-[20px] stroke-background"

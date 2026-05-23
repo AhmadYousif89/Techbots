@@ -10,6 +10,7 @@ import { ProductGridSize } from "./_components/product_grid_size";
 import { ProductGridItem } from "./_components/product_grid_item";
 import { PaginationButtons } from "./_components/pagination_button";
 import { GridItemSkeleton } from "./_components/skeletons/grid_item";
+import { PaginationSummary } from "./_components/pagination_summary";
 
 export async function ProductGrid({
   searchParams,
@@ -40,6 +41,7 @@ export async function ProductGrid({
     <div id="products-grid" className="scroll-mt-10 lg:scroll-mt-24">
       <div className="flex h-16 items-center px-8">
         {totalCount > 0 && <ProductGridSize />}
+        <PaginationSummary searchParams={searchParams} />
         {totalPages > 0 && (
           <PaginationButtons
             className="ml-auto flex items-center justify-center gap-2"

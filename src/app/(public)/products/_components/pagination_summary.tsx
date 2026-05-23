@@ -35,7 +35,12 @@ export async function PaginationSummary({
   }
 
   return (
-    <p className={cn("text-xs font-medium text-muted-foreground", className)}>
+    <p
+      className={cn(
+        "whitespace-nowrap text-right text-xs font-medium text-muted-foreground",
+        className,
+      )}
+    >
       <span className="font-semibold">{start + 1}</span> -{" "}
       <span className="font-semibold">
         {end > totalCount ? totalCount : end}
