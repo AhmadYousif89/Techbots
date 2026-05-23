@@ -5,6 +5,7 @@ import prisma from "@/app/lib/db";
 import { notFound } from "next/navigation";
 
 import { SearchParams } from "@/app/lib/types";
+import { formatPrice } from "@/app/lib/utils";
 import {
   Card,
   CardContent,
@@ -66,12 +67,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 <Link href={`/products/${product.asin}`} className="text-xs">
                   {product.title.split(" ").slice(0, 4).join(" ")}
                 </Link>
-                <Badge className="">
-                  {product.price.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  })}
-                </Badge>
+                <Badge className="">$ {formatPrice(product.price)}</Badge>
               </div>
             </Card>
           ))}

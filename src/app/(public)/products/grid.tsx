@@ -183,6 +183,8 @@ export async function getProducts({
     ).map((product) => ({
       ...product,
       price: normalizePrice(product.price),
+      topReviews: [],
+      orderItems: [],
     }));
   } catch (error) {
     console.error("Error fetching products:", error);

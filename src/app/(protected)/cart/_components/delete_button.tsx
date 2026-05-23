@@ -24,7 +24,7 @@ type DeleteAction = "deleteOne" | "deleteAll";
 
 type DeleteCartItemProps = {
   asin?: string;
-  price?: number;
+  price?: number | string;
   action?: DeleteAction;
 };
 
@@ -41,7 +41,7 @@ export function DeleteCartItems({ asin, price, action }: DeleteCartItemProps) {
     startTransition(async () => {
       if (action === "deleteOne") {
         if (asin) removeFromCart(asin);
-        if (userId && asin && price) {
+        if (userId && asin && price !== undefined) {
           try {
             await removeFromServerCart(userId, asin, price);
           } catch (error) {

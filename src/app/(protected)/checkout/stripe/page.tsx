@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import prisma from "@/app/lib/db";
 import { Checkout } from "../_component/checkout";
-import { SearchParams, TProduct } from "@/app/lib/types";
+import { SearchParams } from "@/app/lib/types";
 import { normalizePrice } from "@/app/lib/utils";
 
 export const metadata = {
@@ -16,22 +16,27 @@ type PageProps = {
 };
 
 export default async function Page({ searchParams }: PageProps) {
-  const items: Partial<TProduct>[] = [];
+  const items: { asin: string; cartQuantity: number }[] = [];
   Object.entries(searchParams).map((item) => {
+    const rawValue = Array.isArray(item[1]) ? item[1][0] : item[1];
+    if (!rawValue) {
+      return;
+    }
+    const [asin, quantity] = rawValue.split(" ");
     const prod = {
-      asin: item[1]?.split(" ")[0],
-      cartQuantity: item[1]?.split(" ")[1],
-    } as Partial<TProduct>;
+      asin,
+      cartQuantity: Number(quantity || 1),
+    };
     items.push(prod);
   });
 
-  const products = (await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where: {
       asin: {
         in: items.map((item) => item.asin) as string[],
       },
     },
-  })) as TProduct[];
+  });
 
   const totalAmount = products.reduce((acc, item) => {
     const cartItem = items.find((cartItem) => cartItem.asin === item.asin);

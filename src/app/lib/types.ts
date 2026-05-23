@@ -1,6 +1,6 @@
-import { OrderItem, Product, ProductImages, Review } from "@prisma/client";
+import type { OrderItem, Product, ProductImages, Review } from "@prisma/client";
 
-export type SearchParams = { [key: string]: string | string | undefined };
+export type SearchParams = { [key: string]: string | string[] | undefined };
 export type SortValue =
   | "popular"
   | "newest"
@@ -8,13 +8,22 @@ export type SortValue =
   | "highest-price"
   | "reset"
   | "";
-export type TProduct = Product & {
-  category: string;
-  cartQuantity: number;
-  topReviews: Review[];
+type ProductBase = Omit<Product, "price"> & {
+  price: number;
+};
+
+type ProductRelations = {
   images: ProductImages[];
+  topReviews: Review[];
   orderItems: OrderItem[];
 };
+
+export type TProduct = ProductBase &
+  ProductRelations & {
+    cartQuantity?: number;
+  };
+
+export type TProductRecord = Product & ProductRelations;
 export type RatingDetails = {
   percentage: number;
   count: number;

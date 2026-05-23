@@ -38,7 +38,11 @@ export async function ProductReviews({
     limit,
   );
 
-  const reviews = product?.topReviews;
+  if (!product) {
+    return null;
+  }
+
+  const reviews = product?.topReviews ?? [];
 
   if (reviewsCount === 0 && !selectedRating) {
     return (

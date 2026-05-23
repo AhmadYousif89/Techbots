@@ -40,8 +40,7 @@ export function CartListView({ getServerCart }: CartListViewProps) {
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
   const VAT =
     useStore(useCartStore, (s) => s.getVAT()) ??
-    (serverCart?.totalValue || 0) * VAT_PERCENTAGE ??
-    0;
+    (serverCart?.totalValue || 0) * VAT_PERCENTAGE;
   const total =
     useStore(useCartStore, (s) => s.getTotalValue()) ??
     serverCart?.totalValue ??
@@ -96,7 +95,7 @@ export function CartListView({ getServerCart }: CartListViewProps) {
               <Fragment key={`${i}:${item.asin}`}>
                 <CartItem
                   asin={item.asin}
-                  serverItem={"product" in item ? item.product : item}
+                  serverItem={"product" in item ? item.product : undefined}
                   serverItemQuantity={
                     "quantity" in item ? item.quantity : undefined
                   }

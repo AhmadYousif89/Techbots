@@ -12,17 +12,19 @@ import { FilterProducts } from "./filter";
 import { SearchProducts } from "./search";
 
 export const generateMetadata = ({ searchParams }: PageProps): Metadata => {
-  const category = capitalizeString(searchParams["cat"] ?? "", false);
-  let brand = searchParams["brand"] ?? "";
-  brand = brand.includes(",")
+  const { category, brand } = extractSearchParams(searchParams);
+  const categoryTitle = capitalizeString(category, false);
+  const brandTitle = brand.includes(",")
     ? brand
         .split(",")
-        .map((b) => capitalizeString(b))
+        .map((item) => capitalizeString(item))
         .join(", ")
     : brand;
-  const title = `Shop ${category ? "| " + category : ""}`;
+  const title = `Shop ${categoryTitle ? "| " + categoryTitle : ""}`;
   const description = `Find the best products online${
-    category ? ` for ${category}${brand ? ` from ${brand}.` : "."}` : "."
+    categoryTitle
+      ? ` for ${categoryTitle}${brandTitle ? ` from ${brandTitle}.` : "."}`
+      : "."
   }`;
 
   return { title, description };

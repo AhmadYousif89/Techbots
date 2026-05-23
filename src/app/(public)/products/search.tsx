@@ -18,7 +18,12 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type SearchResultGroups = Record<string, Data[]>;
 
@@ -91,6 +96,7 @@ export function SearchProducts() {
         </Button>
       </DialogTrigger>
       <DialogContent className="min-h-[380px] p-4">
+        <DialogTitle className="sr-only">Search Products</DialogTitle>
         <Command loop shouldFilter={false}>
           <CommandInput
             placeholder="Type something to search..."

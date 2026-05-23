@@ -12,16 +12,16 @@ import {
   incrementServerCartItem,
 } from "../_actions/actions";
 import { TCartProduct } from "../page";
-import { TProduct } from "@/app/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import useStore from "@/app/components/hooks/use-store";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/app/lib/utils";
+import type { TCartStoreItem } from "../_store/cart";
 
 type CartItemProps = {
   asin: string;
-  serverItem: TCartProduct | undefined;
+  serverItem: TCartProduct | TCartStoreItem | undefined;
   serverItemQuantity: number | undefined;
 };
 
@@ -36,7 +36,9 @@ export function CartItem({
   const decreaseQuantity = useCartStore((s) => s.decreaseQuantity);
 
   const item = serverItem ?? cart.find((item) => item.asin === asin);
-  const cartQuantity = serverItemQuantity ?? (item as TProduct)?.cartQuantity;
+  const cartQuantity =
+    serverItemQuantity ??
+    (item && "cartQuantity" in item ? item.cartQuantity : 0);
 
   if (!item) {
     return null;

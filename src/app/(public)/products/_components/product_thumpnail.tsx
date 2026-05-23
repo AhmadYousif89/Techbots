@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
-import { Info, Loader, Loader2, Trash2 } from "lucide-react";
+import { Info, Loader, Trash2 } from "lucide-react";
 import { capitalizeString } from "@/app/lib/utils";
 import { useCartMenuState, useWishlistMenuState } from "@/app/lib/store";
 
@@ -14,11 +14,12 @@ import { formatPrice } from "@/app/lib/utils";
 import { TCartProduct } from "@/app/(protected)/cart/page";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { removeFromServerCart } from "@/app/(protected)/cart/_actions/actions";
+import type { TCartStoreItem } from "@/app/(protected)/cart/_store/cart";
 import { useWishlistStore } from "../_store/wishlist";
 import { useTransition } from "react";
 
 type ProductThumbnailProps = {
-  product: TProduct | TCartProduct;
+  product: TProduct | TCartProduct | TCartStoreItem;
   type: "cart" | "wishlist";
 };
 

@@ -7,6 +7,7 @@ import { useCartStore } from "../_store/cart";
 import { syncCart } from "../_actions/actions";
 import { useShippingStore } from "../_store/shipping_form";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { normalizePrice } from "@/app/lib/utils";
 
 type CartViewsProps = PropsWithChildren;
 
@@ -17,7 +18,14 @@ export function CartViews({ children }: CartViewsProps) {
 
   useEffect(() => {
     if (userId && cartItems.length) {
-      syncCart(userId, cartItems);
+      syncCart(
+        userId,
+        cartItems.map((item) => ({
+          asin: item.asin,
+          price: normalizePrice(item.price),
+          cartQuantity: item.cartQuantity,
+        })),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, cartItems.length]);

@@ -29,12 +29,13 @@ export const generateMetadata = async ({
     where: { asin: params.asin },
     select: { brand: true, title: true },
   });
-  const category = capitalizeString(searchParams.cat ?? "", false);
+  const { category } = extractSearchParams(searchParams);
+  const categoryTitle = capitalizeString(category, false);
   const prodTitle = product?.title.split(" ").slice(0, 5).join(" ") ?? "";
   const brand = capitalizeString(product?.brand ?? "", false);
 
   return {
-    title: `${category} | ${prodTitle}`,
+    title: `${categoryTitle} | ${prodTitle}`,
     description: `Shop the new ${prodTitle} from ${brand}. Enjoy the best features and quality at Techbots.`,
   };
 };
@@ -47,10 +48,10 @@ export const getProductDetails = async (
   const { page, selectedRating } = extractSearchParams(searchParams);
   const limitPerPage = limit;
   const start = (+page <= 0 ? 0 : +page - 1) * limitPerPage;
-  let product = {} as TProduct;
+  let product: TProduct | null = null;
 
   try {
-    product = (await prisma.product.findUnique({
+    const fetchedProduct = await prisma.product.findUnique({
       where: { asin },
       include: {
         images: true,
@@ -61,13 +62,14 @@ export const getProductDetails = async (
           skip: start,
         },
       },
-    })) as TProduct;
+    });
 
-    if (product) {
+    if (fetchedProduct) {
       product = {
-        ...product,
-        price: normalizePrice(product.price),
-      } as TProduct;
+        ...fetchedProduct,
+        price: normalizePrice(fetchedProduct.price),
+        orderItems: [],
+      };
     }
   } catch (error) {
     console.error("Error fetching product details:", error);

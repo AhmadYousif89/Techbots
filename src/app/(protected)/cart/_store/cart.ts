@@ -12,6 +12,7 @@ import { normalizePrice } from "@/app/lib/utils";
 
 export type TCartStoreItem = Omit<TProduct, "price"> & {
   price: number | string;
+  cartQuantity: number;
 };
 
 export type CartState = {
@@ -41,7 +42,8 @@ export const useCartStore = create<CartState>()(
         const { cart } = get();
         const ShippingType = useShippingStore.getState().data.shipping;
         const total = cart.reduce(
-          (acc, item) => acc + normalizePrice(item.price) * item.cartQuantity,
+          (acc, item) =>
+            acc + normalizePrice(item.price) * (item.cartQuantity ?? 0),
           0,
         );
 
@@ -53,7 +55,14 @@ export const useCartStore = create<CartState>()(
       },
       addToCart: (item) =>
         set((state) => ({
-          cart: [...state.cart, { ...item, price: normalizePrice(item.price) }],
+          cart: [
+            ...state.cart,
+            {
+              ...item,
+              price: normalizePrice(item.price),
+              cartQuantity: item.cartQuantity ?? 1,
+            } as TCartStoreItem,
+          ],
         })),
       removeFromCart: (asin) =>
         set((state) => ({
@@ -63,7 +72,10 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           cart: state.cart.map((cartItem) =>
             cartItem.asin === asin
-              ? { ...cartItem, cartQuantity: cartItem.cartQuantity + 1 }
+              ? {
+                  ...cartItem,
+                  cartQuantity: (cartItem.cartQuantity ?? 0) + 1,
+                }
               : cartItem,
           ),
         })),
@@ -71,7 +83,10 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           cart: state.cart.map((cartItem) =>
             cartItem.asin === asin
-              ? { ...cartItem, cartQuantity: cartItem.cartQuantity - 1 }
+              ? {
+                  ...cartItem,
+                  cartQuantity: (cartItem.cartQuantity ?? 0) - 1,
+                }
               : cartItem,
           ),
         })),
