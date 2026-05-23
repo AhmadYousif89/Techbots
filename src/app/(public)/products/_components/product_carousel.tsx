@@ -18,7 +18,12 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Lightbox } from "./carousel/lightbox";
 
 type ProductCarouselProps = {
@@ -98,6 +103,7 @@ export function ProductCarousel({
             />
           </DialogTrigger>
           <DialogContent className="min-h-svh max-w-screen-xl px-0 min-[400px]:min-h-[calc(100%-10rem)] lg:px-6">
+            <DialogTitle className="sr-only">{product.title}</DialogTitle>
             <Lightbox product={product} />
           </DialogContent>
         </Dialog>

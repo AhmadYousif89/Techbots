@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 type PaginationButtonProps = {
   className?: string;
   asin?: string;
+  showPendingState?: boolean;
   page: string;
   params: string;
   baseUrl: string;
@@ -32,7 +33,14 @@ type PaginationButtonProps = {
 };
 
 export const PaginationButtons = (props: PaginationButtonProps) => {
-  const { asin, params, page, totalPages, baseUrl } = props;
+  const {
+    asin,
+    params,
+    page,
+    totalPages,
+    baseUrl,
+    showPendingState = true,
+  } = props;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [optimisticPage, setOptimisticPage] = useOptimistic(page || "1");
@@ -65,7 +73,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
 
   return (
     <div
-      data-pending={isPending ? "" : undefined}
+      data-pending={showPendingState && isPending ? "" : undefined}
       className={cn("flex items-center gap-2 *:flex-1", props.className)}
     >
       {totalPages > 2 && (
@@ -94,7 +102,7 @@ export const PaginationButtons = (props: PaginationButtonProps) => {
         <SelectTrigger showIcon={false} className="h-7 p-0 text-xs">
           <SelectValue asChild>
             <div className="flex h-full w-full items-center justify-center gap-1 px-2">
-              {isPending ? (
+              {showPendingState && isPending ? (
                 <Loader2 className="size-4 animate-spin text-muted-foreground" />
               ) : (
                 <span>{optimisticPage}</span>

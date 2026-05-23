@@ -2,13 +2,18 @@
 
 import { useRef } from "react";
 import { Review } from "@prisma/client";
-import { CircleUserRound, Loader } from "lucide-react";
+import { CircleUserRound } from "lucide-react";
 
 import { RatingStars } from "./rating_stars";
 import { ReviewDate, ReviewProfile } from "@/app/lib/types";
 import { CardContent, CardHeader } from "@/components/ui/card";
 import { useClampCheck } from "@/app/components/hooks/use-clamp-check";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export function ReviewItem(review: Review) {
   let reviewer;
@@ -31,7 +36,7 @@ export function ReviewItem(review: Review) {
   const { isClamped } = useClampCheck(bodyTextRef, bodyText);
 
   return (
-    <article className="bg-accent/25 p-2 group-has-[[data-pending]]:animate-pulse group-has-[[data-pending]]:bg-accent">
+    <article className="bg-accent/25 p-2">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <CardHeader className="flex-row gap-4 p-0">
@@ -48,7 +53,6 @@ export function ReviewItem(review: Review) {
               />
             </div>
           </CardHeader>
-          <Loader className="mr-4 hidden size-6 text-muted-foreground group-has-[[data-pending]]:block group-has-[[data-pending]]:animate-[spin_3s_linear_infinite]" />
         </div>
         <CardContent
           ref={bodyTextRef}
@@ -69,8 +73,8 @@ export function ReviewItem(review: Review) {
               <div className="flex items-center justify-between">
                 <CardHeader className="flex-row gap-4 p-0">
                   <CircleUserRound strokeWidth={1} className="my-auto size-9" />
-                  <div>
-                    <h4 className="text-sm font-medium">{reviewer}</h4>
+                  <DialogTitle>
+                    <p className="text-sm font-medium">{reviewer}</p>
                     <p className="mt-1 text-xs font-medium text-muted-foreground">
                       {new Date(time).toLocaleString()}
                     </p>
@@ -79,9 +83,8 @@ export function ReviewItem(review: Review) {
                       productRating={review.rating}
                       showTotalReviews={false}
                     />
-                  </div>
+                  </DialogTitle>
                 </CardHeader>
-                <Loader className="mr-4 hidden size-6 text-muted-foreground group-has-[[data-pending]]:block group-has-[[data-pending]]:animate-[spin_3s_linear_infinite]" />
               </div>
               <CardContent
                 dangerouslySetInnerHTML={{ __html: bodyHtmlText }}

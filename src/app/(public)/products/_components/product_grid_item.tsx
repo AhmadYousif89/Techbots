@@ -14,7 +14,12 @@ import { Separator } from "@/components/ui/separator";
 import { AddToCartButton } from "@/app/components/cart/add_button";
 import { AddToWishlistButton } from "@/app/components/wishlist/add_button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { extractSearchParams } from "@/app/lib/utils";
 
 const ProductQuickView = dynamic(
@@ -45,6 +50,7 @@ export async function ProductGridItem({ product, searchParams }: Props) {
           </button>
         </DialogTrigger>
         <DialogContent className="max-w-[1200px] p-0">
+          <DialogTitle className="sr-only">{product.title}</DialogTitle>
           <ProductQuickView product={product} />
         </DialogContent>
       </Dialog>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "lucide-react";
@@ -28,23 +28,44 @@ import {
 type SearchResultGroups = Record<string, Data[]>;
 
 export function SearchProducts() {
+  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResultGroups>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const shortcutLabel = useMemo(() => {
+    if (typeof navigator === "undefined") return "⌘/";
+
+    return /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘/" : "Ctrl+/";
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isShortcut =
+        (event.metaKey || event.ctrlKey) &&
+        (event.key === "/" || event.key === "?");
+
+      if (!isShortcut) return;
+
+      event.preventDefault();
+      setOpen((pv) => !pv);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const trimmedQuery = query.trim();
 
     if (!trimmedQuery) {
       setResults({});
-      setIsLoading(false);
       return;
     }
 
     const controller = new AbortController();
     const timeoutId = window.setTimeout(async () => {
-      setIsLoading(true);
-
       try {
         const response = await fetch(
           `/api/products/search?query=${encodeURIComponent(trimmedQuery)}`,
@@ -64,10 +85,6 @@ export function SearchProducts() {
         if (!controller.signal.aborted) {
           setResults({});
         }
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsLoading(false);
-        }
       }
     }, 200);
 
@@ -78,7 +95,7 @@ export function SearchProducts() {
   }, [query]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           title="search"
@@ -90,8 +107,8 @@ export function SearchProducts() {
             className="size-6 p-1 text-muted-foreground"
           />
           <span className="text-xs text-muted-foreground">Search</span>
-          <kbd className="ml-4 hidden min-w-8 justify-center rounded-full border bg-input text-muted-foreground sm:inline-flex">
-            ⌘/
+          <kbd className="ml-4 hidden min-w-8 justify-center rounded-full border bg-input p-1 text-xs font-bold text-muted-foreground sm:inline-flex">
+            {shortcutLabel}
           </kbd>
         </Button>
       </DialogTrigger>
