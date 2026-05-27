@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "lucide-react";
@@ -9,43 +9,42 @@ import { useRouter } from "next/navigation";
 import type { Data } from "@/app/lib/products";
 import { capitalizeString } from "@/app/lib/utils";
 
+import { Button } from "@/components/ui/button";
 import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogTitle } from "@/components/ui/dialog";
 
 type SearchResultGroups = Record<string, Data[]>;
+
+const searchResultsCache = new Map<string, SearchResultGroups>();
 
 export function SearchProducts() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResultGroups>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+
   const shortcutLabel = useMemo(() => {
     if (typeof navigator === "undefined") return "⌘/";
-
     return /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘/" : "Ctrl+/";
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       const isShortcut =
-        (event.metaKey || event.ctrlKey) &&
-        (event.key === "/" || event.key === "?");
+        (e.metaKey || e.ctrlKey) && (e.key === "/" || e.key === "?");
 
       if (!isShortcut) return;
 
-      event.preventDefault();
+      e.preventDefault();
       setOpen((pv) => !pv);
     };
 
@@ -58,13 +57,23 @@ export function SearchProducts() {
 
   useEffect(() => {
     const trimmedQuery = query.trim();
+    const cacheKey = trimmedQuery.toLowerCase();
 
     if (!trimmedQuery) {
       setResults({});
+      setIsLoading(false);
+      return;
+    }
+
+    if (searchResultsCache.has(cacheKey)) {
+      setResults(searchResultsCache.get(cacheKey) ?? {});
+      setIsLoading(false);
       return;
     }
 
     const controller = new AbortController();
+    setIsLoading(true);
+
     const timeoutId = window.setTimeout(async () => {
       try {
         const response = await fetch(
@@ -72,21 +81,23 @@ export function SearchProducts() {
           { signal: controller.signal },
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch search results.");
-        }
+        if (!response.ok) throw new Error("Failed to fetch search results.");
 
         const data: SearchResultGroups = await response.json();
 
         if (!controller.signal.aborted) {
+          searchResultsCache.set(cacheKey, data);
           setResults(data);
+          setIsLoading(false);
         }
-      } catch (error) {
+      } catch {
         if (!controller.signal.aborted) {
+          searchResultsCache.set(cacheKey, {});
           setResults({});
+          setIsLoading(false);
         }
       }
-    }, 200);
+    }, 500);
 
     return () => {
       window.clearTimeout(timeoutId);
@@ -94,38 +105,59 @@ export function SearchProducts() {
     };
   }, [query]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const frameId = window.requestAnimationFrame(() => {
+      listRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [open, query, results, isLoading]);
+
+  const hasResults = Object.keys(results).length > 0;
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          title="search"
-          variant={"ghost"}
-          className="group z-10 size-auto rounded-full border px-1.5 py-1 max-xl:hover:bg-input xl:hover:bg-transparent"
-        >
-          <Search
-            strokeWidth={2.5}
-            className="size-6 p-1 text-muted-foreground"
-          />
-          <span className="text-xs text-muted-foreground">Search</span>
-          <kbd className="ml-4 hidden min-w-8 justify-center rounded-full border bg-input p-1 text-xs font-bold text-muted-foreground sm:inline-flex">
-            {shortcutLabel}
-          </kbd>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="min-h-[380px] p-4">
+    <>
+      <Button
+        title="search"
+        variant="ghost"
+        onClick={() => setOpen(true)}
+        className="group z-10 size-auto rounded-full border px-1.5 py-1 max-xl:hover:bg-input xl:hover:bg-transparent"
+      >
+        <Search
+          strokeWidth={2.5}
+          className="size-6 p-1 text-muted-foreground"
+        />
+        <span className="text-xs text-muted-foreground">Search</span>
+        <kbd className="ml-4 hidden min-w-8 justify-center rounded-full border bg-input p-1 text-xs font-bold text-muted-foreground sm:inline-flex">
+          {shortcutLabel}
+        </kbd>
+      </Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <DialogTitle className="sr-only">Search Products</DialogTitle>
-        <Command loop shouldFilter={false}>
+        <Command loop shouldFilter={false} className="min-h-[380px] p-4">
           <CommandInput
             placeholder="Type something to search..."
             value={query}
             onValueChange={setQuery}
           />
-          <CommandList>
-            {!query.trim() ? (
+          {!isLoading && !hasResults && query.trim() !== "" && (
+            <CommandEmpty className="py-8 text-center text-sm font-semibold text-muted-foreground">
+              No results found.
+            </CommandEmpty>
+          )}
+          <CommandList ref={listRef}>
+            {isLoading ? (
+              <SearchResultsSkeleton />
+            ) : !query.trim() ? (
               <p className="px-2 py-8 text-center text-sm font-semibold text-muted-foreground">
                 Start typing to load search results.
               </p>
-            ) : Object.keys(results).length > 0 ? (
+            ) : (
+              hasResults &&
               Object.keys(results).map((category) => (
                 <CommandGroup
                   key={category}
@@ -139,23 +171,15 @@ export function SearchProducts() {
                   <SearchItems items={results[category]} />
                 </CommandGroup>
               ))
-            ) : (
-              <CommandEmpty className="py-8 text-center text-sm font-semibold text-muted-foreground">
-                No results found.
-              </CommandEmpty>
             )}
           </CommandList>
         </Command>
-      </DialogContent>
-    </Dialog>
+      </CommandDialog>
+    </>
   );
 }
 
-type SearchResultsProps = {
-  items: Data[];
-};
-
-function SearchItems({ items }: SearchResultsProps) {
+function SearchItems({ items }: { items: Data[] }) {
   const router = useRouter();
 
   return (
@@ -189,5 +213,26 @@ function SearchItems({ items }: SearchResultsProps) {
         </CommandItem>
       ))}
     </>
+  );
+}
+
+function SearchResultsSkeleton() {
+  return (
+    <div className="space-y-6 px-2 py-4">
+      {[...Array(2)].map((_, groupIndex) => (
+        <div key={groupIndex} className="space-y-3">
+          <div className="h-4 w-28 animate-pulse rounded bg-input" />
+
+          <div className="space-y-2">
+            {[...Array(4)].map((_, itemIndex) => (
+              <div key={itemIndex} className="flex items-center gap-2">
+                <div className="size-10 shrink-0 animate-pulse rounded-md bg-input" />
+                <div className="h-10 w-full animate-pulse rounded-md bg-input" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
