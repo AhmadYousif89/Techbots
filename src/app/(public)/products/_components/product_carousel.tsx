@@ -104,7 +104,7 @@ export function ProductCarousel({
           </DialogTrigger>
           <DialogContent className="min-h-svh max-w-screen-xl px-0 min-[400px]:min-h-[calc(100%-10rem)] lg:px-6">
             <DialogTitle className="sr-only">{product.title}</DialogTitle>
-            <Lightbox product={product} />
+            <Lightbox product={product} initialImageIndex={imageIndex} />
           </DialogContent>
         </Dialog>
       </ResizablePanel>

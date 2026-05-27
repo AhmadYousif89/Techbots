@@ -1,20 +1,25 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TProduct } from "@/app/lib/types";
 import { ProductImageZoom } from "./image_magnifyer";
 
 type LightboxProps = {
   product: TProduct;
+  initialImageIndex?: number;
 };
 
-export function Lightbox({ product }: LightboxProps) {
-  const [imageIndex, setImageIndex] = useState(0);
+export function Lightbox({ product, initialImageIndex = 0 }: LightboxProps) {
+  const [imageIndex, setImageIndex] = useState(initialImageIndex);
+
+  useEffect(() => {
+    setImageIndex(initialImageIndex);
+  }, [initialImageIndex]);
 
   return (
     <section>
       <h2 className="sr-only">Browse Product Images</h2>
       <div className="flex h-full flex-col items-center justify-between lg:flex-row lg:gap-x-8">
-        <div className="mb-4 grid flex-1 justify-center border-b p-4 xl:pb-8">
+        <div className="mb-4 grid flex-1 justify-center">
           <ProductImageZoom
             width={650}
             height={650}
@@ -22,7 +27,7 @@ export function Lightbox({ product }: LightboxProps) {
             src={product.images[imageIndex].link}
           />
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-3 p-2 sm:px-4 lg:grid lg:grid-cols-2 lg:place-content-start lg:p-4">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 p-2 sm:px-4 lg:mt-0 lg:grid lg:grid-cols-2 lg:place-content-start lg:p-4">
           {product.images.map((image, index) => (
             <button
               key={index}
