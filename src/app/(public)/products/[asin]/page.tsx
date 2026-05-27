@@ -123,7 +123,7 @@ export default function SingleProductPage({ params, searchParams }: PageProps) {
   const { asin } = params;
 
   return (
-    <main className="max-view mx-auto grid min-h-screen">
+    <main className="max-view mx-auto grid w-full">
       <Suspense fallback={<BreadcrumbSkeleton />}>
         <BreadcrumbSection asin={asin} type="single" />
       </Suspense>
