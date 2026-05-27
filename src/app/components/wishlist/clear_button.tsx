@@ -9,11 +9,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { useWishlistStore } from "@/app/(public)/products/_store/wishlist";
+import { clearWishlist } from "@/app/(public)/products/_store/wishlist";
 import { useOnClickOutside } from "../hooks/use_onClick_outside";
 
 export function ClearWishlistButton() {
-  const { clearList } = useWishlistStore();
   const ref = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = () => {
@@ -26,7 +25,7 @@ export function ClearWishlistButton() {
   useOnClickOutside(ref, handleClickOutside);
 
   const handleClearList = () => {
-    clearList();
+    clearWishlist();
     toast.custom(() => {
       return (
         <div className="flex items-center gap-4">

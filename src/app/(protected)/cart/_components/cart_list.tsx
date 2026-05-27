@@ -26,6 +26,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import useStore from "@/app/components/hooks/use-store";
+import { useShippingStore } from "../_store/shipping_form";
+import {
+  getCartTotalValue,
+  getCartVAT,
+  isCartCouponValid,
+  setCouponValue,
+} from "../_store/cart";
 
 type CartListViewProps = {
   getServerCart: Promise<TServerCart>;
@@ -37,20 +44,19 @@ export function CartListView({ getServerCart }: CartListViewProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [localCouponValue, setLocalCouponValue] = useState("");
 
-  const cart = useStore(useCartStore, (s) => s.cart) ?? [];
-  const VAT =
-    useStore(useCartStore, (s) => s.getVAT()) ??
-    (serverCart?.totalValue || 0) * VAT_PERCENTAGE;
-  const total =
-    useStore(useCartStore, (s) => s.getTotalValue()) ??
-    serverCart?.totalValue ??
-    0;
-  const cartCount =
-    useStore(useCartStore, (s) => s.getTotalCount()) ?? serverCart?.count ?? 0;
-
+  const cart = useStore(useCartStore, (s) => s.cart);
   const coupon = useStore(useCartStore, (s) => s.coupon) ?? "";
-  const setCouponValue = useCartStore((s) => s.setCouponValue);
-  const couponIsValid = useStore(useCartStore, (s) => s.couponIsValid());
+  const shipping = useShippingStore((s) => s.data.shipping);
+  const total =
+    cart !== undefined
+      ? getCartTotalValue(cart, shipping, coupon)
+      : (serverCart?.totalValue ?? 0);
+  const VAT =
+    cart !== undefined
+      ? getCartVAT(total)
+      : (serverCart?.totalValue || 0) * VAT_PERCENTAGE;
+  const cartCount = cart?.length ?? serverCart?.count ?? 0;
+  const couponIsValid = isCartCouponValid(coupon);
 
   let content;
   const serverCartItems = serverCart?.cartItems || [];
@@ -78,7 +84,7 @@ export function CartListView({ getServerCart }: CartListViewProps) {
       </CardContent>
     );
   } else {
-    const data = serverCartItems.length ? serverCartItems : cart;
+    const data = cart ?? serverCartItems;
 
     content = (
       <CardContent className="grid pt-6 lg:grid-cols-2 lg:justify-between lg:gap-8 lg:divide-x">
@@ -127,7 +133,7 @@ export function CartListView({ getServerCart }: CartListViewProps) {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    setCouponValue?.(localCouponValue);
+                    setCouponValue(localCouponValue);
                     setIsSubmitted(true);
                   }}
                   className="relative my-2 flex items-center justify-between gap-4"

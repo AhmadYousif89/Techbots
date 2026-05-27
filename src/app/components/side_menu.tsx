@@ -6,7 +6,7 @@ import { UserButton } from "@clerk/nextjs";
 
 import { Logo } from "./logo";
 import { AuthButtons } from "./auth_buttons";
-import { useSideMenuState } from "@/app/lib/store";
+import { setSideMenuOpen, useMenuStore } from "@/app/lib/store";
 import { capitalizeString } from "@/app/lib/utils";
 
 import {
@@ -33,10 +33,10 @@ type Props = {
 
 export function SideMenu({ categoryList }: Props) {
   const categories = use(categoryList);
-  const { isOpen, setIsOpen } = useSideMenuState();
+  const isOpen = useMenuStore((state) => state.sideMenuOpen);
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={setSideMenuOpen}>
       <SheetTrigger asChild>
         <Button
           size={"sm"}
@@ -82,7 +82,7 @@ export function SideMenu({ categoryList }: Props) {
         <ul className="grid gap-4 pb-4 text-sm">
           <li>
             <Link
-              onClick={() => setIsOpen(false)}
+              onClick={() => setSideMenuOpen(false)}
               href="/products"
               className="inline-block w-full border-b-[1px] border-transparent pb-1 hover:border-b-foreground/15 hover:text-foreground/70"
             >
@@ -100,7 +100,7 @@ export function SideMenu({ categoryList }: Props) {
                     {categories.map((category) => (
                       <li key={category}>
                         <Link
-                          onClick={() => setIsOpen(false)}
+                          onClick={() => setSideMenuOpen(false)}
                           href={`/products?cat=${category}`}
                           className="inline-block border-b-[1px] border-transparent p-1 text-xs hover:border-b-foreground/15 hover:text-foreground/70"
                         >
@@ -115,7 +115,7 @@ export function SideMenu({ categoryList }: Props) {
           </li>
           <li>
             <Link
-              onClick={() => setIsOpen(false)}
+              onClick={() => setSideMenuOpen(false)}
               className="inline-block w-full border-b-[1px] border-transparent pb-1 hover:border-b-foreground/15 hover:text-foreground/70"
               href="/cart"
             >
@@ -124,7 +124,7 @@ export function SideMenu({ categoryList }: Props) {
           </li>
           <li>
             <Link
-              onClick={() => setIsOpen(false)}
+              onClick={() => setSideMenuOpen(false)}
               className="inline-block w-full border-b-[1px] border-transparent pb-1 hover:border-b-foreground/15 hover:text-foreground/70"
               href="/#blogs"
             >
@@ -133,7 +133,7 @@ export function SideMenu({ categoryList }: Props) {
           </li>
           <li>
             <Link
-              onClick={() => setIsOpen(false)}
+              onClick={() => setSideMenuOpen(false)}
               className="inline-block w-full border-b-[1px] border-transparent pb-1 hover:border-b-foreground/15 hover:text-foreground/70"
               href="/#footer"
             >

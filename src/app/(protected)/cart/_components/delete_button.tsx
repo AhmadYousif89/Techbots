@@ -19,6 +19,7 @@ import {
 import { Button, ButtonProps } from "@/components/ui/button";
 import { clearServerCart, removeFromServerCart } from "../_actions/actions";
 import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
+import { clearCart, removeFromCart } from "../_store/cart";
 
 type DeleteAction = "deleteOne" | "deleteAll";
 
@@ -32,10 +33,6 @@ export function DeleteCartItems({ asin, price, action }: DeleteCartItemProps) {
   const { userId } = useAuth();
   const [dialogIsOpen, setDialogState] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [removeFromCart, clearCart] = useCartStore((s) => [
-    s.removeFromCart,
-    s.clearCart,
-  ]);
 
   const handleDelete = () => {
     startTransition(async () => {

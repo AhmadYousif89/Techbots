@@ -5,7 +5,10 @@ import { PropsWithChildren, useEffect } from "react";
 
 import { useCartStore } from "../_store/cart";
 import { syncCart } from "../_actions/actions";
-import { useShippingStore } from "../_store/shipping_form";
+import {
+  getShippingFormState,
+  useShippingStore,
+} from "../_store/shipping_form";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { normalizePrice } from "@/app/lib/utils";
 
@@ -14,7 +17,9 @@ type CartViewsProps = PropsWithChildren;
 export function CartViews({ children }: CartViewsProps) {
   const { userId } = useAuth();
   const cartItems = useCartStore((s) => s.cart);
-  const shippingFormState = useShippingStore((s) => s.formState());
+  const shippingFormState = getShippingFormState(
+    useShippingStore((s) => s.data),
+  );
 
   useEffect(() => {
     if (userId && cartItems.length) {
@@ -27,8 +32,7 @@ export function CartViews({ children }: CartViewsProps) {
         })),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, cartItems.length]);
+  }, [userId, cartItems]);
 
   return (
     <Tabs defaultValue="cart" className="bg-muted pb-1 pt-10">

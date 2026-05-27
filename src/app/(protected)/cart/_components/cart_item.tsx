@@ -18,6 +18,7 @@ import useStore from "@/app/components/hooks/use-store";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/app/lib/utils";
 import type { TCartStoreItem } from "../_store/cart";
+import { decreaseQuantity, increaseQuantity } from "../_store/cart";
 
 type CartItemProps = {
   asin: string;
@@ -32,8 +33,6 @@ export function CartItem({
 }: CartItemProps) {
   const { userId } = useAuth();
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
-  const increaseQuantity = useCartStore((s) => s.increaseQuantity);
-  const decreaseQuantity = useCartStore((s) => s.decreaseQuantity);
 
   const item = serverItem ?? cart.find((item) => item.asin === asin);
   const cartQuantity =
@@ -46,7 +45,7 @@ export function CartItem({
 
   const handleItemQuantity = async (action: "increment" | "decrement") => {
     if (action === "increment") {
-      increaseQuantity?.(item.asin);
+      increaseQuantity(item.asin);
       if (userId) {
         try {
           await incrementServerCartItem(userId, item.asin, item.price);
@@ -55,7 +54,7 @@ export function CartItem({
         }
       }
     } else {
-      decreaseQuantity?.(item.asin);
+      decreaseQuantity(item.asin);
       if (userId) {
         try {
           await decrementServerCartItem(userId, item.asin, item.price);

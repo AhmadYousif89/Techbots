@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
@@ -15,16 +15,19 @@ import {
 } from "@/components/ui/card";
 import { useCartStore } from "../_store/cart";
 import useStore from "@/app/components/hooks/use-store";
-import { TOrder, useOrderStore } from "../_store/orders";
+import { TOrder, creatOrder, useOrderStore } from "../_store/orders";
 import { useShippingStore } from "../_store/shipping_form";
+import { getCartTotalValue } from "../_store/cart";
 
 export function CartPaymentView() {
   const router = useRouter();
   const { userId } = useAuth();
-  const items = useCartStore((s) => s.cart);
-  const { data, setFormData } = useShippingStore();
-  const total = useStore(useCartStore, (s) => s.getTotalValue()) ?? 0;
-  const [orders, creatOrder] = useOrderStore((s) => [s.orders, s.creatOrder]);
+  const cartItems = useStore(useCartStore, (s) => s.cart);
+  const items = useMemo(() => cartItems ?? [], [cartItems]);
+  const data = useShippingStore((s) => s.data);
+  const orderItems = useStore(useOrderStore, (s) => s.orders);
+  const orders = useMemo(() => orderItems ?? [], [orderItems]);
+  const total = getCartTotalValue(items, data.shipping);
 
   useEffect(() => {
     const ids = items
@@ -36,7 +39,7 @@ export function CartPaymentView() {
     if (orders.length > 0) {
       router.push(`/checkout/stripe?${ids}`);
     }
-  }, [items, orders, router, setFormData]);
+  }, [items, orders, router]);
 
   const confirmOrder = () => {
     if (!userId) {

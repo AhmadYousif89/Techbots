@@ -3,7 +3,6 @@
 import { use } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingBag, ShoppingCart, Slash } from "lucide-react";
-import { useCartMenuState } from "@/app/lib/store";
 
 import {
   Drawer,
@@ -33,6 +32,7 @@ import { TServerCart } from "@/app/(protected)/cart/page";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { useMediaQuery } from "@/app/components/hooks/use_media_query";
 import { ProductThumbnail } from "@/app/(public)/products/_components/product_thumpnail";
+import { setCartMenuOpen, useMenuStore } from "@/app/lib/store";
 
 type CartMenuProps = {
   getServerCart: Promise<TServerCart>;
@@ -41,11 +41,11 @@ type CartMenuProps = {
 export function CartMenu({ getServerCart }: CartMenuProps) {
   const router = useRouter();
   const serverCart = use(getServerCart);
-  const { isOpen, setIsOpen } = useCartMenuState();
   const isNotMobile = useMediaQuery("(min-width: 639px)");
-  const cart = useStore(useCartStore, (s) => s.cart) ?? [];
-  const cartCount =
-    useStore(useCartStore, (s) => s.getTotalCount()) ?? serverCart?.count ?? 0;
+
+  const isOpen = useMenuStore((state) => state.cartMenuOpen);
+  const cart = useStore(useCartStore, (s) => s.cart);
+  const cartCount = cart?.length ?? serverCart?.count ?? 0;
   const data = serverCart?.cartItems.length
     ? serverCart?.cartItems.map((i) => i.product)
     : cart;
@@ -60,7 +60,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
     <Button
       onClick={() => {
         if (cartCount) router.push("/cart");
-        setIsOpen(false);
+        setCartMenuOpen(false);
       }}
     >
       {cartCount === 0 ? "Close" : "View My Cart"}
@@ -82,7 +82,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
 
   if (isNotMobile) {
     return (
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <Sheet open={isOpen} onOpenChange={setCartMenuOpen}>
         <SheetTrigger asChild>{cartButton}</SheetTrigger>
         <SheetContent className="grid min-w-[450px] grid-rows-[auto,1fr,auto]">
           <SheetHeader className="mt-8">
@@ -104,7 +104,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
             </section>
           ) : (
             <section className="flex flex-col gap-4 overflow-auto px-4 py-4">
-              {data.map((item) => (
+              {data?.map((item) => (
                 <ProductThumbnail product={item} key={item.asin} type="cart" />
               ))}
             </section>
@@ -119,7 +119,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer open={isOpen} onOpenChange={setCartMenuOpen}>
       <DrawerTrigger asChild>{cartButton}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
@@ -138,7 +138,7 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
           </section>
         ) : (
           <section className="flex max-h-96 flex-col gap-4 overflow-auto px-4 py-4">
-            {cart.map((item) => (
+            {cart?.map((item) => (
               <ProductThumbnail product={item} key={item.asin} type="cart" />
             ))}
           </section>

@@ -1,31 +1,29 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-type SideMenuState = {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+type MenuStoreState = {
+  sideMenuOpen: boolean;
+  cartMenuOpen: boolean;
+  wishlistMenuOpen: boolean;
 };
 
-export const useSideMenuState = create<SideMenuState>(set => ({
-  isOpen: false,
-  setIsOpen: isOpen => set({ isOpen })
+export const useMenuStore = create<MenuStoreState>(() => ({
+  sideMenuOpen: false,
+  cartMenuOpen: false,
+  wishlistMenuOpen: false,
 }));
 
-type CartMenuState = {
+type MenuSelectorState = {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
 };
 
-export const useCartMenuState = create<CartMenuState>(set => ({
-  isOpen: false,
-  setIsOpen: isOpen => set({ isOpen })
-}));
+export function setSideMenuOpen(isOpen: boolean) {
+  useMenuStore.setState({ sideMenuOpen: isOpen });
+}
 
-type WishlistMenuState = {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-};
+export function setCartMenuOpen(isOpen: boolean) {
+  useMenuStore.setState({ cartMenuOpen: isOpen });
+}
 
-export const useWishlistMenuState = create<WishlistMenuState>(set => ({
-  isOpen: false,
-  setIsOpen: isOpen => set({ isOpen })
-}));
+export function setWishlistMenuOpen(isOpen: boolean) {
+  useMenuStore.setState({ wishlistMenuOpen: isOpen });
+}

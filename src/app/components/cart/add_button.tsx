@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { TProduct } from "@/app/lib/types";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { TItemInServerCart } from "@/app/(public)/products/[asin]/page";
+import { addToCart, removeFromCart } from "@/app/(protected)/cart/_store/cart";
 
 import {
   addServerCartItem,
@@ -41,10 +42,6 @@ export function AddToCartButton({
     : ({} as TItemInServerCart);
   const [isPending, startTransition] = useTransition();
   const cart = useCartStore((s) => s.cart);
-  const [addToCart, removeFromCart] = useCartStore((s) => [
-    s.addToCart,
-    s.removeFromCart,
-  ]);
 
   let textContent: React.ReactNode =
     action === "addToCart" ? "Add to cart" : "Buy now";
@@ -79,7 +76,6 @@ export function AddToCartButton({
       });
     }
     startTransition(async () => {
-      product.cartQuantity = 1;
       addToCart(product);
       if (userId) {
         try {

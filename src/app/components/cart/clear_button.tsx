@@ -10,14 +10,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/app/(protected)/cart/_store/cart";
+import { clearCart } from "@/app/(protected)/cart/_store/cart";
 import { clearServerCart } from "@/app/(protected)/cart/_actions/actions";
 import { useOnClickOutside } from "../hooks/use_onClick_outside";
 import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
 
 export function ClearCartButton() {
   const { userId } = useAuth();
-  const clearCart = useCartStore((s) => s.clearCart);
   const [isPending, startTransition] = useTransition();
   const ref = useRef<HTMLDivElement>(null);
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { Heart, HeartCrack } from "lucide-react";
-import { useWishlistMenuState } from "@/app/lib/store";
 
 import {
   Drawer,
@@ -30,11 +29,13 @@ import { useMediaQuery } from "../hooks/use_media_query";
 import { useWishlistStore } from "@/app/(public)/products/_store/wishlist";
 import { ProductThumbnail } from "@/app/(public)/products/_components/product_thumpnail";
 import useStore from "../hooks/use-store";
+import { setWishlistMenuOpen, useMenuStore } from "@/app/lib/store";
 
 export function WishListMenu() {
   const isNotMobile = useMediaQuery("(min-width: 639px)");
-  const { isOpen, setIsOpen } = useWishlistMenuState();
-  const count = useStore(useWishlistStore, (s) => s.getTotalCount()) ?? 0;
+  const isOpen = useMenuStore((state) => state.wishlistMenuOpen);
+  const wishlist = useStore(useWishlistStore, (state) => state.wishlist);
+  const count = wishlist?.length ?? 0;
 
   const WishListButton = (
     <Button className="relative size-7 p-1 ring-1 ring-input transition-all hover:bg-background hover:ring-primary">
@@ -57,7 +58,7 @@ export function WishListMenu() {
 
   if (isNotMobile) {
     return (
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <Sheet open={isOpen} onOpenChange={setWishlistMenuOpen}>
         <SheetTrigger asChild>{WishListButton}</SheetTrigger>
         <SheetContent className="grid min-w-[450px] grid-rows-[auto,1fr,auto]">
           <SheetHeader className="mt-8">
@@ -90,7 +91,7 @@ export function WishListMenu() {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer open={isOpen} onOpenChange={setWishlistMenuOpen}>
       <DrawerTrigger asChild>{WishListButton}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
@@ -124,7 +125,7 @@ export function WishListMenu() {
 }
 
 function WishlistItems() {
-  const { wishlist } = useWishlistStore();
+  const wishlist = useStore(useWishlistStore, (state) => state.wishlist) ?? [];
 
   return (
     <section className="grid max-h-96 gap-4 overflow-auto p-4 sm:flex sm:max-h-screen sm:flex-col sm:px-0">

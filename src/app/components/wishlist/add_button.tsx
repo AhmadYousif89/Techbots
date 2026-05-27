@@ -8,6 +8,10 @@ import { TProduct } from "@/app/lib/types";
 
 import { Button } from "@/components/ui/button";
 import { useWishlistStore } from "@/app/(public)/products/_store/wishlist";
+import {
+  addItemToWishlist,
+  removeItemFromWishlist,
+} from "@/app/(public)/products/_store/wishlist";
 
 type AddToWishlistButtonProps = {
   product: TProduct;
@@ -21,7 +25,7 @@ export function AddToWishlistButton({
   logoSize = 24,
 }: AddToWishlistButtonProps) {
   const [item, setItem] = useState("");
-  const { wishlist, addItem, removeItem } = useWishlistStore();
+  const wishlist = useWishlistStore((state) => state.wishlist);
 
   const wishItem = wishlist.find(
     (item: TProduct) => item.asin === product.asin,
@@ -45,7 +49,7 @@ export function AddToWishlistButton({
         toast.custom(() => {
           if (item) {
             setItem("");
-            removeItem(product.asin);
+            removeItemFromWishlist(product.asin);
             return (
               <div className="flex items-center gap-4">
                 <Info className="text-blue-400" />
@@ -53,7 +57,7 @@ export function AddToWishlistButton({
               </div>
             );
           }
-          addItem(product);
+          addItemToWishlist(product);
           return (
             <div className="flex items-center gap-4">
               <Heart className="text-green-400" />

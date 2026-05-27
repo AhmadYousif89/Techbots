@@ -20,7 +20,13 @@ import { useCartStore } from "../_store/cart";
 import { ShippingType } from "../_lib/types";
 import { NEXT_DAY_SHIPPING_COST } from "../constants";
 import useStore from "@/app/components/hooks/use-store";
-import { ShippingFormKeys, useShippingStore } from "../_store/shipping_form";
+import {
+  ShippingFormKeys,
+  getShippingFormState,
+  setFormData,
+  useShippingStore,
+} from "../_store/shipping_form";
+import { getCartTotalValue, getCartVAT } from "../_store/cart";
 
 const initTouchState = {
   firstname: false,
@@ -36,11 +42,12 @@ export function CartShippingView() {
   const router = useRouter();
   const { userId } = useAuth();
   const [touchState, setTouchState] = useState(initTouchState);
-  const { data, setFormData } = useShippingStore();
-  const formResult = useShippingStore((s) => s.formState());
-  const VAT = useStore(useCartStore, (s) => s.getVAT()) ?? 0;
-  const total = useStore(useCartStore, (s) => s.getTotalValue()) ?? 0;
-  const cartCount = useStore(useCartStore, (s) => s.getTotalCount()) ?? 0;
+  const data = useShippingStore((s) => s.data);
+  const cart = useStore(useCartStore, (s) => s.cart) ?? [];
+  const formResult = getShippingFormState(data);
+  const total = getCartTotalValue(cart, data.shipping);
+  const VAT = getCartVAT(total);
+  const cartCount = cart.length;
 
   const handleInputChange = (value: string, name: ShippingFormKeys) => {
     setFormData({ ...data, [name]: value.trim() });

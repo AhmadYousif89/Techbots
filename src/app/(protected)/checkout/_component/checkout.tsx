@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardTitle, CardFooter, CardContent } from "@/components/ui/card";
 
 import { useCartStore } from "../../cart/_store/cart";
+import { getCartTotalValue, getCartVAT } from "../../cart/_store/cart";
 import { NEXT_DAY_SHIPPING_COST } from "../../cart/constants";
 import { useShippingStore } from "../../cart/_store/shipping_form";
 import { formatPrice } from "@/app/lib/utils";
@@ -48,9 +49,9 @@ function PaymentInformation() {
 
   const data = useShippingStore((s) => s.data);
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
-  const VAT = useStore(useCartStore, (s) => s.getVAT()) ?? 0;
-  const total = useStore(useCartStore, (s) => s.getTotalValue()) ?? 0;
-  const cartCount = useStore(useCartStore, (s) => s.getTotalCount()) ?? 0;
+  const total = getCartTotalValue(cart, data.shipping);
+  const VAT = getCartVAT(total);
+  const cartCount = cart.length;
 
   const fullAmount = (total + VAT).toFixed(2);
   const isDisabled = !stripe || !elements || isLoading;

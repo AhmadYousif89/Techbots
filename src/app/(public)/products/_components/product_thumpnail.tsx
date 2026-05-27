@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
+
 import { Info, Loader, Trash2 } from "lucide-react";
 import { capitalizeString } from "@/app/lib/utils";
-import { useCartMenuState, useWishlistMenuState } from "@/app/lib/store";
+import { setCartMenuOpen, setWishlistMenuOpen } from "@/app/lib/store";
 
 import { TProduct } from "@/app/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -12,11 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/app/lib/utils";
 import { TCartProduct } from "@/app/(protected)/cart/page";
-import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { removeFromServerCart } from "@/app/(protected)/cart/_actions/actions";
 import type { TCartStoreItem } from "@/app/(protected)/cart/_store/cart";
-import { useWishlistStore } from "../_store/wishlist";
-import { useTransition } from "react";
+import { removeFromCart } from "@/app/(protected)/cart/_store/cart";
+import { removeItemFromWishlist } from "../_store/wishlist";
 
 type ProductThumbnailProps = {
   product: TProduct | TCartProduct | TCartStoreItem;
@@ -24,9 +25,6 @@ type ProductThumbnailProps = {
 };
 
 export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
-  const { setIsOpen: setIsCartOpen } = useCartMenuState();
-  const { setIsOpen: setIsWishlistOpen } = useWishlistMenuState();
-
   return (
     <Card className="flex items-center gap-2 p-2">
       <Image
@@ -56,8 +54,8 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
             href={`/products/${product.asin}`}
             className="ml-2 text-xs text-muted-foreground hover:text-blue-500 hover:underline"
             onClick={() => {
-              if (type === "cart") setIsCartOpen(false);
-              else setIsWishlistOpen(false);
+              if (type === "cart") setCartMenuOpen(false);
+              else setWishlistMenuOpen(false);
             }}
           >
             {product.title.split(" ").slice(0, 6).join(" ")}
@@ -72,8 +70,6 @@ export function ProductThumbnail({ product, type }: ProductThumbnailProps) {
 
 function DeleteThumbnailButton({ product, type }: ProductThumbnailProps) {
   const { userId } = useAuth();
-  const { removeFromCart } = useCartStore();
-  const { removeItem: removeWishlistItem } = useWishlistStore();
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
@@ -88,7 +84,7 @@ function DeleteThumbnailButton({ product, type }: ProductThumbnailProps) {
           }
         }
       } else {
-        removeWishlistItem(product.asin);
+        removeItemFromWishlist(product.asin);
       }
       toast.custom(() => {
         return (

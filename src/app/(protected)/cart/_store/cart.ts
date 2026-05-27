@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { useShippingStore } from "./shipping_form";
 import {
   VAT_PERCENTAGE,
   VALID_COUPONS,
   NEXT_DAY_SHIPPING_COST,
 } from "../constants";
 import { TProduct } from "@/app/lib/types";
+import { ShippingType } from "../_lib/types";
 import { normalizePrice } from "@/app/lib/utils";
 
 export type TCartStoreItem = Omit<TProduct, "price"> & {
@@ -17,106 +17,96 @@ export type TCartStoreItem = Omit<TProduct, "price"> & {
 
 export type CartState = {
   cart: TCartStoreItem[];
-  getVAT: () => number;
-  getTotalCount: () => number;
-  getTotalValue: () => number;
-  addToCart: (item: TProduct) => void;
-  increaseQuantity: (id: string) => void;
-  decreaseQuantity: (id: string) => void;
-  removeFromCart: (id: string) => void;
-  clearCart: () => void;
   coupon: string;
-  setCouponValue: (value: string) => void;
-  couponIsValid: () => boolean;
 };
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (): CartState => ({
       cart: [],
-      getTotalCount: () => {
-        const { cart } = get();
-        return cart.length;
-      },
-      getTotalValue: () => {
-        const { cart } = get();
-        const ShippingType = useShippingStore.getState().data.shipping;
-        const total = cart.reduce(
-          (acc, item) =>
-            acc + normalizePrice(item.price) * (item.cartQuantity ?? 0),
-          0,
-        );
-
-        return ShippingType === "next" ? total + NEXT_DAY_SHIPPING_COST : total;
-      },
-      getVAT: () => {
-        const { getTotalValue: totalValue } = get();
-        return totalValue() * VAT_PERCENTAGE;
-      },
-      addToCart: (item) =>
-        set((state) => ({
-          cart: [
-            ...state.cart,
-            {
-              ...item,
-              price: normalizePrice(item.price),
-              cartQuantity: item.cartQuantity ?? 1,
-            } as TCartStoreItem,
-          ],
-        })),
-      removeFromCart: (asin) =>
-        set((state) => ({
-          cart: state.cart.filter((cartItem) => cartItem.asin !== asin),
-        })),
-      increaseQuantity: (asin) =>
-        set((state) => ({
-          cart: state.cart.map((cartItem) =>
-            cartItem.asin === asin
-              ? {
-                  ...cartItem,
-                  cartQuantity: (cartItem.cartQuantity ?? 0) + 1,
-                }
-              : cartItem,
-          ),
-        })),
-      decreaseQuantity: (asin) =>
-        set((state) => ({
-          cart: state.cart.map((cartItem) =>
-            cartItem.asin === asin
-              ? {
-                  ...cartItem,
-                  cartQuantity: (cartItem.cartQuantity ?? 0) - 1,
-                }
-              : cartItem,
-          ),
-        })),
-      clearCart: () => set({ cart: [], coupon: "" }),
-
       coupon: "",
-      couponIsValid: () => {
-        const { coupon } = get();
-        return VALID_COUPONS.includes(coupon && coupon.toLowerCase());
-      },
-      setCouponValue: (value) => {
-        for (const coupon in VALID_COUPONS) {
-          if (coupon.toLowerCase() === value) {
-            if (value.toLowerCase() === "25off") {
-              set({
-                coupon: value,
-                getTotalValue: () => get().getTotalValue() * 0.75,
-              });
-            } else if (value.toLowerCase() === "50off") {
-              set({
-                coupon: value,
-                getTotalValue: () => get().getTotalValue() * 0.5,
-              });
-            }
-            return;
-          }
-          set({ coupon: value });
-        }
-      },
     }),
     { name: "cart" },
   ),
 );
+
+export function getCartTotalValue(
+  cart: TCartStoreItem[],
+  shipping: ShippingType,
+  coupon = "",
+) {
+  const subtotal = cart.reduce(
+    (acc, item) => acc + normalizePrice(item.price) * (item.cartQuantity ?? 0),
+    0,
+  );
+  const shippingValue = shipping === "next" ? NEXT_DAY_SHIPPING_COST : 0;
+  const total = subtotal + shippingValue;
+  const normalizedCoupon = coupon.toLowerCase();
+
+  if (normalizedCoupon === "25off") return total * 0.75;
+
+  if (normalizedCoupon === "50off") return total * 0.5;
+
+  return total;
+}
+
+export function getCartVAT(totalValue: number) {
+  return totalValue * VAT_PERCENTAGE;
+}
+
+export function isCartCouponValid(coupon: string) {
+  return VALID_COUPONS.includes(coupon.toLowerCase());
+}
+
+export function addToCart(item: TProduct) {
+  useCartStore.setState((state) => ({
+    cart: [
+      ...state.cart,
+      {
+        ...item,
+        price: normalizePrice(item.price),
+        cartQuantity: item.cartQuantity ?? 1,
+      },
+    ],
+  }));
+}
+
+export function increaseQuantity(asin: string) {
+  useCartStore.setState((state) => ({
+    cart: state.cart.map((cartItem) =>
+      cartItem.asin === asin
+        ? {
+            ...cartItem,
+            cartQuantity: (cartItem.cartQuantity ?? 0) + 1,
+          }
+        : cartItem,
+    ),
+  }));
+}
+
+export function decreaseQuantity(asin: string) {
+  useCartStore.setState((state) => ({
+    cart: state.cart.map((cartItem) =>
+      cartItem.asin === asin
+        ? {
+            ...cartItem,
+            cartQuantity: (cartItem.cartQuantity ?? 0) - 1,
+          }
+        : cartItem,
+    ),
+  }));
+}
+
+export function removeFromCart(asin: string) {
+  useCartStore.setState((state) => ({
+    cart: state.cart.filter((cartItem) => cartItem.asin !== asin),
+  }));
+}
+
+export function setCouponValue(value: string) {
+  useCartStore.setState({ coupon: value });
+}
+
+export function clearCart() {
+  useCartStore.setState({ cart: [], coupon: "" });
+}

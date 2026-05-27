@@ -5,28 +5,22 @@ import { TProduct } from "@/app/lib/types";
 
 type WishlistState = {
   wishlist: TProduct[];
-  getTotalCount: () => number;
-  addItem: (item: TProduct) => void;
-  removeItem: (id: string) => void;
-  clearList: () => void;
 };
 
 export const useWishlistStore = create<WishlistState>()(
-  persist(
-    (set, get) => ({
-      wishlist: [],
-      getTotalCount: () => {
-        const { wishlist } = get();
-        return wishlist.length;
-      },
-      addItem: (item) =>
-        set((state) => ({ wishlist: [...state.wishlist, item] })),
-      removeItem: (asin) =>
-        set((state) => ({
-          wishlist: state.wishlist.filter((item) => item.asin !== asin),
-        })),
-      clearList: () => set({ wishlist: [] }),
-    }),
-    { name: "wishlist" },
-  ),
+  persist(() => ({ wishlist: [] as TProduct[] }), { name: "wishlist" }),
 );
+
+export function addItemToWishlist(item: TProduct) {
+  useWishlistStore.setState((s) => ({ wishlist: [...s.wishlist, item] }));
+}
+
+export function removeItemFromWishlist(asin: string) {
+  useWishlistStore.setState((s) => ({
+    wishlist: s.wishlist.filter((item) => item.asin !== asin),
+  }));
+}
+
+export function clearWishlist() {
+  useWishlistStore.setState({ wishlist: [] });
+}
