@@ -48,21 +48,19 @@ export function HotProducts() {
                 <CardFooter className="flex justify-between gap-2">
                   <Badge
                     variant={"outline"}
-                    className="min-w-16 justify-center py-2"
+                    className="min-w-16 justify-center py-2 text-xs"
                   >
                     Starting at
                     <small className="ml-1.5 text-sm font-bold">
                       {item.price}
                     </small>
                   </Badge>
-                  <Link href={item.url}>
-                    <Button
-                      variant={"link"}
-                      className="rounded-md bg-primary/95 text-xs text-white"
-                    >
-                      {item.buttonTitle}
-                    </Button>
-                  </Link>
+                  <Button
+                    asChild
+                    className="rounded-md px-2 text-xs text-white"
+                  >
+                    <Link href={item.url}>{item.buttonTitle}</Link>
+                  </Button>
                 </CardFooter>
               </Card>
             </CarouselItem>

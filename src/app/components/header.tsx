@@ -14,7 +14,7 @@ export function Header() {
   const categories = getCategories();
 
   return (
-    <header className="sticky top-0 z-20 h-20 bg-foreground/85 px-8 backdrop-blur-sm">
+    <header className="sticky top-0 z-20 h-[var(--header-height)] bg-foreground/85 px-8 backdrop-blur-sm">
       <div className="max-view mx-auto flex h-full items-center justify-between">
         <SideMenu categoryList={categories} />
         <Logo />

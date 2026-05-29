@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="max-view mx-auto min-h-svh">
+      <main className="max-view mx-auto w-full">
         <HomeSlider />
         <HotProducts />
         <Suspense fallback={<MainPageSlideSkeleton />}>

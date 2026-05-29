@@ -35,6 +35,8 @@
     --ring: 240 10% 3.9%;
 
     --radius: 0.5rem;
+
+    --header-height: 80px;
   }
 
   .dark {
@@ -91,5 +93,12 @@
 
   input[type="number"] {
     -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }
