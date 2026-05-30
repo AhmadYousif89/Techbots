@@ -54,16 +54,37 @@ export async function POST(req: Request) {
     `\n===================\nClerk Webhook type: ${eventType}\n===================\n`,
   );
   if (eventType === "user.created") {
-    const { id, email_addresses, image_url, username } = evt.data;
+    const {
+      id,
+      email_addresses,
+      image_url,
+      username,
+      primary_email_address_id,
+    } = evt.data as {
+      id?: string;
+      email_addresses?: Array<{
+        id?: string;
+        email_address?: string;
+      }>;
+      image_url?: string;
+      username?: string;
+      primary_email_address_id?: string;
+    };
 
-    if (!id || !email_addresses) {
+    const email = Array.isArray(email_addresses)
+      ? (email_addresses.find(
+          (address) => address.id === primary_email_address_id,
+        )?.email_address ?? email_addresses[0]?.email_address)
+      : undefined;
+
+    if (!id || !email) {
       return new Response("Error occured -- missing data", { status: 400 });
     }
 
     console.log(`User created: ${id}`);
     const user = {
       clerkUserId: id,
-      email: email_addresses[0].email_address,
+      email,
       ...(image_url ? { imageUrl: image_url } : {}),
       ...(username ? { username } : {}),
     };
