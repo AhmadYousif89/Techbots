@@ -12,10 +12,6 @@ export const useMenuStore = create<MenuStoreState>(() => ({
   wishlistMenuOpen: false,
 }));
 
-type MenuSelectorState = {
-  isOpen: boolean;
-};
-
 export function setSideMenuOpen(isOpen: boolean) {
   useMenuStore.setState({ sideMenuOpen: isOpen });
 }
