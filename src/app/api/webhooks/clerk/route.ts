@@ -1,11 +1,38 @@
 import { Webhook } from "svix";
-import { User } from "@prisma/client";
 import { headers } from "next/headers";
 import { addUserToDB } from "@/app/lib/users";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
+
+type ClerkEmailAddress = {
+  id?: string;
+  email_address?: string;
+};
+
+async function resolveEmailAddress(
+  clerkUserId: string,
+  emailAddresses?: ClerkEmailAddress[],
+  primaryEmailAddressId?: string,
+) {
+  if (Array.isArray(emailAddresses) && emailAddresses.length > 0) {
+    const primaryEmail = emailAddresses.find(
+      (address) => address.id === primaryEmailAddressId,
+    )?.email_address;
+    if (primaryEmail) return primaryEmail;
+    const firstEmail = emailAddresses[0]?.email_address;
+    if (firstEmail) return firstEmail;
+  }
+
+  const client = clerkClient();
+  const user = await client.users.getUser(clerkUserId);
+
+  return (
+    user.emailAddresses.find(
+      (address) => address.id === user.primaryEmailAddressId,
+    )?.emailAddress ?? user.emailAddresses[0]?.emailAddress
+  );
+}
 
 export async function POST(req: Request) {
-  // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
@@ -53,6 +80,15 @@ export async function POST(req: Request) {
   console.log(
     `\n===================\nClerk Webhook type: ${eventType}\n===================\n`,
   );
+
+  type UserCreatedEventData = {
+    id?: string;
+    email_addresses?: ClerkEmailAddress[];
+    image_url?: string;
+    username?: string;
+    primary_email_address_id?: string;
+  };
+
   if (eventType === "user.created") {
     const {
       id,
@@ -60,21 +96,10 @@ export async function POST(req: Request) {
       image_url,
       username,
       primary_email_address_id,
-    } = evt.data as {
-      id?: string;
-      email_addresses?: Array<{
-        id?: string;
-        email_address?: string;
-      }>;
-      image_url?: string;
-      username?: string;
-      primary_email_address_id?: string;
-    };
+    } = evt.data as UserCreatedEventData;
 
-    const email = Array.isArray(email_addresses)
-      ? (email_addresses.find(
-          (address) => address.id === primary_email_address_id,
-        )?.email_address ?? email_addresses[0]?.email_address)
+    const email = id
+      ? await resolveEmailAddress(id, email_addresses, primary_email_address_id)
       : undefined;
 
     if (!id || !email) {
@@ -89,7 +114,7 @@ export async function POST(req: Request) {
       ...(username ? { username } : {}),
     };
 
-    await addUserToDB(user as User);
+    await addUserToDB(user);
   }
 
   return new Response("", { status: 200 });
