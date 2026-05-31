@@ -20,86 +20,54 @@ export const syncCart = async (clerkUserId: string, cart: TCartItem[]) => {
   try {
     await ensureUserByClerkId(clerkUserId);
 
-    // Start a transaction to ensure that all operations are atomic
+    // Replace the server snapshot so the server cart always matches the local cart.
     await prisma.$transaction(async (prisma) => {
-      // Find the cart in the server
       const serverCart = await prisma.cart.findUnique({
         where: { clerkUserId },
-        include: {
-          cartItems: {
-            where: { Cart: { clerkUserId } },
-          },
-        },
+        select: { id: true },
       });
 
-      // Return if the cart is already synced
-      if (serverCart && serverCart.isSynced) {
-        console.log("Cart is already synced");
-        return;
-      }
-
-      // If the cart doesn't exist, create it
       if (!serverCart) {
-        console.log("Creating a new server cart...");
-        await prisma.cart.create({
-          data: {
-            clerkUserId,
-            count: cart.length,
-            totalValue: cartTotalValue,
-            cartItems: {
-              create: localCartItems,
+        if (localCartItems.length) {
+          await prisma.cart.create({
+            data: {
+              clerkUserId,
+              count: cart.length,
+              totalValue: cartTotalValue,
+              cartItems: {
+                create: localCartItems,
+              },
+              isSynced: true,
             },
-            isSynced: true,
-          },
-        });
-        console.log("Local cart synced");
+          });
+        } else {
+          await prisma.cart.create({
+            data: {
+              clerkUserId,
+              count: 0,
+              totalValue: 0,
+              isSynced: true,
+            },
+          });
+        }
         return;
       }
 
-      console.log("Syncing with server cart...");
-      // If the cart exists, update the cart items
-      const serverCartItems = serverCart.cartItems.reduce(
-        (acc, item) => {
-          acc[item.productAsin] = item.quantity;
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
-
-      const updatedCartItems = localCartItems.map((item) => {
-        const serverQuantity = serverCartItems[item.productAsin] || 0;
-        return {
-          cartId: serverCart.id,
-          productAsin: item.productAsin,
-          quantity: serverQuantity + item.quantity,
-        };
-      });
-
-      // Find the items that are in the server cart but not in the local cart
-      const deletedCartItems = serverCart.cartItems
-        .filter(
-          (item) =>
-            !localCartItems.some(
-              (localItem) => localItem.productAsin === item.productAsin,
-            ),
-        )
-        .map((item) => item.productAsin); // Get the ASINs of the items to delete
-
-      // Delete the items that are in the server cart but not in the local cart
       await prisma.cartItem.deleteMany({
         where: {
           cartId: serverCart.id,
-          productAsin: { in: deletedCartItems },
         },
       });
 
-      // Create or update the items in the server cart
-      await prisma.cartItem.createMany({
-        data: updatedCartItems,
-        skipDuplicates: true,
-      });
+      if (localCartItems.length) {
+        await prisma.cartItem.createMany({
+          data: localCartItems.map((item) => ({
+            cartId: serverCart.id,
+            ...item,
+          })),
+        });
+      }
 
-      // Update the total value and count of the cart
       await prisma.cart.update({
         where: { clerkUserId },
         data: {

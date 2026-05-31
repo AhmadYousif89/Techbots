@@ -4,8 +4,13 @@ import Image from "next/image";
 import prisma from "@/app/lib/db";
 import { notFound } from "next/navigation";
 
+import { sendEmail } from "@/app/(auth)/email/send.mail";
 import { SearchParams } from "@/app/lib/types";
 import { formatPrice } from "@/app/lib/utils";
+import {
+  parseStripePaymentIntentMetadata,
+  processSuccessfulPaymentIntent,
+} from "../stripe-order";
 import {
   Card,
   CardContent,
@@ -16,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Main } from "@/components/main";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 type SuccessPageProps = {
@@ -23,25 +29,60 @@ type SuccessPageProps = {
 };
 
 export default async function SuccessPage({ searchParams }: SuccessPageProps) {
-  const paymentIntent = await stripe.paymentIntents.retrieve(
-    searchParams["payment_intent"] as string,
-  );
-  if (paymentIntent.metadata == null) return notFound();
+  const paymentIntentId = searchParams["payment_intent"];
+  if (typeof paymentIntentId !== "string" || !paymentIntentId) {
+    notFound();
+  }
 
-  const products = await prisma.product.findMany({
-    where: {
-      asin: {
-        in: Object.values(paymentIntent.metadata),
-      },
-    },
-  });
-
-  if (products.length === 0) return notFound();
-
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
   const isSuccessful = paymentIntent.status === "succeeded";
 
+  if (isSuccessful) {
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_SERVER_URL
+        : "http://localhost:3000";
+
+    await processSuccessfulPaymentIntent({
+      paymentIntent: {
+        id: paymentIntent.id,
+        amount: paymentIntent.amount,
+        amount_received: paymentIntent.amount_received,
+        metadata: paymentIntent.metadata ?? {},
+      },
+      prisma,
+      sendEmail,
+      ordersUrl: new URL("/orders", baseUrl).toString(),
+    });
+  }
+
+  const parsedMetadata = parseStripePaymentIntentMetadata(
+    paymentIntent.metadata,
+  );
+
+  const products = parsedMetadata
+    ? await prisma.product.findMany({
+        where: {
+          asin: {
+            in: parsedMetadata.items.map((item) => item.asin),
+          },
+        },
+      })
+    : [];
+
+  const productByAsin = new Map(
+    products.map((product) => [product.asin, product]),
+  );
+  const orderedProducts = parsedMetadata
+    ? parsedMetadata.items
+        .map((item) => productByAsin.get(item.asin))
+        .filter((product): product is NonNullable<typeof product> =>
+          Boolean(product),
+        )
+    : [];
+
   return (
-    <main className="max-view mx-auto min-h-screen bg-background">
+    <Main className="bg-background">
       <Card className="max-w-screen-sm rounded-none border-0 p-6 shadow-none">
         <CardHeader className="px-0">
           <CardTitle className="font-semibold">
@@ -51,31 +92,37 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
         <Separator />
 
-        <CardContent className="my-8 space-y-4 px-0">
-          {products.map((product) => (
-            <Card key={product.asin} className="flex items-center gap-4 p-2">
-              <div className="p-2">
-                <Image
-                  src={product.mainImage}
-                  alt={product.title}
-                  width={100}
-                  height={100}
-                  className="size-12 object-cover"
-                />
-              </div>
-              <div className="flex flex-1 items-center justify-between gap-4">
-                <Link href={`/products/${product.asin}`} className="text-xs">
-                  {product.title.split(" ").slice(0, 4).join(" ")}
-                </Link>
-                <Badge className="">$ {formatPrice(product.price)}</Badge>
-              </div>
-            </Card>
-          ))}
+        <CardContent className="my-8 space-y-4">
+          {orderedProducts.length > 0 ? (
+            orderedProducts.map((product) => (
+              <Card key={product.asin} className="flex items-center gap-4 p-2">
+                <div className="p-2">
+                  <Image
+                    src={product.mainImage}
+                    alt={product.title}
+                    width={100}
+                    height={100}
+                    className="size-12 object-cover"
+                  />
+                </div>
+                <div className="flex flex-1 items-center justify-between gap-4">
+                  <Link href={`/products/${product.asin}`} className="text-xs">
+                    {product.title.split(" ").slice(0, 4).join(" ")}
+                  </Link>
+                  <Badge className="">$ {formatPrice(product.price)}</Badge>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {isSuccessful
+                ? "Your payment completed successfully. We could not load item details for this order right now."
+                : "Your payment did not complete. Please try again from the checkout page."}
+            </p>
+          )}
         </CardContent>
 
-        <Separator />
-
-        <CardFooter className="pt-6">
+        <CardFooter>
           <Button variant={isSuccessful ? "default" : "outline"}>
             {isSuccessful ? (
               <Link href="/orders">View your orders</Link>
@@ -85,6 +132,6 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </Button>
         </CardFooter>
       </Card>
-    </main>
+    </Main>
   );
 }

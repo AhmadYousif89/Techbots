@@ -34,6 +34,7 @@ import {
   isCartCouponValid,
   setCouponValue,
 } from "../_store/cart";
+import { CartEmpty } from "./cart_empty";
 
 type CartListViewProps = {
   getServerCart: Promise<TServerCart>;
@@ -63,27 +64,7 @@ export function CartListView({ getServerCart }: CartListViewProps) {
   const serverCartItems = serverCart?.cartItems || [];
 
   if (cartCount === 0) {
-    content = (
-      <CardContent className="flex flex-col pt-6">
-        <CardHeader>
-          <CardTitle className="text-muted-foreground">Cart Details</CardTitle>
-          <CardDescription className="text-xs lg:text-sm">
-            Your cart is empty. Start adding some items to continue.
-          </CardDescription>
-        </CardHeader>
-        <div className="my-10">
-          <Slash
-            strokeWidth={1}
-            className="m-auto size-44 text-muted-foreground lg:size-56"
-          >
-            <ShoppingCart
-              strokeWidth={1}
-              className="text-muted-foreground/75"
-            />
-          </Slash>
-        </div>
-      </CardContent>
-    );
+    content = <CartEmpty />;
   } else {
     const data = cart ?? serverCartItems;
 
@@ -192,30 +173,32 @@ export function CartListView({ getServerCart }: CartListViewProps) {
   }
 
   return (
-    <Card className="min-h-screen rounded-none py-8">
+    <Card className="flex flex-col justify-between rounded-none py-8">
       <>{content}</>
-      <CardFooter className="justify-center gap-4 lg:ml-8 lg:py-8">
-        <Button
-          size={"sm"}
-          disabled={cartCount == 0}
-          className="w-28"
-          onClick={() => {
-            router.push("/cart#cart-details", { scroll: true });
-          }}
-        >
-          Next
-        </Button>
-        <Button
-          size={"sm"}
-          variant={"outline"}
-          className="w-28"
-          onClick={() => {
-            router.replace(`/products`);
-          }}
-        >
-          Cancle
-        </Button>
-      </CardFooter>
+      {cartCount > 0 && (
+        <CardFooter className="justify-center gap-4 lg:ml-8 lg:py-8">
+          <Button
+            size={"sm"}
+            disabled={cartCount == 0}
+            className="w-28"
+            onClick={() => {
+              router.push("/cart#cart-details", { scroll: true });
+            }}
+          >
+            Next
+          </Button>
+          <Button
+            size={"sm"}
+            variant={"outline"}
+            className="w-28"
+            onClick={() => {
+              router.replace(`/products`);
+            }}
+          >
+            Cancle
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }

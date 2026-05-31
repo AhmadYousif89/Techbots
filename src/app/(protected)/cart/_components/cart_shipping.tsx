@@ -27,6 +27,7 @@ import {
   useShippingStore,
 } from "../_store/shipping_form";
 import { getCartTotalValue, getCartVAT } from "../_store/cart";
+import { encodeOrderItems } from "@/app/(protected)/checkout/stripe/stripe-order";
 
 const initTouchState = {
   firstname: false,
@@ -44,6 +45,7 @@ export function CartShippingView() {
   const [touchState, setTouchState] = useState(initTouchState);
   const data = useShippingStore((s) => s.data);
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
+  const coupon = useCartStore((s) => s.coupon);
   const formResult = getShippingFormState(data);
   const total = getCartTotalValue(cart, data.shipping);
   const VAT = getCartVAT(total);
@@ -56,6 +58,27 @@ export function CartShippingView() {
 
   const onShippingValueChange = (value: ShippingType) => {
     setFormData({ ...data, shipping: value });
+  };
+
+  const buildCheckoutUrl = () => {
+    const params = new URLSearchParams({
+      firstname: data.firstname,
+      lastname: data.lastname,
+      mainAddress: data.mainAddress,
+      optionalAddress: data.optionalAddress ?? "",
+      city: data.city,
+      phone: String(data.phone),
+      shipping: data.shipping,
+      coupon,
+      items: encodeOrderItems(
+        cart.map((item) => ({
+          asin: item.asin,
+          cartQuantity: item.cartQuantity,
+        })),
+      ),
+    });
+
+    return `/checkout/stripe?${params.toString()}`;
   };
 
   let errors;
@@ -269,10 +292,10 @@ export function CartShippingView() {
               router.push("/sign-in");
               return;
             }
-            router.push("/cart#cart-payment");
+            router.push(buildCheckoutUrl());
           }}
         >
-          Continue to payment
+          Continue to checkout
         </Button>
         <Button
           variant={"outline"}
