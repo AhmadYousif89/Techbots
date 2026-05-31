@@ -77,14 +77,15 @@ model Product {
 }
 
 model Order {
-  id           String      @id @default(cuid())
-  user         User        @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
-  clerkUserId  String      @map("clerk_user_id")
-  shippingInfo Json        @map("shipping_info")
-  pricePaid    Decimal     @default(0.00) @map("price_paid") @db.Decimal(10, 2)
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-  orderItems   OrderItem[]
+  id                    String      @id @default(cuid())
+  clerkUserId           String      @map("clerk_user_id")
+  user                  User        @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
+  stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
+  shippingInfo          Json        @map("shipping_info")
+  pricePaid             Decimal     @default(0.00) @map("price_paid") @db.Decimal(10, 2)
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+  orderItems            OrderItem[]
 
   @@index([clerkUserId])
   @@map("orders")
