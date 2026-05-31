@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { useCartStore } from "../_store/cart";
 import { ShippingType } from "../_lib/types";
-import { NEXT_DAY_SHIPPING_COST } from "../constants";
+import { NEXT_DAY_SHIPPING_COST } from "../_lib/constants";
 import useStore from "@/app/components/hooks/use-store";
 import {
   ShippingFormKeys,

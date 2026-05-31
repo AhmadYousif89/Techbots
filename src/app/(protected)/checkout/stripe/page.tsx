@@ -1,15 +1,19 @@
 import Stripe from "stripe";
-import prisma from "@/app/lib/db";
+import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { Checkout } from "../_component/checkout";
+
+import prisma from "@/app/lib/db";
 import { SearchParams } from "@/app/lib/types";
 import { normalizePrice } from "@/app/lib/utils";
-import { notFound } from "next/navigation";
+import { Checkout } from "../_component/checkout";
 import {
   parseCheckoutSnapshot,
   buildPaymentIntentMetadata,
 } from "@/app/(protected)/checkout/stripe/stripe-order";
-import { NEXT_DAY_SHIPPING_COST, VAT_PERCENTAGE } from "../../cart/constants";
+import {
+  VAT_PERCENTAGE,
+  NEXT_DAY_SHIPPING_COST,
+} from "@/app/(protected)/cart/_lib/constants";
 
 export const metadata = {
   title: "Checkout",
@@ -24,14 +28,10 @@ type PageProps = {
 
 export default async function Page({ searchParams }: PageProps) {
   const { userId } = auth();
-  if (!userId) {
-    notFound();
-  }
+  if (!userId) notFound();
 
   const snapshot = parseCheckoutSnapshot(searchParams);
-  if (!snapshot) {
-    notFound();
-  }
+  if (!snapshot) notFound();
 
   const products = await prisma.product.findMany({
     where: {
@@ -80,7 +80,7 @@ export default async function Page({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="max-view mx-auto min-h-screen bg-background">
+    <main className="max-view mx-auto min-h-screen w-full bg-background">
       <Checkout clientSecret={paymentIntent.client_secret} />
     </main>
   );

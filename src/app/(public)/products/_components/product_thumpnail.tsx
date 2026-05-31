@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/app/lib/utils";
-import { TCartProduct } from "@/app/(protected)/cart/page";
+import { TCartProduct } from "@/app/(protected)/cart/_lib/types";
 import { removeFromServerCart } from "@/app/(protected)/cart/_actions/remove";
 import type { TCartStoreItem } from "@/app/(protected)/cart/_store/cart";
 import { removeFromCart } from "@/app/(protected)/cart/_store/cart";

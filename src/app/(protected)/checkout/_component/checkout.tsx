@@ -23,7 +23,7 @@ import { Card, CardTitle, CardFooter, CardContent } from "@/components/ui/card";
 
 import { useCartStore } from "../../cart/_store/cart";
 import { getCartTotalValue, getCartVAT } from "../../cart/_store/cart";
-import { NEXT_DAY_SHIPPING_COST } from "../../cart/constants";
+import { NEXT_DAY_SHIPPING_COST } from "../../cart/_lib/constants";
 import { useShippingStore } from "../../cart/_store/shipping_form";
 import { formatPrice } from "@/app/lib/utils";
 

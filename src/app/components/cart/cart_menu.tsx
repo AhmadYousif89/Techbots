@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ClearCartButton } from "./clear_button";
 import useStore from "@/app/components/hooks/use-store";
-import { TServerCart } from "@/app/(protected)/cart/page";
+import { TServerCart } from "@/app/(protected)/cart/_lib/types";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { useMediaQuery } from "@/app/components/hooks/use_media_query";
 import { ProductThumbnail } from "@/app/(public)/products/_components/product_thumpnail";

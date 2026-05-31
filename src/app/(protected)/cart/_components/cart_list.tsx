@@ -1,12 +1,13 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { Fragment, use, useState } from "react";
 import { ShoppingCart, Slash } from "lucide-react";
 
-import { TServerCart } from "../page";
+import { TServerCart } from "../_lib/types";
 import { CartItem } from "./cart_item";
 import { useCartStore } from "../_store/cart";
-import { VAT_PERCENTAGE } from "../constants";
+import { VAT_PERCENTAGE } from "../_lib/constants";
 import { DeleteCartItems } from "./delete_button";
 import {
   Accordion,

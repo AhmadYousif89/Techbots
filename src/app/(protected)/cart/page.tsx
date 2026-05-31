@@ -6,42 +6,17 @@ import { CartListView } from "./_components/cart_list";
 import { CartPaymentView } from "./_components/cart_payment";
 import { CartShippingView } from "./_components/cart_shipping";
 import { normalizePrice } from "@/app/lib/utils";
+import { TServerCart } from "./_lib/types";
 
 export const metadata = {
   title: "Cart",
   description: "Your shopping cart.",
 };
 
-export type TCartProduct = {
-  asin: string;
-  title: string;
-  price: number;
-  category: string;
-  mainImage: string;
-  stockQuantity: number;
-};
-
-export type TServerCartItem = {
-  asin: string;
-  quantity: number;
-  product: TCartProduct;
-};
-
-export type TServerCart = {
-  count: number;
-  totalValue: number;
-  cartItems: TServerCartItem[];
-} | null;
-
-export const getServerCart = async (
-  clerkUserId: string | null,
-): Promise<TServerCart> => {
-  "use server";
+export const getServerCart = async (clerkUserId: string | null) => {
   let data: TServerCart = null;
 
-  if (!clerkUserId) {
-    return data;
-  }
+  if (!clerkUserId) return data;
 
   try {
     const cart = await prisma.cart.findUnique({
@@ -98,20 +73,18 @@ export default function CartPage() {
   const serverCartPromise = getServerCart(userId);
 
   return (
-    <main className="min-h-svh">
-      <CartViews>
-        <TabsContent value="cart" className="max-view mx-auto mb-1 mt-0">
-          <CartListView getServerCart={serverCartPromise} />
-        </TabsContent>
+    <CartViews>
+      <TabsContent value="cart" className="max-view mx-auto">
+        <CartListView getServerCart={serverCartPromise} />
+      </TabsContent>
 
-        <TabsContent value="details" className="max-view mx-auto mb-1 mt-0">
-          <CartShippingView />
-        </TabsContent>
+      <TabsContent value="details" className="max-view mx-auto">
+        <CartShippingView />
+      </TabsContent>
 
-        <TabsContent value="payment" className="max-view mx-auto mb-1 mt-0">
-          <CartPaymentView />
-        </TabsContent>
-      </CartViews>
-    </main>
+      <TabsContent value="payment" className="max-view mx-auto">
+        <CartPaymentView />
+      </TabsContent>
+    </CartViews>
   );
 }

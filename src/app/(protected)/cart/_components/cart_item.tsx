@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
 import { Minus, Plus } from "lucide-react";
 
-import { TCartProduct } from "../page";
+import { TCartProduct } from "../_lib/types";
 import { DeleteCartItems } from "./delete_button";
 import { incrementServerCartItem } from "../_actions/increment";
 import { decrementServerCartItem } from "../_actions/decrement";

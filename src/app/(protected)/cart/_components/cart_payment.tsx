@@ -16,7 +16,6 @@ import {
 import { useCartStore } from "../_store/cart";
 import useStore from "@/app/components/hooks/use-store";
 import { useShippingStore } from "../_store/shipping_form";
-import { getCartTotalValue } from "../_store/cart";
 import { encodeOrderItems } from "@/app/(protected)/checkout/stripe/stripe-order";
 
 export function CartPaymentView() {
@@ -26,7 +25,6 @@ export function CartPaymentView() {
   const items = useMemo(() => cartItems ?? [], [cartItems]);
   const data = useShippingStore((s) => s.data);
   const coupon = useCartStore((s) => s.coupon);
-  const total = getCartTotalValue(items, data.shipping, coupon);
 
   const checkoutUrl = useMemo(() => {
     const params = new URLSearchParams({

@@ -5,7 +5,7 @@ import {
   VAT_PERCENTAGE,
   VALID_COUPONS,
   NEXT_DAY_SHIPPING_COST,
-} from "../constants";
+} from "../_lib/constants";
 import { TProduct } from "@/app/lib/types";
 import { ShippingType } from "../_lib/types";
 import { normalizePrice } from "@/app/lib/utils";
