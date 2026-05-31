@@ -4,7 +4,7 @@ import { useAuth } from "@clerk/nextjs";
 import { PropsWithChildren, useEffect } from "react";
 
 import { useCartStore } from "../_store/cart";
-import { syncCart } from "../_actions/actions";
+import { syncCart } from "../_actions/sync";
 import {
   getShippingFormState,
   useShippingStore,

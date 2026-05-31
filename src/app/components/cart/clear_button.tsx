@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { clearCart } from "@/app/(protected)/cart/_store/cart";
-import { clearServerCart } from "@/app/(protected)/cart/_actions/actions";
-import { useOnClickOutside } from "../hooks/use_onClick_outside";
+import { clearServerCart } from "@/app/(protected)/cart/_actions/clear";
 import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
+import { useOnClickOutside } from "../hooks/use_onClick_outside";
 
 export function ClearCartButton() {
   const { userId } = useAuth();

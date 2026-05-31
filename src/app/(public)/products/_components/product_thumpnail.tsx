@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -14,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/app/lib/utils";
 import { TCartProduct } from "@/app/(protected)/cart/page";
-import { removeFromServerCart } from "@/app/(protected)/cart/_actions/actions";
+import { removeFromServerCart } from "@/app/(protected)/cart/_actions/remove";
 import type { TCartStoreItem } from "@/app/(protected)/cart/_store/cart";
 import { removeFromCart } from "@/app/(protected)/cart/_store/cart";
 import { removeItemFromWishlist } from "../_store/wishlist";

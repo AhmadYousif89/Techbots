@@ -5,20 +5,21 @@ import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
 import { Minus, Plus } from "lucide-react";
 
-import { useCartStore } from "../_store/cart";
-import { DeleteCartItems } from "./delete_button";
-import {
-  decrementServerCartItem,
-  incrementServerCartItem,
-} from "../_actions/actions";
 import { TCartProduct } from "../page";
+import { DeleteCartItems } from "./delete_button";
+import { incrementServerCartItem } from "../_actions/increment";
+import { decrementServerCartItem } from "../_actions/decrement";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import useStore from "@/app/components/hooks/use-store";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/app/lib/utils";
-import type { TCartStoreItem } from "../_store/cart";
-import { decreaseQuantity, increaseQuantity } from "../_store/cart";
+import {
+  useCartStore,
+  decreaseQuantity,
+  increaseQuantity,
+  type TCartStoreItem,
+} from "../_store/cart";
 
 type CartItemProps = {
   asin: string;

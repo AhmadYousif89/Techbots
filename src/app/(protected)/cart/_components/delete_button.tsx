@@ -5,7 +5,6 @@ import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { Info, Trash2 } from "lucide-react";
-import { useCartStore } from "../_store/cart";
 
 import {
   Dialog,
@@ -16,10 +15,11 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button, ButtonProps } from "@/components/ui/button";
-import { clearServerCart, removeFromServerCart } from "../_actions/actions";
-import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
+import { Button } from "@/components/ui/button";
+import { clearServerCart } from "../_actions/clear";
+import { removeFromServerCart } from "../_actions/remove";
 import { clearCart, removeFromCart } from "../_store/cart";
+import { LoadingButton } from "@/app/(public)/products/_components/skeletons/loading_btn";
 
 type DeleteAction = "deleteOne" | "deleteAll";
 

@@ -11,11 +11,9 @@ import { TProduct } from "@/app/lib/types";
 import { useCartStore } from "@/app/(protected)/cart/_store/cart";
 import { TItemInServerCart } from "@/app/(public)/products/[asin]/page";
 import { addToCart, removeFromCart } from "@/app/(protected)/cart/_store/cart";
+import { addServerCartItem } from "@/app/(protected)/cart/_actions/add";
+import { removeFromServerCart } from "@/app/(protected)/cart/_actions/remove";
 
-import {
-  addServerCartItem,
-  removeFromServerCart,
-} from "@/app/(protected)/cart/_actions/actions";
 import { Button } from "@/components/ui/button";
 import type { ButtonProps } from "@/components/ui/button";
 

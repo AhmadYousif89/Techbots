@@ -110,8 +110,8 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
             </section>
           )}
           <SheetFooter className="flex gap-4 sm:flex-col sm:space-x-0">
-            {cartCount > 0 && <ClearCartButton />}
             <SheetClose asChild>{cartMenuButton}</SheetClose>
+            {cartCount > 0 && <ClearCartButton />}
           </SheetFooter>
         </SheetContent>
       </Sheet>

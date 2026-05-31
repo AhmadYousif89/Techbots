@@ -1,7 +1,8 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { addUserToDB } from "@/app/lib/users";
 import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
+
+import { ensureUserByClerkId } from "@/app/(protected)/user/lib/utils";
 
 type ClerkEmailAddress = {
   id?: string;
@@ -114,7 +115,11 @@ export async function POST(req: Request) {
       ...(username ? { username } : {}),
     };
 
-    await addUserToDB(user);
+    await ensureUserByClerkId(user.clerkUserId, {
+      email: user.email,
+      ...(user.imageUrl ? { imageUrl: user.imageUrl } : {}),
+      ...(user.username ? { username: user.username } : {}),
+    });
   }
 
   return new Response("", { status: 200 });
