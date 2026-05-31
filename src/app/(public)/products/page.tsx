@@ -10,6 +10,7 @@ import { ProductGrid } from "./grid";
 import { SortProducts } from "./sort";
 import { FilterProducts } from "./filter";
 import { SearchProducts } from "./search";
+import { Main } from "@/components/main";
 
 export const generateMetadata = ({ searchParams }: PageProps): Metadata => {
   const { category, brand } = extractSearchParams(searchParams);
@@ -40,7 +41,7 @@ export default function ProductsPage({ searchParams }: PageProps) {
 
   return (
     <Suspense fallback={<ProductsViewSkeleton grid={grid} />}>
-      <main className="max-view mx-auto mb-0.5 min-h-svh w-full bg-background">
+      <Main className="mb-0.5 bg-background">
         <div className="flex h-14 items-center justify-between bg-muted px-4 md:px-10">
           <BreadcrumbSection category={category} />
           <SearchProducts />
@@ -65,7 +66,7 @@ export default function ProductsPage({ searchParams }: PageProps) {
 
           <ProductGrid searchParams={searchParams} />
         </div>
-      </main>
+      </Main>
     </Suspense>
   );
 }

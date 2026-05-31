@@ -20,6 +20,7 @@ import { SimilarItemSkeleton } from "./skeletons/similar_items";
 import { ProductDetailSkeleton } from "./skeletons/product_view";
 import { ReviewSkeleton } from "./skeletons/reviews";
 import { Separator } from "@/components/ui/separator";
+import { Main } from "@/components/main";
 
 export const generateMetadata = async ({
   params,
@@ -123,7 +124,7 @@ export default function SingleProductPage({ params, searchParams }: PageProps) {
   const { asin } = params;
 
   return (
-    <main className="max-view mx-auto grid w-full">
+    <Main>
       <Suspense fallback={<BreadcrumbSkeleton />}>
         <BreadcrumbSection asin={asin} type="single" />
       </Suspense>
@@ -154,6 +155,6 @@ export default function SingleProductPage({ params, searchParams }: PageProps) {
           <ProductReviews asin={asin} searchParams={searchParams} />
         </Card>
       </Suspense>
-    </main>
+    </Main>
   );
 }

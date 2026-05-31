@@ -6,12 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Main } from "@/components/main";
 import { UserProfile } from "@clerk/nextjs";
 import { ListChecks, MenuIcon } from "lucide-react";
 
 export default function UserProfilePage() {
   return (
-    <main className="max-view mx-auto min-h-svh w-full max-w-screen-xl bg-background">
+    <Main className="max-w-screen-xl bg-background">
       <h1 className="sr-only">User Profile</h1>
       <div className="flex items-center justify-center py-8">
         <UserProfile routing="path" path="/user">
@@ -24,7 +25,7 @@ export default function UserProfilePage() {
           </UserProfile.Page>
         </UserProfile>
       </div>
-    </main>
+    </Main>
   );
 }
 

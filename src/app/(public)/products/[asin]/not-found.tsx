@@ -7,10 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Main } from "@/components/main";
 
 export default function NotFound() {
   return (
-    <main className="max-view mx-auto grid min-h-screen place-content-center bg-background">
+    <Main className="grid place-content-center bg-background">
       <Card className="min-w-96 p-4">
         <CardHeader className="space-y-4">
           <CardTitle className="pb-2">Not Found :/</CardTitle>
@@ -28,6 +29,6 @@ export default function NotFound() {
           </Button>
         </CardFooter>
       </Card>
-    </main>
+    </Main>
   );
 }

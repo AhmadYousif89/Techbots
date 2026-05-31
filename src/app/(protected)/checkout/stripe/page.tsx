@@ -14,6 +14,7 @@ import {
   VAT_PERCENTAGE,
   NEXT_DAY_SHIPPING_COST,
 } from "@/app/(protected)/cart/_lib/constants";
+import { Main } from "@/components/main";
 
 export const metadata = {
   title: "Checkout",
@@ -41,9 +42,7 @@ export default async function Page({ searchParams }: PageProps) {
     },
   });
 
-  if (products.length !== snapshot.items.length) {
-    notFound();
-  }
+  if (products.length !== snapshot.items.length) notFound();
 
   const productByAsin = new Map(
     products.map((product) => [product.asin, product]),
@@ -80,8 +79,8 @@ export default async function Page({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="max-view mx-auto min-h-screen w-full bg-background">
+    <Main className="bg-background">
       <Checkout clientSecret={paymentIntent.client_secret} />
-    </main>
+    </Main>
   );
 }

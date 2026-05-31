@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatPrice, normalizePrice } from "@/app/lib/utils";
 
 import { getOrderForUser, type SingleUserOrder } from "../_lib/orders";
+import { Main } from "@/components/main";
 
 type OrderDetails = NonNullable<SingleUserOrder>;
 type OrderLineItem = OrderDetails["orderItems"][number];
@@ -79,7 +80,7 @@ export default async function OrderPage({ params: { oId } }: OrderProps) {
   );
 
   return (
-    <main className="max-view mx-auto min-h-screen bg-secondary">
+    <Main className="bg-background">
       <Card className="flex flex-col rounded-none px-4 py-8 xl:p-8">
         <CardHeader className="px-0">
           <CardTitle className="flex items-center">
@@ -220,6 +221,6 @@ export default async function OrderPage({ params: { oId } }: OrderProps) {
           </Card>
         </div>
       </Card>
-    </main>
+    </Main>
   );
 }

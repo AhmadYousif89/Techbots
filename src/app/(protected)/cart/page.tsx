@@ -3,7 +3,6 @@ import { auth } from "@clerk/nextjs/server";
 import { CartViews } from "./_components/cart_view";
 import { TabsContent } from "@/components/ui/tabs";
 import { CartListView } from "./_components/cart_list";
-import { CartPaymentView } from "./_components/cart_payment";
 import { CartShippingView } from "./_components/cart_shipping";
 import { normalizePrice } from "@/app/lib/utils";
 import { TServerCart } from "./_lib/types";
@@ -74,16 +73,12 @@ export default function CartPage() {
 
   return (
     <CartViews>
-      <TabsContent value="cart" className="max-view mx-auto">
+      <TabsContent value="cart">
         <CartListView getServerCart={serverCartPromise} />
       </TabsContent>
 
-      <TabsContent value="details" className="max-view mx-auto">
+      <TabsContent value="details">
         <CartShippingView />
-      </TabsContent>
-
-      <TabsContent value="payment" className="max-view mx-auto">
-        <CartPaymentView />
       </TabsContent>
     </CartViews>
   );

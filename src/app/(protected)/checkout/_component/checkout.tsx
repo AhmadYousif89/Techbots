@@ -18,7 +18,12 @@ import useStore from "@/app/components/hooks/use-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Card, CardTitle, CardFooter, CardContent } from "@/components/ui/card";
 
 import { useCartStore } from "../../cart/_store/cart";
@@ -69,8 +74,11 @@ function PaymentInformation() {
     }
     setIsloading(true);
 
-    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/checkout/stripe/success`;
-    // const url = `http://localhost:3000/checkout/stripe/success`;
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_SERVER_URL
+        : "http://localhost:3000";
+    const url = `${baseUrl}/checkout/stripe/success`;
     stripe
       .confirmPayment({
         elements,
@@ -119,6 +127,9 @@ function PaymentInformation() {
               </div>
             </DialogTrigger>
             <DialogContent className="overscroll-y-auto px-4 py-12">
+              <DialogTitle className="text-left font-semibold">
+                Order Items
+              </DialogTitle>
               {cart.map((item, index) => (
                 <Card
                   key={index}

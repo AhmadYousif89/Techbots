@@ -5,6 +5,7 @@ import prisma from "@/app/lib/db";
 
 import { getOrdersForUser } from "./_lib/orders";
 import { OrdersView } from "./_components/orders_view";
+import { Main } from "@/components/main";
 
 export const metadata = {
   title: "My Orders",
@@ -14,9 +15,7 @@ export const metadata = {
 export default async function OrdersPage() {
   const { userId } = auth();
 
-  if (!userId) {
-    notFound();
-  }
+  if (!userId) notFound();
 
   const [orders, user] = await Promise.all([
     getOrdersForUser(userId),
@@ -29,13 +28,11 @@ export default async function OrdersPage() {
     }),
   ]);
 
-  if (!user) {
-    notFound();
-  }
+  if (!user) notFound();
 
   return (
-    <main className="max-view mx-auto min-h-screen">
+    <Main>
       <OrdersView orders={orders} user={user} />
-    </main>
+    </Main>
   );
 }

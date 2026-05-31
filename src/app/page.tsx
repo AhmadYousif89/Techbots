@@ -8,12 +8,13 @@ import { PopularItemsSlide } from "./components/popular_items_slide";
 import { TechDealsSlide } from "./components/tech_deals_slide";
 import { MainPageSlideSkeleton } from "./components/skeletons/main_page_slide_skeleton";
 import { Footer } from "./components/footer";
+import { Main } from "@/components/main";
 
 export default function Home() {
   return (
     <>
       <Header />
-      <main className="max-view mx-auto w-full">
+      <Main>
         <HomeSlider />
         <HotProducts />
         <Suspense fallback={<MainPageSlideSkeleton />}>
@@ -23,7 +24,7 @@ export default function Home() {
           <TechDealsSlide />
         </Suspense>
         <LatestBlogs />
-      </main>
+      </Main>
       <Footer />
     </>
   );
