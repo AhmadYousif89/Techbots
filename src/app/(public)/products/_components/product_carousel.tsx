@@ -102,7 +102,7 @@ export function ProductCarousel({
               onLoad={handleImageLoad}
             />
           </DialogTrigger>
-          <DialogContent className="min-h-svh max-w-screen-xl px-0 min-[400px]:min-h-[calc(100%-10rem)] lg:px-6">
+          <DialogContent className="min-h-svh max-w-screen-xl select-none px-0 min-[400px]:min-h-[calc(100%-10rem)] lg:px-6">
             <DialogTitle className="sr-only">{product.title}</DialogTitle>
             <Lightbox product={product} initialImageIndex={imageIndex} />
           </DialogContent>
@@ -114,14 +114,14 @@ export function ProductCarousel({
         className="mx-auto w-full max-w-screen-md"
       >
         <Carousel opts={{ dragFree: true, align: "start" }}>
-          <CarouselContent className="py-4 pl-4">
+          <CarouselContent className="items-center py-4 pl-8">
             {product.images.map((image, index) => (
-              <CarouselItem key={index} className="basis-[100px]">
+              <CarouselItem key={index} className="basis-auto pl-2">
                 <Button
                   variant="ghost"
                   className={cn(
-                    "h-24 w-full p-0",
-                    imageIndex === index && "border shadow-sm",
+                    "h-full border border-transparent p-1",
+                    imageIndex === index && "border-border shadow",
                   )}
                   onClick={() => handleImageIndexChange(index)}
                 >
