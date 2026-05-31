@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/card";
 import { useCartStore } from "../_store/cart";
 import useStore from "@/app/components/hooks/use-store";
-import { TOrder, creatOrder, useOrderStore } from "../_store/orders";
 import { useShippingStore } from "../_store/shipping_form";
 import { getCartTotalValue } from "../_store/cart";
+import { encodeOrderItems } from "@/app/(protected)/checkout/stripe/stripe-order";
 
 export function CartPaymentView() {
   const router = useRouter();
@@ -25,21 +25,29 @@ export function CartPaymentView() {
   const cartItems = useStore(useCartStore, (s) => s.cart);
   const items = useMemo(() => cartItems ?? [], [cartItems]);
   const data = useShippingStore((s) => s.data);
-  const orderItems = useStore(useOrderStore, (s) => s.orders);
-  const orders = useMemo(() => orderItems ?? [], [orderItems]);
-  const total = getCartTotalValue(items, data.shipping);
+  const coupon = useCartStore((s) => s.coupon);
+  const total = getCartTotalValue(items, data.shipping, coupon);
 
-  useEffect(() => {
-    const ids = items
-      .map((p, i) => {
-        return `p${i + 1}=${p.asin}+${p.cartQuantity}`;
-      })
-      .join("&");
+  const checkoutUrl = useMemo(() => {
+    const params = new URLSearchParams({
+      firstname: data.firstname,
+      lastname: data.lastname,
+      mainAddress: data.mainAddress,
+      optionalAddress: data.optionalAddress ?? "",
+      city: data.city,
+      phone: String(data.phone),
+      shipping: data.shipping,
+      coupon,
+      items: encodeOrderItems(
+        items.map((item) => ({
+          asin: item.asin,
+          cartQuantity: item.cartQuantity,
+        })),
+      ),
+    });
 
-    if (orders.length > 0) {
-      router.push(`/checkout/stripe?${ids}`);
-    }
-  }, [items, orders, router]);
+    return `/checkout/stripe?${params.toString()}`;
+  }, [coupon, data, items]);
 
   const confirmOrder = () => {
     if (!userId) {
@@ -47,15 +55,7 @@ export function CartPaymentView() {
       return;
     }
 
-    const order = {
-      id: Math.random().toString(36).substring(2, 15),
-      userId,
-      shippingInfo: data,
-      items,
-      total,
-    } as TOrder;
-
-    creatOrder(order);
+    router.push(checkoutUrl);
   };
 
   return (
@@ -69,7 +69,7 @@ export function CartPaymentView() {
       </CardHeader>
       <CardContent className="space-y-2"></CardContent>
       <CardFooter>
-        <Button onClick={confirmOrder}>Add payment</Button>
+        <Button onClick={confirmOrder}>Continue to payment</Button>
       </CardFooter>
     </Card>
   );

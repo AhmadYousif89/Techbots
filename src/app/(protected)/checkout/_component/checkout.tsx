@@ -49,7 +49,8 @@ function PaymentInformation() {
 
   const data = useShippingStore((s) => s.data);
   const cart = useStore(useCartStore, (s) => s.cart) ?? [];
-  const total = getCartTotalValue(cart, data.shipping);
+  const coupon = useCartStore((s) => s.coupon);
+  const total = getCartTotalValue(cart, data.shipping, coupon);
   const VAT = getCartVAT(total);
   const cartCount = cart.length;
 
