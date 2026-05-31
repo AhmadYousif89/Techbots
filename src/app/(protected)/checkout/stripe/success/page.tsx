@@ -78,7 +78,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
         <CardFooter className="pt-6">
           <Button variant={isSuccessful ? "default" : "outline"}>
             {isSuccessful ? (
-              <Link href="/orders">Download your payment intent</Link>
+              <Link href="/orders">View your orders</Link>
             ) : (
               <Link href="/checkout/stripe?">Try Again</Link>
             )}

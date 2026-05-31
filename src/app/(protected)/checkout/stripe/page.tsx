@@ -1,8 +1,15 @@
 import Stripe from "stripe";
 import prisma from "@/app/lib/db";
+import { auth } from "@clerk/nextjs/server";
 import { Checkout } from "../_component/checkout";
 import { SearchParams } from "@/app/lib/types";
 import { normalizePrice } from "@/app/lib/utils";
+import { notFound } from "next/navigation";
+import {
+  parseCheckoutSnapshot,
+  buildPaymentIntentMetadata,
+} from "@/app/(protected)/checkout/stripe/stripe-order";
+import { NEXT_DAY_SHIPPING_COST, VAT_PERCENTAGE } from "../../cart/constants";
 
 export const metadata = {
   title: "Checkout",
@@ -16,44 +23,56 @@ type PageProps = {
 };
 
 export default async function Page({ searchParams }: PageProps) {
-  const items: { asin: string; cartQuantity: number }[] = [];
-  Object.entries(searchParams).map((item) => {
-    const rawValue = Array.isArray(item[1]) ? item[1][0] : item[1];
-    if (!rawValue) {
-      return;
-    }
-    const [asin, quantity] = rawValue.split(" ");
-    const prod = {
-      asin,
-      cartQuantity: Number(quantity || 1),
-    };
-    items.push(prod);
-  });
+  const { userId } = auth();
+  if (!userId) {
+    notFound();
+  }
+
+  const snapshot = parseCheckoutSnapshot(searchParams);
+  if (!snapshot) {
+    notFound();
+  }
 
   const products = await prisma.product.findMany({
     where: {
       asin: {
-        in: items.map((item) => item.asin) as string[],
+        in: snapshot.items.map((item) => item.asin) as string[],
       },
     },
   });
 
-  const totalAmount = products.reduce((acc, item) => {
-    const cartItem = items.find((cartItem) => cartItem.asin === item.asin);
-    return (
-      acc + normalizePrice(item.price) * Number(cartItem?.cartQuantity || 1)
-    );
+  if (products.length !== snapshot.items.length) {
+    notFound();
+  }
+
+  const productByAsin = new Map(
+    products.map((product) => [product.asin, product]),
+  );
+  const subtotal = snapshot.items.reduce((acc, item) => {
+    const product = productByAsin.get(item.asin);
+    return acc + normalizePrice(product?.price) * item.cartQuantity;
   }, 0);
 
-  const result: { [k: string]: string } = {};
-  items.forEach((item, index) => {
-    result[index + 1] = item.asin ?? "";
-  });
+  const shippingValue =
+    snapshot.shippingInfo.shipping === "next" ? NEXT_DAY_SHIPPING_COST : 0;
+
+  const subtotalWithShipping = subtotal + shippingValue;
+  const discountedTotal =
+    snapshot.coupon.toLowerCase() === "25off"
+      ? subtotalWithShipping * 0.75
+      : snapshot.coupon.toLowerCase() === "50off"
+        ? subtotalWithShipping * 0.5
+        : subtotalWithShipping;
+
+  const totalAmount = discountedTotal + discountedTotal * VAT_PERCENTAGE;
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: totalAmount * 100, // in cents
+    amount: Math.round(totalAmount * 100),
     currency: "USD",
-    metadata: result, // { '1': 'B07JGJ7B17', '2': 'B07JGJ7B18'}
+    metadata: buildPaymentIntentMetadata({
+      clerkUserId: userId,
+      snapshot,
+    }),
   });
 
   if (paymentIntent.client_secret == null) {

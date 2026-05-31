@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import {
   Body,
   Button,
@@ -12,8 +11,14 @@ import {
   Text,
 } from "react-email";
 
+export type EmailRecipient = {
+  email: string;
+  username?: string | null;
+  imageUrl?: string | null;
+};
+
 type Props = {
-  user: User;
+  user: EmailRecipient;
   url: string;
 };
 
@@ -23,19 +28,20 @@ export const OrderDetailsTemplate = ({ user, url }: Props) => (
   <Html>
     <Head />
     <Body style={main}>
-      <Preview>Your order details are here!</Preview>
+      <Preview>Your order is ready in your account!</Preview>
       <Container style={container}>
-        <div style={image}>
-          <Img
-            src={logoSrc}
-            alt="Bookmark Manager"
-            width={214}
-            height={"auto"}
-            style={{ display: "block" }}
-          />
-        </div>
+        {logoSrc ? (
+          <div style={image}>
+            <Img
+              src={logoSrc}
+              alt="Techbots"
+              width={214}
+              height={"auto"}
+              style={{ display: "block" }}
+            />
+          </div>
+        ) : null}
         <Text style={paragraph}>Hi {user.username || "there"},</Text>
-        <Text style={paragraph}></Text>
         <Section style={btnContainer}>
           <Button
             style={button}
@@ -43,12 +49,12 @@ export const OrderDetailsTemplate = ({ user, url }: Props) => (
             rel="noopener noreferrer"
             target="_blank"
           >
-            Download invoice
+            View your orders
           </Button>
         </Section>
         <Text style={paragraph}>
-          This link will expire in 1 hour. If you did not create an account,
-          please ignore this email.
+          Your payment was confirmed and the order has been saved to your
+          account.
         </Text>
         <Text style={paragraph}>
           Best,
