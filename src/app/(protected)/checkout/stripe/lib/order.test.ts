@@ -1,11 +1,9 @@
 import assert from "node:assert/strict";
 import Stripe from "stripe";
 
-import {
-  buildPaymentIntentMetadata,
-  processSuccessfulPaymentIntent,
-  verifyStripeWebhookEvent,
-} from "./stripe-order";
+import { buildPaymentIntentMetadata } from "./order.metadata";
+import { processSuccessfulPaymentIntent } from "./order.processing";
+import { verifyStripeWebhookEvent } from "./order.webhook";
 
 const webhookSecret = "whsec_test_secret";
 
@@ -27,7 +25,11 @@ const snapshot = {
 };
 
 function createPaymentIntent(
-  overrides: Partial<{ id: string; amount: number }> = {},
+  overrides: Partial<{
+    id: string;
+    amount: number;
+    receipt_email?: string | null;
+  }> = {},
 ) {
   return {
     id: overrides.id ?? "pi_test_123",
@@ -37,6 +39,7 @@ function createPaymentIntent(
       clerkUserId: "user_123",
       snapshot,
     }),
+    receipt_email: overrides.receipt_email,
   };
 }
 
@@ -188,6 +191,45 @@ async function run() {
   assert.equal(skippedResult.emailSent, false);
   assert.equal(skippedResult.orderId, null);
   assert.equal(skippedStore.length, 0);
+
+  // Verify that receipt_email is used when provided
+  const { prisma: customEmailPrisma } = createFakePrisma();
+  let receivedEmailOrUser: any = null;
+  const customEmailResult = await processSuccessfulPaymentIntent({
+    paymentIntent: createPaymentIntent({
+      id: "pi_custom_email",
+      receipt_email: "custom@example.com",
+    }),
+    prisma: customEmailPrisma,
+    sendEmail: async (emailOrUser) => {
+      receivedEmailOrUser = emailOrUser;
+      return { ok: true };
+    },
+    ordersUrl: "https://techbots.example/orders",
+  });
+  assert.equal(customEmailResult.created, true);
+  assert.equal(receivedEmailOrUser, "custom@example.com");
+
+  // Verify that sendEmail falls back to the database user when receipt_email is absent
+  const { prisma: fallbackPrisma } = createFakePrisma();
+  let fallbackEmailOrUser: any = null;
+  const fallbackResult = await processSuccessfulPaymentIntent({
+    paymentIntent: createPaymentIntent({
+      id: "pi_fallback_email",
+      receipt_email: null,
+    }),
+    prisma: fallbackPrisma,
+    sendEmail: async (emailOrUser) => {
+      fallbackEmailOrUser = emailOrUser;
+      return { ok: true };
+    },
+    ordersUrl: "https://techbots.example/orders",
+  });
+  assert.equal(fallbackResult.created, true);
+  assert.deepEqual(fallbackEmailOrUser, {
+    email: "customer@example.com",
+    username: "Customer",
+  });
 
   console.log("Stripe webhook checks passed");
 }

@@ -7,14 +7,16 @@ import { SearchParams } from "@/app/lib/types";
 import { normalizePrice } from "@/app/lib/utils";
 import { Checkout } from "../_component/checkout";
 import {
-  parseCheckoutSnapshot,
+  buildCheckoutAttemptKey,
   buildPaymentIntentMetadata,
-} from "@/app/(protected)/checkout/stripe/stripe-order";
+  parseCheckoutSnapshot,
+} from "./lib/order.metadata";
 import {
   VAT_PERCENTAGE,
   NEXT_DAY_SHIPPING_COST,
 } from "@/app/(protected)/cart/_lib/constants";
 import { Main } from "@/components/main";
+import { ensureUserByClerkId } from "../../user/lib/utils";
 
 export const metadata = {
   title: "Checkout",
@@ -23,11 +25,11 @@ export const metadata = {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
-type PageProps = {
+export default async function Page({
+  searchParams,
+}: {
   searchParams: SearchParams;
-};
-
-export default async function Page({ searchParams }: PageProps) {
+}) {
   const { userId } = auth();
   if (!userId) notFound();
 
@@ -37,7 +39,7 @@ export default async function Page({ searchParams }: PageProps) {
   const products = await prisma.product.findMany({
     where: {
       asin: {
-        in: snapshot.items.map((item) => item.asin) as string[],
+        in: snapshot.items.map((item) => item.asin),
       },
     },
   });
@@ -47,6 +49,7 @@ export default async function Page({ searchParams }: PageProps) {
   const productByAsin = new Map(
     products.map((product) => [product.asin, product]),
   );
+
   const subtotal = snapshot.items.reduce((acc, item) => {
     const product = productByAsin.get(item.asin);
     return acc + normalizePrice(product?.price) * item.cartQuantity;
@@ -65,21 +68,54 @@ export default async function Page({ searchParams }: PageProps) {
 
   const totalAmount = discountedTotal + discountedTotal * VAT_PERCENTAGE;
 
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: Math.round(totalAmount * 100),
-    currency: "USD",
-    metadata: buildPaymentIntentMetadata({
+  await ensureUserByClerkId(userId);
+
+  const checkoutKey = buildCheckoutAttemptKey({
+    clerkUserId: userId,
+    snapshot,
+  });
+
+  await prisma.checkoutAttempt.upsert({
+    where: { checkoutKey },
+    create: {
+      checkoutKey,
       clerkUserId: userId,
       snapshot,
-    }),
+      paymentIntentStatus: "pending",
+    },
+    update: {
+      snapshot,
+      paymentIntentStatus: "pending",
+    },
   });
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: Math.round(totalAmount * 100),
+      currency: "USD",
+      metadata: buildPaymentIntentMetadata({
+        clerkUserId: userId,
+        snapshot,
+        checkoutKey,
+      }),
+    },
+    { idempotencyKey: checkoutKey },
+  );
 
   if (paymentIntent.client_secret == null) {
     throw new Error("Stripe -- Failed to create a payment intent");
   }
 
+  await prisma.checkoutAttempt.update({
+    where: { checkoutKey },
+    data: {
+      stripePaymentIntentId: paymentIntent.id,
+      paymentIntentStatus: paymentIntent.status,
+    },
+  });
+
   return (
-    <Main className="bg-background">
+    <Main>
       <Checkout clientSecret={paymentIntent.client_secret} />
     </Main>
   );

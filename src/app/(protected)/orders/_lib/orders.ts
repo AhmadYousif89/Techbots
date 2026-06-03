@@ -56,6 +56,6 @@ export async function getOrderForUser(clerkUserId: string, orderId: string) {
   });
 }
 
-export type OrdersForUser = Awaited<ReturnType<typeof getOrdersForUser>>;
+type OrdersForUser = Awaited<ReturnType<typeof getOrdersForUser>>;
 export type UserOrder = OrdersForUser[number];
 export type SingleUserOrder = Awaited<ReturnType<typeof getOrderForUser>>;

@@ -5,12 +5,11 @@ import prisma from "@/app/lib/db";
 import { notFound } from "next/navigation";
 
 import { sendEmail } from "@/app/(auth)/email/send.mail";
+import { clearServerCart } from "@/app/(protected)/cart/_actions/clear";
 import { SearchParams } from "@/app/lib/types";
 import { formatPrice } from "@/app/lib/utils";
-import {
-  parseStripePaymentIntentMetadata,
-  processSuccessfulPaymentIntent,
-} from "../stripe-order";
+import { parsePaymentIntentMetadata } from "../lib/order.metadata";
+import { processSuccessfulPaymentIntent } from "../lib/order.processing";
 import {
   Card,
   CardContent,
@@ -18,10 +17,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Main } from "@/components/main";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ClearLocalCartOnSuccess } from "./_components/clear_local_cart_on_success";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 type SuccessPageProps = {
@@ -36,6 +36,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
   const isSuccessful = paymentIntent.status === "succeeded";
+  const parsedMetadata = parsePaymentIntentMetadata(paymentIntent.metadata);
 
   if (isSuccessful) {
     const baseUrl =
@@ -43,22 +44,25 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
         ? process.env.NEXT_PUBLIC_SERVER_URL
         : "http://localhost:3000";
 
-    await processSuccessfulPaymentIntent({
-      paymentIntent: {
-        id: paymentIntent.id,
-        amount: paymentIntent.amount,
-        amount_received: paymentIntent.amount_received,
-        metadata: paymentIntent.metadata ?? {},
-      },
-      prisma,
-      sendEmail,
-      ordersUrl: new URL("/orders", baseUrl).toString(),
-    });
+    try {
+      await processSuccessfulPaymentIntent({
+        paymentIntent: {
+          id: paymentIntent.id,
+          amount: paymentIntent.amount,
+          amount_received: paymentIntent.amount_received,
+          metadata: paymentIntent.metadata ?? {},
+          receipt_email: paymentIntent.receipt_email,
+        },
+        prisma,
+        sendEmail,
+        ordersUrl: new URL("/orders", baseUrl).toString(),
+      });
+    } finally {
+      if (parsedMetadata?.clerkUserId) {
+        await clearServerCart(parsedMetadata.clerkUserId);
+      }
+    }
   }
-
-  const parsedMetadata = parseStripePaymentIntentMetadata(
-    paymentIntent.metadata,
-  );
 
   const products = parsedMetadata
     ? await prisma.product.findMany({
@@ -82,7 +86,8 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     : [];
 
   return (
-    <Main className="bg-background">
+    <Main className="flex flex-col">
+      {isSuccessful ? <ClearLocalCartOnSuccess /> : null}
       <Card className="max-w-screen-sm rounded-none border-0 p-6 shadow-none">
         <CardHeader className="px-0">
           <CardTitle className="font-semibold">
@@ -92,7 +97,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
         <Separator />
 
-        <CardContent className="my-8 space-y-4">
+        <CardContent className="my-8 space-y-4 px-0">
           {orderedProducts.length > 0 ? (
             orderedProducts.map((product) => (
               <Card key={product.asin} className="flex items-center gap-4 p-2">
@@ -122,10 +127,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           )}
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="px-0">
           <Button variant={isSuccessful ? "default" : "outline"}>
             {isSuccessful ? (
-              <Link href="/orders">View your orders</Link>
+              <Link href="/orders">View your order</Link>
             ) : (
               <Link href="/checkout/stripe?">Try Again</Link>
             )}

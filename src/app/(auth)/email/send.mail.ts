@@ -13,10 +13,12 @@ type SendEmailResult =
     };
 
 export const sendEmail = async (
-  user: EmailRecipient,
+  emailOrUser: EmailRecipient | string,
   url: string,
 ): Promise<SendEmailResult> => {
   const apiKey = process.env.RESEND_API_KEY;
+  const user =
+    typeof emailOrUser === "string" ? { email: emailOrUser } : emailOrUser;
 
   if (!apiKey) {
     console.error(

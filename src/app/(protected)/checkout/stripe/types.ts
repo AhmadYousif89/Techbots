@@ -23,7 +23,9 @@ export type StripePaymentIntentLike = {
   id: string;
   amount: number;
   amount_received?: number | null;
+  status?: string;
   metadata: Record<string, string | undefined>;
+  receipt_email?: string | null;
 };
 
 export type SendEmailResult =
@@ -54,4 +56,14 @@ export type StripeWebhookProcessingResult =
       emailSent: false;
       orderId: null;
       reason: string;
+    };
+
+export type OrderWriteResult =
+  | {
+      kind: "created";
+      orderId: string;
+    }
+  | {
+      kind: "duplicate";
+      orderId: string;
     };

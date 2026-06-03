@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -34,11 +35,7 @@ import { formatPrice } from "@/app/lib/utils";
 
 const loader = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
-type CheckoutProps = {
-  clientSecret: string;
-};
-
-export function Checkout({ clientSecret }: CheckoutProps) {
+export function Checkout({ clientSecret }: { clientSecret: string }) {
   return (
     <Elements stripe={loader} options={{ clientSecret }}>
       <PaymentInformation />
@@ -84,6 +81,7 @@ function PaymentInformation() {
         elements,
         confirmParams: {
           return_url: url,
+          receipt_email: email,
         },
       })
       .then(({ error }) => {
@@ -105,11 +103,9 @@ function PaymentInformation() {
   };
 
   return (
-    <section className="mx-auto max-w-screen-lg px-4 py-0">
-      <div className="flex items-center justify-between">
-        <h2 className="py-6 text-xl font-semibold text-muted-foreground">
-          Order Summary
-        </h2>
+    <section className="mx-auto max-w-screen-lg pb-8">
+      <div className="flex items-center justify-between text-muted-foreground">
+        <h2 className="py-6 text-xl font-semibold">Order Summary</h2>
         <Link
           href="/cart"
           className="text-sm hover:text-blue-600 hover:underline"
@@ -121,7 +117,7 @@ function PaymentInformation() {
         <CardContent className="px-0 pb-0">
           <Dialog>
             <DialogTrigger className="relative h-full w-full">
-              <div className="flex cursor-pointer items-center justify-between text-sm font-medium uppercase text-muted-foreground underline">
+              <div className="flex cursor-pointer items-center justify-between text-sm font-medium uppercase text-muted-foreground hover:text-blue-500 hover:underline">
                 <p>Items</p>
                 <span>{cartCount}</span>
               </div>
@@ -202,7 +198,7 @@ function PaymentInformation() {
           </div>
           <CardFooter className="px-0 pt-6">
             <Button type="submit" disabled={isDisabled}>
-              {isLoading ? "Processing..." : <>Purchase | ${fullAmount}</>}
+              {isLoading ? "Processing..." : <>Purchase ${fullAmount}</>}
             </Button>
           </CardFooter>
         </Card>

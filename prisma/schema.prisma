@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  clerkUserId String   @unique @map("clerk_user_id")
-  email       String   @unique
-  username    String?  @default("Anonymous")
-  imageUrl    String?
-  Cart        Cart?
-  Order       Order[]
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id              String            @id @default(cuid())
+  clerkUserId     String            @unique @map("clerk_user_id")
+  email           String            @unique
+  username        String?           @default("Anonymous")
+  imageUrl        String?
+  Cart            Cart?
+  Order           Order[]
+  CheckoutAttempt CheckoutAttempt[]
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
 
   @@map("users")
 }
@@ -95,7 +96,6 @@ model OrderItem {
   id          String  @id @default(cuid())
   order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId     String
-  // If you delete a product from your catalog, it will no longer wipe out your historical financial records.
   product     Product @relation(fields: [productAsin], references: [asin], onDelete: Restrict)
   productAsin String  @map("product_asin")
   count       Int     @default(0)
@@ -103,6 +103,35 @@ model OrderItem {
   @@index([orderId])
   @@index([productAsin])
   @@map("order_items")
+}
+
+model CheckoutAttempt {
+  id                    String   @id @default(cuid())
+  checkoutKey           String   @unique @map("checkout_key")
+  clerkUserId           String   @map("clerk_user_id")
+  user                  User     @relation(fields: [clerkUserId], references: [clerkUserId], onDelete: Cascade)
+  snapshot              Json     @map("snapshot")
+  stripePaymentIntentId String?  @unique @map("stripe_payment_intent_id")
+  paymentIntentStatus   String?  @map("payment_intent_status")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@index([clerkUserId])
+  @@map("checkout_attempts")
+}
+
+model PaymentEvent {
+  id                    String   @id @default(cuid())
+  stripeEventId         String   @unique @map("stripe_event_id")
+  stripeEventType       String   @map("stripe_event_type")
+  stripePaymentIntentId String   @map("stripe_payment_intent_id")
+  checkoutKey           String?  @map("checkout_key")
+  payload               Json     @map("payload")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  @@index([stripePaymentIntentId])
+  @@index([checkoutKey])
+  @@map("payment_events")
 }
 
 model ProductImages {
