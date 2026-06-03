@@ -58,7 +58,15 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
   return (
     <Card className="rounded-none border-0 p-4 shadow-none xl:p-8">
       <CardHeader className="px-0">
-        <CardTitle className="flex items-center">My Orders</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          My Orders
+          <Link
+            href="/products"
+            className="p-1 text-sm font-medium text-muted-foreground hover:text-blue-500 hover:underline"
+          >
+            Back to shop
+          </Link>
+        </CardTitle>
         <CardDescription>
           Review paid orders and open each order for shipping details.
         </CardDescription>
@@ -69,19 +77,16 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
         <CardHeader className="p-0">
           <CardTitle className="pb-2 text-lg">Personal Info</CardTitle>
         </CardHeader>
-        <div className="flex gap-4 border-l pl-4">
-          <CardContent className="p-0">
-            <p className="text-xs text-foreground/70 lg:text-sm">
-              Name:{" "}
-              <span className="font-semibold">
-                {user.username || "Anonymous"}
-              </span>
+        <div className="flex gap-2">
+          <CardContent className="border-l p-0 pl-4">
+            <p className="text-xs font-semibold text-foreground/70 lg:text-sm">
+              {user.username || "Anonymous"}
             </p>
-            <p className="text-xs text-foreground/70 lg:text-sm">
-              Email: <span className="font-semibold">{user.email}</span>
+            <p className="text-xs font-semibold text-foreground/70 lg:text-sm">
+              {user.email}
             </p>
           </CardContent>
-          <CardContent className="p-0">
+          <CardContent className="border-l p-0 pl-4">
             <p className="text-xs text-foreground/70 lg:text-sm">
               Total orders:{" "}
               <span className="font-semibold">{orders.length}</span>
@@ -166,12 +171,6 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
           )}
         </CardContent>
       </Card>
-
-      <div className="mt-6 flex justify-end">
-        <Button asChild variant="link" className="hover:text-blue-600">
-          <Link href="/products">Back to shop</Link>
-        </Button>
-      </div>
     </Card>
   );
 }
