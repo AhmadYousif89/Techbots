@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 

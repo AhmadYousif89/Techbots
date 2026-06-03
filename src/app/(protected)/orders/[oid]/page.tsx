@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import Link from "next/link";
 
 import { auth } from "@clerk/nextjs/server";

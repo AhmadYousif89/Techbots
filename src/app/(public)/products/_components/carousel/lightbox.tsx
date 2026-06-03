@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { useEffect, useState } from "react";
 import { TProduct } from "@/app/lib/types";
 import { ProductImageZoom } from "./image_magnifyer";

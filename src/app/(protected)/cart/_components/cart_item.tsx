@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { useAuth } from "@clerk/nextjs";
 import { Minus, Plus } from "lucide-react";
 

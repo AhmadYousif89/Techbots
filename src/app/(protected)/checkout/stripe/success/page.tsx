@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import prisma from "@/app/lib/db";
 import { notFound } from "next/navigation";
 
@@ -97,7 +97,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   const recipientEmail = paymentIntent.receipt_email || "your email";
 
   return (
-    <Main className="relative flex min-h-[85vh] flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-50/30 via-background to-background py-12 px-4 dark:from-emerald-950/10">
+    <Main className="relative flex min-h-[85vh] flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-50/30 via-background to-background px-4 py-12 dark:from-emerald-950/10">
       <style>{`
         @keyframes drawCheckmark {
           to {
@@ -127,14 +127,14 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
       {isSuccessful ? <ClearLocalCartOnSuccess /> : null}
 
-      <div className="w-full max-w-lg animate-scale-in">
+      <div className="animate-scale-in w-full max-w-lg">
         <Card className="relative overflow-hidden border border-muted/80 bg-card/60 shadow-2xl backdrop-blur-xl dark:bg-card/40">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
-          
-          <CardHeader className="flex flex-col items-center pt-8 pb-4 text-center">
+          <div className="absolute left-0 right-0 top-0 h-1.5 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
+
+          <CardHeader className="flex flex-col items-center pb-4 pt-8 text-center">
             {isSuccessful ? (
               <div className="relative mb-4 flex items-center justify-center">
-                <div className="absolute h-16 w-16 animate-pulse-glow rounded-full bg-emerald-400/20" />
+                <div className="animate-pulse-glow absolute h-16 w-16 rounded-full bg-emerald-400/20" />
                 <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
                   <svg
                     className="h-8 w-8"
@@ -154,7 +154,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
               </div>
             ) : (
               <div className="relative mb-4 flex items-center justify-center">
-                <div className="absolute h-16 w-16 animate-pulse-glow rounded-full bg-destructive/20" />
+                <div className="animate-pulse-glow absolute h-16 w-16 rounded-full bg-destructive/20" />
                 <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
                   <svg
                     className="h-8 w-8"
@@ -176,39 +176,51 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
               {isSuccessful ? "Payment Successful!" : "Payment Failed"}
             </CardTitle>
-            
-            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+
+            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
               {isSuccessful
                 ? `Thank you for your purchase. We've sent a receipt and confirmation email to ${recipientEmail}.`
                 : "Something went wrong with the transaction. Your account has not been charged."}
             </p>
           </CardHeader>
 
-          <CardContent className="px-6 py-4 space-y-6">
+          <CardContent className="space-y-6 px-6 py-4">
             <div className="rounded-xl border border-muted/60 bg-muted/30 p-4 dark:bg-muted/10">
-              <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-xs">
-                <div className="text-muted-foreground font-medium">Order Status</div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+                <div className="font-medium text-muted-foreground">
+                  Order Status
+                </div>
                 <div className="text-right">
                   {isSuccessful ? (
-                    <Badge variant="default" className="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-0 pointer-events-none hover:bg-emerald-500/10">
+                    <Badge
+                      variant="default"
+                      className="pointer-events-none border-0 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10 dark:bg-emerald-500/20 dark:text-emerald-400"
+                    >
                       Paid
                     </Badge>
                   ) : (
-                    <Badge variant="destructive" className="border-0 pointer-events-none">
+                    <Badge
+                      variant="destructive"
+                      className="pointer-events-none border-0"
+                    >
                       Failed
                     </Badge>
                   )}
                 </div>
 
-                <div className="text-muted-foreground font-medium">Payment ID</div>
-                <div className="text-right font-mono text-foreground font-semibold">
+                <div className="font-medium text-muted-foreground">
+                  Payment ID
+                </div>
+                <div className="text-right font-mono font-semibold text-foreground">
                   {formatIntentId(paymentIntent.id)}
                 </div>
 
                 {isSuccessful && (
                   <>
-                    <div className="text-muted-foreground font-medium">Amount Charged</div>
-                    <div className="text-right text-foreground font-bold">
+                    <div className="font-medium text-muted-foreground">
+                      Amount Charged
+                    </div>
+                    <div className="text-right font-bold text-foreground">
                       ${formatPrice(paymentIntent.amount / 100)}
                     </div>
                   </>
@@ -216,8 +228,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
                 {parsedMetadata?.shippingInfo?.shipping && (
                   <>
-                    <div className="text-muted-foreground font-medium">Delivery Method</div>
-                    <div className="text-right text-foreground font-semibold">
+                    <div className="font-medium text-muted-foreground">
+                      Delivery Method
+                    </div>
+                    <div className="text-right font-semibold text-foreground">
                       {parsedMetadata.shippingInfo.shipping === "next"
                         ? "Next Day Shipping"
                         : "Free Standard Shipping"}
@@ -232,7 +246,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Purchased Items
                 </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
                   {orderedProducts.map((product) => (
                     <div
                       key={product.asin}
@@ -246,19 +260,22 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                           className="object-contain"
                         />
                       </div>
-                      <div className="flex flex-1 items-center justify-between gap-4 min-w-0">
+                      <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
                         <div className="min-w-0">
                           <Link
                             href={`/products/${product.asin}`}
-                            className="block text-xs font-semibold text-foreground hover:text-blue-500 hover:underline truncate"
+                            className="block truncate text-xs font-semibold text-foreground hover:text-blue-500 hover:underline"
                           >
                             {product.title}
                           </Link>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                          <p className="mt-0.5 text-[10px] text-muted-foreground">
                             ASIN: {product.asin}
                           </p>
                         </div>
-                        <Badge variant="secondary" className="text-xs shrink-0 font-medium">
+                        <Badge
+                          variant="secondary"
+                          className="shrink-0 text-xs font-medium"
+                        >
                           ${formatPrice(product.price)}
                         </Badge>
                       </div>
@@ -267,20 +284,21 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 </div>
               </div>
             ) : isSuccessful ? (
-              <p className="text-xs text-center text-muted-foreground">
-                Your order is completed. We could not fetch item details right now, but your order history is updated.
+              <p className="text-center text-xs text-muted-foreground">
+                Your order is completed. We could not fetch item details right
+                now, but your order history is updated.
               </p>
             ) : null}
           </CardContent>
 
           <Separator className="bg-muted/80" />
 
-          <CardFooter className="flex flex-col sm:flex-row gap-3 px-6 py-6">
+          <CardFooter className="flex flex-col gap-3 px-6 py-6 sm:flex-row">
             {isSuccessful ? (
               <>
                 <Button
                   asChild
-                  className="w-full sm:flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium shadow-md transition-all active:scale-[0.98]"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 font-medium text-white shadow-md transition-all hover:from-emerald-600 hover:to-teal-700 active:scale-[0.98] sm:flex-1"
                 >
                   <Link href={orderId ? `/orders/${orderId}` : "/orders"}>
                     View order details
@@ -289,7 +307,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full sm:flex-1 border-muted hover:bg-muted/50 font-medium transition-all active:scale-[0.98]"
+                  className="w-full border-muted font-medium transition-all hover:bg-muted/50 active:scale-[0.98] sm:flex-1"
                 >
                   <Link href="/products">Continue shopping</Link>
                 </Button>
@@ -298,7 +316,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
               <Button
                 asChild
                 variant="default"
-                className="w-full bg-destructive hover:bg-destructive/90 text-white font-medium transition-all active:scale-[0.98]"
+                className="w-full bg-destructive font-medium text-white transition-all hover:bg-destructive/90 active:scale-[0.98]"
               >
                 <Link href="/checkout/stripe?">Try Again</Link>
               </Button>

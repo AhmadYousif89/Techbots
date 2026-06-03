@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { use, useMemo, useState, useCallback } from "react";
 import { TProduct } from "@/app/lib/types";
 import { cn } from "@/lib/utils";

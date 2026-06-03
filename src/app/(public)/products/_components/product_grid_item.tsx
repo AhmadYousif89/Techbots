@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import dynamic from "next/dynamic";
 import { EyeIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";

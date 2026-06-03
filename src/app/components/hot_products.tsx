@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { featuredProducts } from "@/lib/data";
 
 import {

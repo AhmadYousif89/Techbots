@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { toast } from "sonner";
 import { useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";

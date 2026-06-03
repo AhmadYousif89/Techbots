@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import Autoplay from "embla-carousel-autoplay";
 
 import {
