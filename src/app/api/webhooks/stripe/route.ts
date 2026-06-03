@@ -3,10 +3,10 @@ import type Stripe from "stripe";
 import prisma from "@/app/lib/db";
 import { sendEmail } from "@/app/(auth)/email/send.mail";
 import {
-  buildOrdersUrl,
+  logStripeWebhookEvent,
   verifyStripeWebhookEvent,
-  processSuccessfulPaymentIntent,
-} from "@/app/(protected)/checkout/stripe/stripe-order";
+} from "@/app/(protected)/checkout/stripe/lib/order.webhook";
+import { processSuccessfulPaymentIntent } from "@/app/(protected)/checkout/stripe/lib/order.processing";
 
 export const runtime = "nodejs";
 
@@ -42,7 +42,12 @@ export async function POST(req: Request) {
       paymentIntent: event.data.object,
       prisma,
       sendEmail,
-      ordersUrl: buildOrdersUrl(new URL(req.url).origin),
+      ordersUrl: new URL("/orders", new URL(req.url).origin).toString(),
+      stripeEvent: {
+        stripeEventId: event.id,
+        stripeEventType: event.type,
+        stripeEventPayload: event,
+      },
     });
 
     console.log("Processed Stripe payment intent", result);
@@ -52,7 +57,20 @@ export async function POST(req: Request) {
     event.type === "payment_intent.payment_failed" ||
     event.type === "payment_intent.canceled"
   ) {
-    console.log(`Stripe webhook received ${event.type} for ${event.id}`);
+    const result = await logStripeWebhookEvent({
+      paymentIntent: event.data.object,
+      prisma,
+      stripeEvent: {
+        stripeEventId: event.id,
+        stripeEventType: event.type,
+        stripeEventPayload: event,
+      },
+    });
+
+    console.log(
+      `Stripe webhook received ${event.type} for ${event.id}`,
+      result,
+    );
   }
 
   return new Response(JSON.stringify({ received: true }), {
