@@ -1,4 +1,4 @@
-import { Image } from "@unpic/react";
+import Image from "next/image";
 import { memo, useMemo, useRef, CSSProperties } from "react";
 
 import { useImageZoom } from "./use_zoom";

@@ -81,7 +81,8 @@ export function ProductCarousel({
             className={`relative flex size-full max-w-[30rem] p-4 lg:mx-auto lg:max-w-lg ${showLightbox ? "" : "pointer-events-none"}`}
           >
             <Image
-              fill
+              width={200}
+              height={200}
               src={imageUrl}
               alt={`thumbnail image for ${product.title}`}
               className={cn(

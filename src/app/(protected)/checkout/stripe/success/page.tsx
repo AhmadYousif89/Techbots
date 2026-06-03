@@ -252,11 +252,12 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                       key={product.asin}
                       className="flex items-center gap-4 rounded-lg border border-muted/50 bg-background/40 p-2.5 shadow-sm dark:bg-background/20"
                     >
-                      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border bg-white p-1">
+                      <div className="relative size-16 flex-shrink-0 overflow-hidden rounded-md border bg-white p-1">
                         <Image
+                          width={100}
+                          height={100}
                           src={product.mainImage}
                           alt={product.title}
-                          fill
                           className="object-contain"
                         />
                       </div>
