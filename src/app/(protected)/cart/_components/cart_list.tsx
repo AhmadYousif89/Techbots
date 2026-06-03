@@ -69,46 +69,29 @@ export function CartListView({ getServerCart }: CartListViewProps) {
     const data = cart ?? serverCartItems;
 
     content = (
-      <CardContent className="grid pt-6 lg:grid-cols-2 lg:justify-between lg:gap-8 lg:divide-x">
-        <div className="row-[1]">
-          <CardHeader className="flex-row items-center justify-between px-0 pt-0">
-            <CardTitle className="text-muted-foreground">
-              Cart Details
-            </CardTitle>
-            <DeleteCartItems action="deleteAll" />
-          </CardHeader>
+      <CardContent className="flex flex-col gap-8 pt-6 *:flex-1 md:flex-row">
+        <section className="flex flex-col gap-8 overflow-y-auto overscroll-contain pb-4">
+          {data.map((item, i) => (
+            <Fragment key={`${i}:${item.asin}`}>
+              <CartItem
+                asin={item.asin}
+                serverItem={"product" in item ? item.product : undefined}
+                serverItemQuantity={
+                  "quantity" in item ? item.quantity : undefined
+                }
+              />
+            </Fragment>
+          ))}
+        </section>
 
-          <section className="flex max-h-[600px] flex-col gap-8 overflow-y-auto overscroll-contain py-4">
-            {data.map((item, i) => (
-              <Fragment key={`${i}:${item.asin}`}>
-                <CartItem
-                  asin={item.asin}
-                  serverItem={"product" in item ? item.product : undefined}
-                  serverItemQuantity={
-                    "quantity" in item ? item.quantity : undefined
-                  }
-                />
-                <Separator className="last:hidden" />
-              </Fragment>
-            ))}
-          </section>
-        </div>
-
-        <Separator className="col-[1] my-12 lg:hidden" />
-
-        <section className="flex max-w-screen-md flex-col sm:pl-8 lg:col-[2] lg:row-[1]">
-          <CardHeader className="px-0 pt-0">
+        <section className="flex flex-col">
+          <header className="pb-6">
             <CardTitle className="text-muted-foreground">Summary</CardTitle>
-          </CardHeader>
+          </header>
 
-          <Accordion
-            collapsible
-            type="single"
-            title="Enter coupon"
-            className="max-w-xs"
-          >
+          <Accordion collapsible type="single" title="Enter coupon">
             <AccordionItem value="coupon">
-              <AccordionTrigger className="text-xs uppercase text-muted-foreground underline hover:text-foreground/50">
+              <AccordionTrigger className="text-xs uppercase text-muted-foreground hover:text-foreground/50 hover:underline">
                 I have a coupon code
               </AccordionTrigger>
               <AccordionContent className="pr-2">
@@ -148,7 +131,7 @@ export function CartListView({ getServerCart }: CartListViewProps) {
             </AccordionItem>
           </Accordion>
 
-          <CardContent className="my-8 px-0 pb-0">
+          <div className="my-8">
             <div className="flex items-center justify-between font-medium uppercase text-muted-foreground">
               <p className="text-sm">Subtotal</p>
               <span className="text-sm">${total.toFixed(2)}</span>
@@ -166,17 +149,23 @@ export function CartListView({ getServerCart }: CartListViewProps) {
               <p>Total</p>
               <span>${(total + VAT).toFixed(2)}</span>
             </div>
-          </CardContent>
+          </div>
         </section>
       </CardContent>
     );
   }
 
   return (
-    <Card className="flex flex-col justify-between rounded-none py-8">
+    <Card className="rounded-none border-0 shadow-none">
+      {cartCount > 0 && (
+        <CardHeader className="flex-row items-center justify-between">
+          <CardTitle className="text-muted-foreground">Cart Details</CardTitle>
+          <DeleteCartItems action="deleteAll" />
+        </CardHeader>
+      )}
       <>{content}</>
       {cartCount > 0 && (
-        <CardFooter className="justify-center gap-4 lg:ml-8 lg:py-8">
+        <CardFooter className="justify-center gap-4 p-6">
           <Button
             size={"sm"}
             disabled={cartCount == 0}

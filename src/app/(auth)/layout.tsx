@@ -7,7 +7,7 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Main className="bg-background pb-8">
+    <Main className="pb-8">
       <Logo className="h-20 w-fit px-8 text-primary" />
       {children}
     </Main>

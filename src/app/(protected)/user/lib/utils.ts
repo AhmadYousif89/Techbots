@@ -34,31 +34,36 @@ export async function ensureUserByClerkId(
   clerkUserId: string,
   profile?: TClerkUserProfile,
 ) {
-  const existingUser = await prisma.user.findUnique({
-    where: { clerkUserId },
-  });
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { clerkUserId },
+    });
 
-  if (existingUser) return existingUser;
+    if (existingUser) return existingUser;
 
-  const resolvedProfile =
-    profile && profile.email
-      ? profile
-      : await resolveClerkUserProfile(clerkUserId);
+    const resolvedProfile =
+      profile && profile.email
+        ? profile
+        : await resolveClerkUserProfile(clerkUserId);
 
-  return prisma.user.upsert({
-    where: { clerkUserId },
-    update: {},
-    create: {
-      clerkUserId,
-      email: resolvedProfile.email,
-      ...(resolvedProfile.imageUrl
-        ? { imageUrl: resolvedProfile.imageUrl }
-        : {}),
-      ...(resolvedProfile.username
-        ? { username: resolvedProfile.username }
-        : {}),
-    },
-  });
+    return prisma.user.upsert({
+      where: { clerkUserId },
+      update: {},
+      create: {
+        clerkUserId,
+        email: resolvedProfile.email,
+        ...(resolvedProfile.imageUrl
+          ? { imageUrl: resolvedProfile.imageUrl }
+          : {}),
+        ...(resolvedProfile.username
+          ? { username: resolvedProfile.username }
+          : {}),
+      },
+    });
+  } catch (error) {
+    console.error(`Error ensuring user with Clerk ID ${clerkUserId}:`, error);
+    throw error;
+  }
 }
 
 export async function addUserToDB(data: Prisma.UserCreateInput) {

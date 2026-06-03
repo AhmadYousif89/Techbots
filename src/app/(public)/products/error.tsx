@@ -20,7 +20,7 @@ export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
   const router = useRouter();
 
   return (
-    <Main className="grid place-content-center bg-background">
+    <Main className="grid place-content-center">
       <Card className="min-w-96 max-w-screen-sm p-4">
         <CardHeader className="space-y-4">
           <CardTitle className="pb-2">Error!</CardTitle>

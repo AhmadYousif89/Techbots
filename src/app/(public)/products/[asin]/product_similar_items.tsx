@@ -67,10 +67,7 @@ export async function SimilarProducts({
         </div>
       </CardHeader>
       <CardContent className="mb-6 p-6">
-        <Carousel
-          className="mx-auto max-w-[80vw] xl:max-w-screen-lg"
-          opts={{ dragFree: true, skipSnaps: true, align: "start" }}
-        >
+        <Carousel opts={{ dragFree: true, skipSnaps: true, align: "start" }}>
           <CarouselContent>
             {products.map((product) => {
               return (

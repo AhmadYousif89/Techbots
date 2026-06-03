@@ -77,13 +77,13 @@ export function DeleteCartItems({ asin, price, action }: DeleteCartItemProps) {
           variant={action === "deleteAll" ? "ghost" : "outline"}
           title={action === "deleteOne" ? "Remove from cart" : "Empty cart"}
           className={cn(
-            "size-7 p-1 hover:bg-transparent",
+            "size-7 border-0 p-1 hover:border hover:bg-transparent",
             action === "deleteOne" && "bg-destructive/20",
             action === "deleteAll" &&
               "border border-input hover:border-transparent hover:bg-destructive/20",
           )}
         >
-          <Trash2 className="text-destructive" />
+          <Trash2 className="size-4 text-destructive" />
         </Button>
       </DialogTrigger>
       <DialogContent>

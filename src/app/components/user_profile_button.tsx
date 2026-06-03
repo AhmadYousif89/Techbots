@@ -1,18 +1,15 @@
 "use client";
 
-import { LogIn, User } from "lucide-react";
+import { DotIcon, LogIn, ShoppingBag, User } from "lucide-react";
 import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/nextjs";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Separator } from "@/components/ui/separator";
 
 export function UserProfileButton() {
   const { userId } = useAuth();
@@ -25,8 +22,7 @@ export function UserProfileButton() {
     return (
       <div className="hidden size-7 place-content-center rounded-full bg-muted-foreground ring-1 ring-input ring-offset-1 lg:grid">
         <UserButton
-          userProfileMode="navigation"
-          userProfileUrl="/user"
+          userProfileMode="modal"
           afterSignOutUrl="/"
           appearance={{
             elements: {
@@ -34,7 +30,20 @@ export function UserProfileButton() {
               userPreviewSecondaryIdentifier: "font-medium",
             },
           }}
-        />
+        >
+          <UserButton.MenuItems>
+            <UserButton.Link
+              href="/cart"
+              label="Manage Cart"
+              labelIcon={<ShoppingBag className="size-4" />}
+            />
+            <UserButton.Link
+              href="/orders"
+              label="Order History"
+              labelIcon={<LogsIcon />}
+            />
+          </UserButton.MenuItems>
+        </UserButton>
       </div>
     );
   }
@@ -69,3 +78,15 @@ export function UserProfileButton() {
     </DropdownMenu>
   );
 }
+
+const LogsIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="16px"
+    viewBox="0 -960 960 960"
+    width="16px"
+    fill="currentColor"
+  >
+    <path d="M480-400 40-640l440-240 440 240-440 240Zm0 160L63-467l84-46 333 182 333-182 84 46-417 227Zm0 160L63-307l84-46 333 182 333-182 84 46L480-80Zm0-411 273-149-273-149-273 149 273 149Zm0-149Z" />
+  </svg>
+);

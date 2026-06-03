@@ -27,13 +27,6 @@ export async function MainNav() {
           <CategoryNavMenu data={categories} />
         </li>
         <li>
-          <Link href="/#blogs">
-            <Button variant={"link"} className="text-secondary">
-              Blogs
-            </Button>
-          </Link>
-        </li>
-        <li>
           <Link href="/#footer">
             <Button variant={"link"} className="text-secondary">
               Contact

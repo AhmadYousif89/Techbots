@@ -16,7 +16,7 @@ export default function NotFound() {
         <CardHeader className="space-y-4">
           <CardTitle className="pb-2">Not Found :/</CardTitle>
           <CardDescription className="text-lg font-medium">
-            The product you are looking for is not available.
+            The resource you are looking for is not available.
           </CardDescription>
         </CardHeader>
 

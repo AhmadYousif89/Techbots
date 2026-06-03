@@ -56,7 +56,7 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
   );
 
   return (
-    <Card className="rounded-none p-4 xl:p-8">
+    <Card className="rounded-none border-0 p-4 shadow-none xl:p-8">
       <CardHeader className="px-0">
         <CardTitle className="flex items-center">My Orders</CardTitle>
         <CardDescription>
@@ -65,27 +65,32 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
       </CardHeader>
       <Separator />
 
-      <Card className="mt-8 max-w-xs p-4">
+      <Card className="mt-8 p-4">
         <CardHeader className="p-0">
           <CardTitle className="pb-2 text-lg">Personal Info</CardTitle>
         </CardHeader>
-        <div className="grid gap-1 border-l pl-4">
-          <CardDescription className="text-xs lg:text-sm">
-            Placed by:{" "}
-            <span className="font-semibold">
-              {user.username || "Anonymous"}
-            </span>
-          </CardDescription>
-          <CardDescription className="text-xs lg:text-sm">
-            Email: <span className="font-semibold">{user.email}</span>
-          </CardDescription>
-          <CardDescription className="text-xs lg:text-sm">
-            Total orders: <span className="font-semibold">{orders.length}</span>
-          </CardDescription>
-          <CardDescription className="text-xs lg:text-sm">
-            Total spent:{" "}
-            <span className="font-semibold">${formatPrice(totalSpent)}</span>
-          </CardDescription>
+        <div className="flex gap-4 border-l pl-4">
+          <CardContent className="p-0">
+            <p className="text-xs text-foreground/70 lg:text-sm">
+              Name:{" "}
+              <span className="font-semibold">
+                {user.username || "Anonymous"}
+              </span>
+            </p>
+            <p className="text-xs text-foreground/70 lg:text-sm">
+              Email: <span className="font-semibold">{user.email}</span>
+            </p>
+          </CardContent>
+          <CardContent className="p-0">
+            <p className="text-xs text-foreground/70 lg:text-sm">
+              Total orders:{" "}
+              <span className="font-semibold">{orders.length}</span>
+            </p>
+            <p className="text-xs text-foreground/70 lg:text-sm">
+              Total spent:{" "}
+              <span className="font-semibold">${formatPrice(totalSpent)}</span>
+            </p>
+          </CardContent>
         </div>
       </Card>
 
@@ -102,7 +107,7 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
               </span>
             </h2>
           ) : (
-            <Table className="mx-auto max-w-screen-lg">
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="min-w-20 max-sm:px-0">Order</TableHead>
@@ -163,8 +168,8 @@ export function OrdersView({ orders, user }: OrdersViewProps) {
       </Card>
 
       <div className="mt-6 flex justify-end">
-        <Button asChild variant="outline">
-          <Link href="/products">Continue shopping</Link>
+        <Button asChild variant="link" className="hover:text-blue-600">
+          <Link href="/products">Back to shop</Link>
         </Button>
       </div>
     </Card>

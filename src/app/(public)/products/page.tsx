@@ -41,7 +41,7 @@ export default function ProductsPage({ searchParams }: PageProps) {
 
   return (
     <Suspense fallback={<ProductsViewSkeleton grid={grid} />}>
-      <Main className="mb-0.5 bg-background">
+      <Main className="mb-0.5">
         <div className="flex h-14 items-center justify-between bg-muted px-4 md:px-10">
           <BreadcrumbSection category={category} />
           <SearchProducts />

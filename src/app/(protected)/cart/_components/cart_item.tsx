@@ -10,7 +10,6 @@ import { DeleteCartItems } from "./delete_button";
 import { incrementServerCartItem } from "../_actions/increment";
 import { decrementServerCartItem } from "../_actions/decrement";
 import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
 import useStore from "@/app/components/hooks/use-store";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/app/lib/utils";
@@ -67,72 +66,67 @@ export function CartItem({
   };
 
   return (
-    <div className="mt-4 flex max-w-xl gap-8 even:pt-8">
-      <Card className="grid aspect-square w-full max-w-16 place-content-center self-start rounded shadow-sm">
+    <article className="rounded-md border p-2 shadow-sm">
+      <div className="mb-2 flex gap-2.5">
+        <Badge
+          variant={"outline"}
+          className="border-0 bg-emerald-500 text-secondary"
+        >
+          On Sale
+        </Badge>
+        <Badge className="text-muted-foreground" variant={"outline"}>
+          {formatPrice(item.price)}
+        </Badge>
+      </div>
+
+      <div className="m-1 flex items-center gap-4 rounded">
         <Image
           title={asin}
           src={item.mainImage}
           alt={item.title}
           width={100}
           height={100}
-          className="size-14 object-contain"
+          className="aspect-square w-14 object-cover object-center"
         />
-      </Card>
-
-      <div>
-        <div className="mb-2 flex gap-2">
-          <Badge
-            variant={"outline"}
-            className="border-0 bg-emerald-500 text-secondary shadow-sm"
-          >
-            On Sale
-          </Badge>
-          <Badge
-            className="py-1 text-muted-foreground shadow-sm"
-            variant={"outline"}
-          >
-            {formatPrice(item.price)}
-          </Badge>
-        </div>
         <Link href={`/products/${item.asin}`} className="group">
-          <CardTitle className="text-xs font-medium text-muted-foreground transition-colors group-hover:text-muted-foreground/80 group-hover:underline sm:text-sm">
+          <p className="text-pretty text-xs font-medium text-muted-foreground transition-colors group-hover:text-muted-foreground/80 group-hover:underline sm:text-sm/tight">
             {item.title}
-          </CardTitle>
+          </p>
         </Link>
+      </div>
 
-        <div className="mt-6 flex items-center gap-4">
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          disabled={cartQuantity === item.stockQuantity}
+          variant="outline"
+          className="size-7 p-1"
+          onClick={() => handleItemQuantity("increment")}
+        >
+          <Plus className="size-4" />
+        </Button>
+        <Badge
+          variant={"outline"}
+          className="inline-grid h-6 w-20 justify-center"
+        >
+          {cartQuantity} / {item.stockQuantity}
+        </Badge>
+        {cartQuantity > 1 ? (
           <Button
-            disabled={cartQuantity === item.stockQuantity}
+            size="icon"
             variant="outline"
             className="size-7 p-1"
-            onClick={() => handleItemQuantity("increment")}
+            onClick={() => handleItemQuantity("decrement")}
           >
-            <Plus />
+            <Minus />
           </Button>
-          <Badge
-            variant={"outline"}
-            className="inline-grid h-8 w-20 place-content-center p-2 shadow-sm"
-          >
-            {cartQuantity} / {item.stockQuantity}
-          </Badge>
-          {cartQuantity > 1 ? (
-            <Button
-              size="icon"
-              variant="outline"
-              className="size-7 p-1"
-              onClick={() => handleItemQuantity("decrement")}
-            >
-              <Minus />
-            </Button>
-          ) : (
-            <DeleteCartItems
-              action="deleteOne"
-              asin={item.asin}
-              price={item.price}
-            />
-          )}
-        </div>
+        ) : (
+          <DeleteCartItems
+            action="deleteOne"
+            asin={item.asin}
+            price={item.price}
+          />
+        )}
       </div>
-    </div>
+    </article>
   );
 }

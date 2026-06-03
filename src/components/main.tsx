@@ -10,7 +10,7 @@ export const Main = ({
   return (
     <main
       ref={ref}
-      className={cn("max-view mx-auto min-h-screen w-full", className)}
+      className={cn("max-view mx-auto w-full grow bg-background", className)}
       {...props}
     />
   );

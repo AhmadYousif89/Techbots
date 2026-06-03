@@ -7,16 +7,12 @@ export const clearServerCart = async (clerkUserId: string) => {
   await prisma.$transaction(async (prisma) => {
     const cart = await prisma.cart.findUnique({
       where: { clerkUserId },
-      include: {
-        cartItems: {
-          where: { Cart: { clerkUserId } },
-        },
+      select: {
+        id: true,
       },
     });
 
-    if (!cart) {
-      throw new Error("Cart not found");
-    }
+    if (!cart) return;
 
     await prisma.cartItem.deleteMany({
       where: { cartId: cart.id },

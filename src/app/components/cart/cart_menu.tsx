@@ -67,19 +67,6 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
     </Button>
   );
 
-  const cartDescription = (
-    <>
-      You have
-      <Badge
-        variant={"outline"}
-        className="mx-1 size-8 justify-center text-sm shadow-sm"
-      >
-        {cartCount > 99 ? "99+" : cartCount}
-      </Badge>
-      item{cartCount !== 1 ? "s" : ""} in your shopping cart
-    </>
-  );
-
   if (isNotMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={setCartMenuOpen}>
@@ -89,9 +76,6 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
             <SheetTitle className="flex items-center justify-center gap-4 text-2xl">
               Cart Items <ShoppingBag />
             </SheetTitle>
-            <SheetDescription className="text-center">
-              {cartDescription}
-            </SheetDescription>
           </SheetHeader>
           {cartCount === 0 ? (
             <section className="grid items-center justify-center">
@@ -126,9 +110,6 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
           <DrawerTitle className="mb-2 flex items-center justify-center gap-2 text-xl">
             Cart Items <ShoppingBag className="size-5" />
           </DrawerTitle>
-          <DrawerDescription className="mb-2">
-            {cartDescription}
-          </DrawerDescription>
         </DrawerHeader>
         {cartCount === 0 ? (
           <section className="grid justify-center">
@@ -144,8 +125,8 @@ export function CartMenu({ getServerCart }: CartMenuProps) {
           </section>
         )}
         <DrawerFooter>
-          {cartCount > 0 && <ClearCartButton />}
           <DrawerClose asChild>{cartMenuButton}</DrawerClose>
+          {cartCount > 0 && <ClearCartButton />}
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

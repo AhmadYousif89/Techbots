@@ -1,10 +1,11 @@
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GridItemSkeleton } from "./grid_item";
+import { Main } from "@/components/main";
 
 export function ProductsViewSkeleton({ grid }: { grid: string }) {
   return (
-    <main className="max-view group mx-auto min-h-screen bg-background">
+    <Main className="group">
       <div className="flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <Skeleton className="h-2 w-12 bg-input/65" />
@@ -85,6 +86,6 @@ export function ProductsViewSkeleton({ grid }: { grid: string }) {
           </div>
         </div>
       </div>
-    </main>
+    </Main>
   );
 }

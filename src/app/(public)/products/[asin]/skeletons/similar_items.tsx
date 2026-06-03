@@ -10,10 +10,7 @@ export function SimilarItemSkeleton() {
     <div className="bg-background px-8 py-16">
       <Skeleton className="mb-8 h-8 w-56 rounded-full" />
       <div>
-        <Carousel
-          className="mx-auto max-w-[80vw] xl:max-w-screen-lg"
-          opts={{ dragFree: true, align: "start" }}
-        >
+        <Carousel opts={{ dragFree: true, align: "start" }}>
           <CarouselContent>
             {Array.from({ length: 10 }).map((_, index) => (
               <CarouselItem key={index} className="grid basis-48 pb-4">

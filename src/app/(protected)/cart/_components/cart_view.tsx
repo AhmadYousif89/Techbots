@@ -32,9 +32,9 @@ export function CartViews({ children }: CartViewsProps) {
   const hasCartItems = (cartItems?.length ?? 0) > 0;
 
   return (
-    <Tabs asChild defaultValue="cart" className="mt-2 grow">
-      <Main>
-        <TabsList className="lg:max-view flex h-20 pb-0 *:h-full *:flex-1 sm:gap-8 sm:px-0 md:mx-auto md:max-w-screen-lg md:gap-16">
+    <Tabs asChild defaultValue="cart">
+      <Main className="mt-2 flex flex-col">
+        <TabsList className="lg:max-view flex h-20 *:size-full sm:gap-8">
           <TabsTrigger
             id="cart-list"
             value="cart"
